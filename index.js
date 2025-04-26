@@ -23,7 +23,7 @@ if (!fs.existsSync(CA_CERT_PATH)) {
 }
 
 // —————————————————————————
-// Hilfsfunktion für Client-ID
+// Hilfsfunktion für Client-ID Generierung
 // —————————————————————————
 function generateClientId(length = 16) {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
