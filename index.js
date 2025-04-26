@@ -6,7 +6,7 @@ const path = require('path');
 const process = require('process');
 
 // —————————————————————————
-// Drucker-Konfiguration aus .env
+// Drucker-Konfiguration aus .env 
 // —————————————————————————
 const BROKER_ADDRESS = process.env.BROKER_ADDRESS;
 const PORT = process.env.PORT || 3000;
