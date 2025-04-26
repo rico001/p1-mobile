@@ -14,6 +14,8 @@ const USERNAME = process.env.MQTT_USERNAME;
 const PASSWORD = process.env.MQTT_PASSWORD;
 const SERIAL_NUMBER = process.env.SERIAL_NUMBER;
 const CA_CERT_PATH = path.join(__dirname, process.env.CA_CERT_PATH);
+const FTP_CACHE_BASE_PATH = 'ftp:///cache/';
+const FTP_MODEL_BASE_PATH = 'ftp:///model/';
 
 const TOPIC_REPORT = `device/${SERIAL_NUMBER}/report`;
 const TOPIC_REQUEST = `device/${SERIAL_NUMBER}/request`;
@@ -76,13 +78,11 @@ client.on('connect', () => {
 });
 
 client.on('message', (topic, message) => {
-  let text;
-  try {
-    text = message.toString();
-  } catch (err) {
-    text = message;
+  let json = JSON.parse(message.toString());
+  if (json?.print?.sequence_id?.includes('print_file') || json?.system?.sequence_id?.includes('access_code')) {
+    console.log(`[MQTT] 📥 Nachricht empfangen von '${topic}':`);
+    console.log(json);
   }
-  console.log(`[MQTT] 📥 ${topic} → ${text}`);
 });
 
 client.on('reconnect', () => {
@@ -100,8 +100,62 @@ client.on('error', (error) => {
 // —————————————————————————
 // Express-Server starten
 // —————————————————————————
-app.get('/', (req, res) => {
-  res.send('MQTT Client läuft...');
+// some tests
+
+app.get('/print-file', (req, res) => {
+  const sequence_id = "print_file-" + Date.now();
+  const printFileRequest = {
+    print: {
+      sequence_id: sequence_id,
+      command: 'project_file',
+      param: 'Metadata/plate_X.gcode',
+      project_id: '0',
+      profile_id: '0',
+      task_id: '0',
+      subtask_id: '0',
+      subtask_name: '',
+      file: '',
+      url: `${FTP_MODEL_BASE_PATH}P1S_Bed scraper by JernejP_PLA.gcode`, // URL to print. Root path, protocol can vary. E.g., if sd card, "ftp:///myfile.3mf", "ftp:///cache/myotherfile.3mf"
+      md5: '',
+      timelapse: true,
+      bed_type: 'auto',
+      bed_levelling: true,
+      flow_cali: true,
+      vibration_cali: true,
+      layer_inspect: true,
+      ams_mapping: '',
+      use_ams: true
+    }
+  };
+  client.publish(TOPIC_REQUEST, JSON.stringify(printFileRequest), { qos: 1 }, (err) => {
+    if (err) {
+      console.error('[MQTT] ❌ Fehler beim Publish:', err);
+    } else {
+      console.log(`[MQTT] 📤 Gesendet an '${TOPIC_REQUEST}'`);
+    }
+  });
+  res.send('Print File Request gesendet');
+});
+
+// publish access code request and wait for response with a mqtt client, based on sequence_id 
+app.get('/access-code', (req, res) => {
+  const sequence_id = "access_code" + Date.now();
+  const accessCodeRequest = {
+    system: {
+      sequence_id: sequence_id,
+      command: 'get_access_code'
+    }
+  };
+
+  client.publish(TOPIC_REQUEST, JSON.stringify(accessCodeRequest), { qos: 1 }, (err) => {
+    if (err) {
+      console.error('[MQTT] ❌ Fehler beim Publish:', err);
+    } else {
+      console.log(`[MQTT] 📤 Gesendet an '${TOPIC_REQUEST}'`);
+    }
+  });
+
+  res.send('Access Code Request gesendet');
 });
 
 app.listen(PORT, () => {
