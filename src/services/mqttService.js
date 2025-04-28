@@ -6,41 +6,41 @@ import { config } from '../config/index.js';
 import { generateClientId } from '../utils/clientIdGenerator.js';
 
 class MqttService extends EventEmitter {
-  constructor() {
+  constructor( mqttConfig = config.mqtt) {
     super();
     this.client = null;
     this.clientId = generateClientId();
-    this.topics = config.mqtt.topics;
+    this.config = mqttConfig;
 
     // Map von sequence_id → resolve-Funktion
     this._responseCallbacks = new Map();
   }
 
   init() {
-    if (!fs.existsSync(config.mqtt.caCertPath)) {
-      throw new Error(`Zertifikat nicht gefunden: ${config.mqtt.caCertPath}`);
+    if (!fs.existsSync(this.config.caCertPath)) {
+      throw new Error(`Zertifikat nicht gefunden: ${this.config.caCertPath}`);
     }
-    const ca = fs.readFileSync(config.mqtt.caCertPath);
+    const ca = fs.readFileSync(this.config.caCertPath);
     const opts = {
       clientId: this.clientId,
-      username: config.mqtt.username,
-      password: config.mqtt.password,
+      username: this.config.username,
+      password: this.config.password,
       clean: true,
       reconnectPeriod: 1000,
       keepalive: 20,
       rejectUnauthorized: false,
       ca
     };
-    this.client = mqtt.connect(config.mqtt.brokerUrl, opts);
+    this.client = mqtt.connect(this.config.brokerUrl, opts);
     this._registerEvents();
   }
 
   _registerEvents() {
     this.client.on('connect', () => {
       console.log('[MQTT] ✅ Verbunden');
-      this.client.subscribe(this.topics.report, err => {
+      this.client.subscribe(this.config.topics.report, err => {
         if (err) console.error('[MQTT] ❌ Subscribe-Fehler:', err);
-        else console.log(`[MQTT] 📡 Subscribed to '${this.topics.report}'`);
+        else console.log(`[MQTT] 📡 Subscribed to '${this.config.topics.report}'`);
       });
     });
     this.client.on('message', this._onMessage.bind(this));
@@ -63,7 +63,7 @@ findSequenceId(obj) {
 _onMessage(topic, message) {
   let json = JSON.parse(message.toString());
   const seqId = this.findSequenceId(json);
-  if (topic === this.topics.report && seqId && this._responseCallbacks.has(seqId)) {
+  if (topic === this.config.topics.report && seqId && this._responseCallbacks.has(seqId)) {
     const resolve = this._responseCallbacks.get(seqId);
     console.log("_responseCallbacks", this._responseCallbacks);
     this._responseCallbacks.delete(seqId);
