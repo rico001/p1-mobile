@@ -11,7 +11,7 @@ class MqttService extends EventEmitter {
     this.client = null;
     this.clientId = generateClientId();
     this.topics = config.mqtt.topics;
-    
+
     // Map von sequence_id → resolve-Funktion
     this._responseCallbacks = new Map();
   }
@@ -74,6 +74,7 @@ _onMessage(topic, message) {
 
 
 publish(topic, payload) {
+  console.log("publish", topic, payload);
   return new Promise((resolve, reject) => {
     this.client.publish(topic, JSON.stringify(payload), err => {
       if (err) reject(err);
@@ -89,8 +90,8 @@ publish(topic, payload) {
  * @param {number} timeout in ms 
  * @returns {Promise<object>} die empfangene Report-Nachricht als JSON
  */
-request(topic, payload, timeout = 5000) {
-  const seqId = payload.system.sequence_id;
+request(topic, payload, seqId, timeout = 5000) {
+  console.log("seqId", seqId);
   return new Promise(async (resolve, reject) => {
     // Callback registrieren
     this._responseCallbacks.set(seqId, resolve);
