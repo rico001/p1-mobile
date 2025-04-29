@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer';
 import { config } from '../config/index.js'; // Stelle sicher, dass config/index.js existiert und export const config enthält
+import AdmZip from 'adm-zip'; // Stelle sicher, dass adm-zip installiert ist
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -114,10 +115,28 @@ class PuppeteerService {
 
     } finally {
       // Cleanup: Seite und Browser immer schließen
-      if (page) await page.close().catch(() => {});
-      if (browser) await browser.close().catch(() => {});
+      if (page) await page.close().catch(() => { });
+      if (browser) await browser.close().catch(() => { });
     }
   }
+
+  async extractThumbnailFrom3mf(filePath) {
+    const zip = new AdmZip(filePath);
+    const zipEntries = zip.getEntries();
+  
+    const thumbnailEntry = zipEntries.find(entry =>{
+      console.log(entry.entryName)
+      return entry.entryName.toLowerCase().endsWith('.png');
+    });
+  
+    if (thumbnailEntry) {
+      const thumbnailBuffer = thumbnailEntry.getData(); // Buffer direkt zurückgeben
+      return thumbnailBuffer;
+    } else {
+      throw new Error('Kein Thumbnail im 3MF gefunden');
+    }
+  }
+  
 }
 
 // Singleton-Export: die Konfiguration bleibt, aber Browser-Instanzen fresh
