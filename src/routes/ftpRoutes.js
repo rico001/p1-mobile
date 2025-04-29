@@ -1,6 +1,6 @@
 // ftpRoutes.js
 import { Router } from "express"
-import { uploadFile, downloadFile, deleteFile, createFolder, moveFile, clearFolder, listFiles } from "../controllers/ftpController.js"
+import { uploadFile, downloadFile, deleteFile, listFiles } from "../controllers/ftpController.js"
 
 const router = Router()
 

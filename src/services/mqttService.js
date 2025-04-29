@@ -90,14 +90,14 @@ publish(topic, payload) {
  * @param {number} timeout in ms 
  * @returns {Promise<object>} die empfangene Report-Nachricht als JSON
  */
-request(topic, payload, seqId, timeout = 5000) {
+request(payload, seqId, timeout = 5000) {
   console.log("seqId", seqId);
   return new Promise(async (resolve, reject) => {
     // Callback registrieren
     this._responseCallbacks.set(seqId, resolve);
     // Nachricht abschicken
     try {
-      await this.publish(topic, payload);
+      await this.publish(this.config.topics.request, payload);
     } catch (err) {
       this._responseCallbacks.delete(seqId);
       return reject(err);
