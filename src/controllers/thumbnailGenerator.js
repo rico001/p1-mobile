@@ -41,10 +41,10 @@ export const generateThumbnails = async (req, res) => {
             // 2. Generiere Thumbnail via PuppeteerService synchron
             let buffer;
             try {
-                buffer = await PuppeteerService.imageBy3mfWithImage2Stl(
-                    local3mf,
-                    { width: 800, height: 800, fullPage: false }
-                );
+                buffer = await PuppeteerService.extractThumbnailFrom3mf(local3mf);
+                if (!buffer) {
+                    throw new Error('Thumbnail konnte nicht extrahiert werden');
+                }
             } catch (error) {
                 console.error(`Fehler beim Generieren des Thumbnails für ${file.name}:`, error);
                 // Lösche lokale 3MF-Datei und fahre fort
