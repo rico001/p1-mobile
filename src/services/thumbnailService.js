@@ -1,10 +1,12 @@
 import puppeteer from 'puppeteer';
 import { config } from '../config/index.js'; // Stelle sicher, dass config/index.js existiert und export const config enthält
 import AdmZip from 'adm-zip'; // Stelle sicher, dass adm-zip installiert ist
+import path from 'path';
+import fs from 'fs';
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-class PuppeteerService {
+class ThumbnailService {
   constructor(
     puppeteerConfig = config.puppeteer || {}
   ) {
@@ -26,7 +28,7 @@ class PuppeteerService {
    * @param {string} viewerUrl - URL der Viewer-Seite
    * @returns {Promise<Buffer>} Puffer des Screenshots
    */
-  async imageBy3mfWithImage2Stl(
+  async __extractThumbnailWithImage2Stl(
     filePath,
     { width = 1024, height = 768, fullPage = false, timeoutMs = 500000 } = {}
   ) {
@@ -120,24 +122,54 @@ class PuppeteerService {
     }
   }
 
-  async extractThumbnailFrom3mf(filePath) {
+  async __extractThumbnailFrom3mf(filePath) {
     const zip = new AdmZip(filePath);
     const zipEntries = zip.getEntries();
-  
-    const thumbnailEntry = zipEntries.find(entry =>{
+
+    const thumbnailEntry = zipEntries.find(entry => {
       console.log(entry.entryName)
       return entry.entryName.toLowerCase().endsWith('.png');
     });
-  
+
     if (thumbnailEntry) {
       const thumbnailBuffer = thumbnailEntry.getData(); // Buffer direkt zurückgeben
       return thumbnailBuffer;
-    } else {
-      throw new Error('Kein Thumbnail im 3MF gefunden');
+    }
+    return null;
+  }
+
+  async extractThumbnail(filelocalPath, thumbnailPath) {
+
+    let buffer;
+    try {
+      buffer = await this.__extractThumbnailFrom3mf(filelocalPath);
+      if (!buffer) {
+        buffer = await this.__extractThumbnailWithImage2Stl(filelocalPath);
+      }
+
+      if (buffer) {
+        await fs.promises.writeFile(thumbnailPath, buffer);
+      }
+    } catch (error) {
+      console.error(`Fehler beim Generieren des Thumbnails für ${filelocalPath}`, error);
+    }
+
+    fs.unlink(filelocalPath, err => {
+      if (err) console.warn('Löschen der lokalen Datei fehlgeschlagen:', err);
+    });
+
+  }
+
+  async deleteThumbnail(thumbnailPath) {
+    try {
+      await fs.promises.unlink(thumbnailPath);
+      console.log(`Thumbnail ${thumbnailPath} gelöscht.`);
+    } catch (error) {
+      console.error(`Fehler beim Löschen des Thumbnails ${thumbnailPath}:`, error);
     }
   }
-  
+
 }
 
 // Singleton-Export: die Konfiguration bleibt, aber Browser-Instanzen fresh
-export default new PuppeteerService();
+export default new ThumbnailService();

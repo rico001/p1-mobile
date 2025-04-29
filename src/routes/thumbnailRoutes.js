@@ -1,6 +1,6 @@
 // ftpRoutes.js
 import { Router } from "express"
-import { generateThumbnails } from "../controllers/thumbnailGenerator.js"
+import { generateThumbnails } from "../controllers/thumbnailController.js"
 
 const router = Router()
 

@@ -2,7 +2,7 @@
 import ftpService from "../services/ftpService.js"
 import path from 'path';
 import * as fs from "fs";
-import PuppeteerService from "../services/puppeteerService.js";
+import ThumbnailService from "../services/thumbnailService.js";
 
 //GET /api/ftp/list-files
 export const listFiles = async (req, res) => {
@@ -43,21 +43,6 @@ export const listFiles = async (req, res) => {
     }
 }
 
-/*
-
-
-
-  async uploadFile(localPath, remotePath) {
-        try {
-            await this.connect()
-            await this.client.uploadFrom(localPath, remotePath)
-            console.log(`Datei hochgeladen: ${localPath} -> ${remotePath}`)
-        } catch (error) {
-            throw new Error("Fehler beim Upload: " + error.message)
-        }
-    }
-*/
-
 export const uploadFile = async (req, res) => {
     try {
         // 2. Prüfen, ob Multer eine Datei liefert
@@ -66,32 +51,12 @@ export const uploadFile = async (req, res) => {
         }
 
         // 3. Pfade setzen
-        const localPath = path.resolve(process.cwd(), "files", req.file.originalname); // z. B. '/tmp/meinedatei.txt'
+        const filelocalPath = path.resolve(process.cwd(), "files", req.file.originalname); // z. B. '/tmp/meinedatei.txt'
         const remotePath = path.posix.join("/", req.file.originalname); // z. B. '/meinedatei.txt'
+        await ftpService.uploadFile(filelocalPath, remotePath);
 
-        // 4. Upload über deinen FTP-Service
-        await ftpService.uploadFile(localPath, remotePath);
-
-
-        const thumbDir = path.resolve(process.cwd(), 'thumbnails');
-        const thumbnailFileName = `${req.file.originalname}.png`;
-        const thumbnailPath = path.resolve(thumbDir, thumbnailFileName);
-        let buffer;
-        try {
-            buffer = await PuppeteerService.extractThumbnailFrom3mf(localPath);
-            if (!buffer) {
-                //throw new Error('Thumbnail konnte nicht extrahiert werden');
-            } else {
-                await fs.promises.writeFile(thumbnailPath, buffer);
-            }
-        } catch (error) {
-            console.error(`Fehler beim Generieren des Thumbnails für ${thumbnailFileName}`, error);
-        }
-
-        // 5. Optional: lokale Datei löschen
-        fs.unlink(localPath, err => {
-            if (err) console.warn('Löschen der lokalen Datei fehlgeschlagen:', err);
-        });
+        const thumbnailPath = path.resolve(process.cwd(), "thumbnails", path.parse(req.file.originalname).name + ".png");
+        await ThumbnailService.extractThumbnail(filelocalPath, thumbnailPath);
 
         res.json({ message: "Datei erfolgreich hochgeladen." });
     } catch (error) {
@@ -153,7 +118,11 @@ export const deleteFile = async (req, res) => {
         if (!fileName) {
             return res.status(400).json({ message: "remotePath ist erforderlich." })
         }
+
         await ftpService.deleteFile(fileName)
+        const thumbnailPath = path.resolve(process.cwd(), "thumbnails", fileName + ".png")
+        ThumbnailService.deleteThumbnail(thumbnailPath)
+
         res.json({ message: "success", command: "deleteFile", fileName: fileName })
     } catch (error) {
         res.status(500).json({ message: error.message })
