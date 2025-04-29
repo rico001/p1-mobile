@@ -1,103 +1,87 @@
 import puppeteer from 'puppeteer';
-import { config } from '../config'; // Erwartet eine Konfigurationsstruktur mit config.puppeteer
+import { config } from '../config/index.js'; // Stelle sicher, dass config/index.js existiert und export const config enthält
 
 class PuppeteerService {
   constructor(
-    // Entire puppeteerConfig defaulting to config.puppeteer
     puppeteerConfig = config.puppeteer || {}
   ) {
-    this.browser = null;
+    // Default Puppeteer-Config aus deinem config-Modul
+    const { headless = true, args = [] } = puppeteerConfig;
+    const defaultArgs = ['--no-sandbox', '--disable-setuid-sandbox'];
 
-    // Destructure mit Default-Werten
-    const {
-      headless = true,
-      args = []
-    } = puppeteerConfig;
-
-    this.defaultOptions = {
+    this.launchOptions = {
       headless,
-      args: [ ...args],
+      args: [...defaultArgs, ...args],
     };
   }
 
   /**
-   * Browser starten (Singleton) — kann mit Optionen überschrieben werden
+   * Lädt eine lokale 3MF-Datei auf imagetostl.com hoch und erstellt einen Screenshot des gerenderten Modells.
+   * Öffnet für jede Datei einen neuen Browser-Context, damit keine Sessions hängen bleiben.
+   * @param {string} filePath - Lokaler Pfad zur .3mf-Datei
+   * @param {{ width?: number, height?: number, fullPage?: boolean, timeoutMs?: number }} options
+   * @param {string} viewerUrl - URL der Viewer-Seite
+   * @returns {Promise<Buffer>} Puffer des Screenshots
    */
-  async init(options = {}) {
-    if (!this.browser) {
-      this.browser = await puppeteer.launch({
-        ...this.defaultOptions,
-        ...options,
-      });
+  async screenshot3mf(
+    filePath,
+    { width = 1024, height = 768, fullPage = false, timeoutMs = 120000 } = {},
+    viewerUrl = 'https://imagetostl.com/de/3mf-online-ansehen'
+  ) {
+    let browser;
+    let page;
+    try {
+      // Frischen Browser starten
+      browser = await puppeteer.launch(this.launchOptions);
+      page = await browser.newPage();
+      await page.setViewport({ width, height });
+
+      // Viewer-Seite laden
+      await page.goto(viewerUrl, { waitUntil: 'networkidle2', timeout: timeoutMs });
+
+      // Consent-Dialog klicken, falls vorhanden
+      try {
+        const consentBtn = await page.waitForSelector('button[aria-label="Einwilligen"]', { timeout: timeoutMs });
+        if (consentBtn) await consentBtn.click();
+      } catch {
+        // kein Consent nötig
+      }
+
+      // Datei per Input hochladen
+      const fileInput = await page.waitForSelector('input[type=file]', { timeout: timeoutMs });
+      await fileInput.uploadFile(filePath);
+
+      await page.waitForSelector('canvas#oea', { timeout: timeoutMs });
+      // Sicherstellen, dass Canvas geladen ist (Größe > 0)
+      await page.waitForFunction(() => {
+        const c = document.querySelector('canvas#oea');
+        return c && c.width > 0 && c.height > 0;
+      }, { timeout: timeoutMs });
+
+      // Nur Canvas-Element screenshot
+      // get element with class name "lg" und display none
+      const lgElement = await page.$('.lg');
+      if (lgElement) {
+        await page.evaluate(el => el.style.display = 'none', lgElement);
+      }
+      // same with gf class name
+      const gfElement = await page.$('.gf');
+      if (gfElement) {
+        await page.evaluate(el => el.style.display = 'none', gfElement);
+      }
+      // Screenshot des Canvas-Elements erstellen 
+      const canvas = await page.$('canvas#oea');
+      if (!canvas) throw new Error('Canvas element not found');
+      const buffer = await canvas.screenshot({ type: 'png' });
+      return buffer;
+
+    } finally {
+      // Cleanup: Seite und Browser immer schließen
+      if (page) await page.close().catch(() => {});
+      if (browser) await browser.close().catch(() => {});
     }
-    return this.browser;
-  }
-
-  /**
-   * Browser wieder schließen
-   */
-  async close() {
-    if (this.browser) {
-      await this.browser.close();
-      this.browser = null;
-    }
-  }
-
-  /**
-   * Neue Seite mit optionalen Viewport- und Header-Settings
-   */
-  async newPage({ viewport = { width: 1280, height: 800 }, extraHTTPHeaders = {} } = {}) {
-    if (!this.browser) {
-      await this.init();
-    }
-    const page = await this.browser.newPage();
-    await page.setViewport(viewport);
-    if (Object.keys(extraHTTPHeaders).length) {
-      await page.setExtraHTTPHeaders(extraHTTPHeaders);
-    }
-    return page;
-  }
-
-  /**
-   * Screenshot von URL
-   */
-  async screenshot(url, { fullPage = true, pageOptions = {}, screenshotOptions = {} } = {}) {
-    const page = await this.newPage(pageOptions);
-    await page.goto(url, { waitUntil: 'networkidle2' });
-    const buffer = await page.screenshot({
-      fullPage,
-      ...screenshotOptions,
-    });
-    await page.close();
-    return buffer;
-  }
-
-  /**
-   * PDF-Generierung von URL
-   */
-  async pdf(url, { format = 'A4', printBackground = true, pageOptions = {}, pdfOptions = {} } = {}) {
-    const page = await this.newPage(pageOptions);
-    await page.goto(url, { waitUntil: 'networkidle2' });
-    const buffer = await page.pdf({
-      format,
-      printBackground,
-      ...pdfOptions,
-    });
-    await page.close();
-    return buffer;
-  }
-
-  /**
-   * Funktion auf der Seite ausführen
-   */
-  async evaluate(url, pageFunction, args = [], { pageOptions = {} } = {}) {
-    const page = await this.newPage(pageOptions);
-    await page.goto(url, { waitUntil: 'networkidle2' });
-    const result = await page.evaluate(pageFunction, ...args);
-    await page.close();
-    return result;
   }
 }
 
-// Singleton-Export
+// Singleton-Export: die Konfiguration bleibt, aber Browser-Instanzen fresh
 export default new PuppeteerService();
