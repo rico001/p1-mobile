@@ -22,14 +22,16 @@ export const generateThumbnails = async (req, res) => {
         const results = [];
         for (const file of targets) {
             const local3mf = path.resolve(tmpDir, file.name);
-            const thumbnailFileName = `${file.name}__thumbnail.png`;
+            const thumbnailFileName = `${file.name}.png`;
             const thumbnailPath = path.resolve(thumbDir, thumbnailFileName);
 
             // 1. Lade Datei vom FTP-Server
+            console.log(`Lade ${file.name} herunter...`);
             await ftpService.downloadFile(
                 path.posix.join(remoteDir, file.name),
                 local3mf
             );
+            console.log(`Lade ${file.name} herunter... Fertig!`);
 
             // 2. Generiere Thumbnail via PuppeteerService synchron
             let buffer;

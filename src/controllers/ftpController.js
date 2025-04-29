@@ -2,16 +2,15 @@
 import ftpService from "../services/ftpService.js"
 import path from 'path';
 import fs from 'fs/promises';
-import PuppeteerService from "../services/puppeteerService.js";
 
-//GET /api/ftp/list?path=/ordner&type=3mf
+//GET /api/ftp/list-files?path=/ordner&type=3mf
 export const listFiles = async (req, res) => {
     //create list of all thumbnails in thumbnails folder
     const thumbnailsDir = path.resolve(process.cwd(), 'thumbnails');
     const thumbnailFiles = await fs.readdir(thumbnailsDir);
     try {
         const remoteDir = req.query.path || "/"
-        const fileType = req.query.type || null // Typ aus Query holen (z.B. "pdf" oder "jpg")
+        const fileType = req.query.type || "3mf"
 
         const files = await ftpService.listFiles(remoteDir)
 
@@ -30,6 +29,7 @@ export const listFiles = async (req, res) => {
             size: file.size,
             thumbnail: thumbnailFiles.find(thumbnail => thumbnail.startsWith(file.name)) ? 
                 path.posix.join('/thumbnails', thumbnailFiles.find(thumbnail => thumbnail.startsWith(file.name))) : null,
+            delete: path.posix.join('/api/ftp/delete-file?fileName=' + file.name),
         }))
 
         res.json(filteredFiles)
@@ -67,12 +67,12 @@ export const downloadFile = async (req, res) => {
 
 export const deleteFile = async (req, res) => {
     try {
-        const { remotePath } = req.body
-        if (!remotePath) {
+        const fileName = req.query.fileName
+        if (!fileName) {
             return res.status(400).json({ message: "remotePath ist erforderlich." })
         }
-        await ftpService.deleteFile(remotePath)
-        res.json({ message: "Datei erfolgreich gelöscht." })
+        await ftpService.deleteFile(fileName)
+        res.json({ message: "success", command: "delete", fileName: fileName })
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
