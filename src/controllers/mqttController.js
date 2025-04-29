@@ -4,7 +4,15 @@ import mqttService from '../services/mqttService.js';
 
 export async function printFile3mf(req, res, next) {
   try {
+   
+    const fileName = req.query.fileName;
+    const bed_levelling = req.query.bed_levelling;
+    const flow_cali = req.query.flow_cali;
+    const vibration_cali = req.query.vibration_cali;
 
+    if (!fileName) {
+      return res.status(400).json({ message: 'fileName is required' });
+    }
     const sequence_id = `print-file-3mf__${Date.now()}`;
     const payload = {
       print: {
@@ -16,13 +24,13 @@ export async function printFile3mf(req, res, next) {
         task_id: '0',
         subtask_id: 'aktuellePlateTest',
         subtask_name: '0',
-        url: `file:///sdcard/aktuellePlateTest.3mf`, //1. in Orca: export aktuelle Plate in STL-Datei 2. sende File via FTP an Drucker 3. drucke File via this API-Endpoint
+        url: `file:///sdcard/${fileName}`, //1. in Orca: export aktuelle Plate in STL-Datei 2. sende File via FTP an Drucker 3. drucke File via this API-Endpoint
         md5: '',
         timelapse: true,
         bed_type: 'auto',
-        bed_levelling: true,
-        flow_cali: true,
-        vibration_cali: true,
+        bed_levelling: bed_levelling || true,
+        flow_cali: flow_cali || true,
+        vibration_cali: vibration_cali || true,
         layer_inspect: true,
         ams_mapping: '',
         use_ams: true
@@ -30,7 +38,6 @@ export async function printFile3mf(req, res, next) {
     };
 
     const report = await mqttService.request(
-      mqttService.topics.request, 
       payload,
       sequence_id
     );

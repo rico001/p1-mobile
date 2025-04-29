@@ -32,6 +32,7 @@ export const listFiles = async (req, res) => {
                 download: path.posix.join('/api/ftp/download-file?fileName=' + file.name),
                 delete: path.posix.join('/api/ftp/delete-file?fileName=' + file.name),
                 refreshThumbnail: path.posix.join('/api/thumbnail/files?fileName=' + file.name),
+                print: path.posix.join('/api/mqtt/print-file?fileName=' + file.name)
             }
         }))
 
@@ -41,13 +42,28 @@ export const listFiles = async (req, res) => {
     }
 }
 
+/*
+
+
+
+  async uploadFile(localPath, remotePath) {
+        try {
+            await this.connect()
+            await this.client.uploadFrom(localPath, remotePath)
+            console.log(`Datei hochgeladen: ${localPath} -> ${remotePath}`)
+        } catch (error) {
+            throw new Error("Fehler beim Upload: " + error.message)
+        }
+    }
+*/
+
 export const uploadFile = async (req, res) => {
     try {
-        const { localPath, remotePath } = req.body
+        const fileName
         if (!localPath || !remotePath) {
             return res.status(400).json({ message: "localPath und remotePath sind erforderlich." })
         }
-        await ftpService.uploadFile(localPath, remotePath)
+        await ftpService.uploadFile("/", fileName)
         res.json({ message: "Datei erfolgreich hochgeladen." })
     } catch (error) {
         res.status(500).json({ message: error.message })
