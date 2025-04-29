@@ -6,10 +6,11 @@ import PuppeteerService from "../services/puppeteerService.js";
 
 export const generateThumbnails = async (req, res) => {
     try {
+        const fileName = req.query.fileName; // dieser muss noch implementiert werden
         const remoteDir = req.query.path || '/';
         const fileType = req.query.type || '3mf';
         const files = await ftpService.listFiles(remoteDir);
-        const targets = files.filter(f =>
+        let targets = files.filter(f =>
             f.name.toLowerCase().endsWith(`.${fileType.toLowerCase()}`)
         );
 
@@ -20,6 +21,10 @@ export const generateThumbnails = async (req, res) => {
         await fs.mkdir(thumbDir, { recursive: true });
 
         const results = [];
+        //filter by filename
+        if (fileName) {
+            targets = targets.filter(file => file.name.toLowerCase() === fileName.toLowerCase());
+        }
         for (const file of targets) {
             const local3mf = path.resolve(tmpDir, file.name);
             const thumbnailFileName = `${file.name}.png`;
@@ -53,7 +58,11 @@ export const generateThumbnails = async (req, res) => {
             // 5. Lösche lokale 3MF-Datei
             await fs.unlink(local3mf);
 
-            results.push({ file: file.name, thumbnail: thumbnailPath });
+            results.push({ message: "success", 
+                command: "generateThumbnails", 
+                fileName: fileName, 
+                refreshedThumbnail: "/thumbnails/" + thumbnailFileName 
+            });
         }
 
         res.json(results);

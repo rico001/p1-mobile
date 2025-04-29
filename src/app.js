@@ -13,7 +13,7 @@ app.use((req, res, next) => {
 
 app.use('/api/mqtt', mqttRoutes);
 app.use('/api/ftp', ftpRoutes);
-app.use('/api/thumbnails', thumbanailRoutes);
+app.use('/api/thumbnail', thumbanailRoutes);
 
 //public for thumbnails
 app.use('/thumbnails', express.static('thumbnails'));

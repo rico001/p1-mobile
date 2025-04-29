@@ -1,19 +1,17 @@
 // ftpController.js
 import ftpService from "../services/ftpService.js"
 import path from 'path';
-import fs from 'fs/promises';
+import * as fs from "fs";
 
-//GET /api/ftp/list-files?path=/ordner&type=3mf
+//GET /api/ftp/list-files
 export const listFiles = async (req, res) => {
     //create list of all thumbnails in thumbnails folder
     const thumbnailsDir = path.resolve(process.cwd(), 'thumbnails');
-    const thumbnailFiles = await fs.readdir(thumbnailsDir);
+    const thumbnailFiles = await fs.promises.readdir(thumbnailsDir);
     try {
-        const remoteDir = req.query.path || "/"
+
         const fileType = req.query.type || "3mf"
-
-        const files = await ftpService.listFiles(remoteDir)
-
+        const files = await ftpService.listFiles("/")
 
         let filteredFiles = files
 
@@ -27,9 +25,14 @@ export const listFiles = async (req, res) => {
         filteredFiles = filteredFiles.map(file => ({
             name: file.name,
             size: file.size,
-            thumbnail: thumbnailFiles.find(thumbnail => thumbnail.startsWith(file.name)) ? 
-                path.posix.join('/thumbnails', thumbnailFiles.find(thumbnail => thumbnail.startsWith(file.name))) : null,
-            delete: path.posix.join('/api/ftp/delete-file?fileName=' + file.name),
+            thumbnail: thumbnailFiles.find(thumbnail => thumbnail.startsWith(file.name)) ?
+                path.posix.join('/thumbnails', thumbnailFiles.find(thumbnail => thumbnail.startsWith(file.name))) :
+                null,
+            operations: {
+                download: path.posix.join('/api/ftp/download-file?fileName=' + file.name),
+                delete: path.posix.join('/api/ftp/delete-file?fileName=' + file.name),
+                refreshThumbnail: path.posix.join('/api/thumbnail/files?fileName=' + file.name),
+            }
         }))
 
         res.json(filteredFiles)
@@ -54,17 +57,50 @@ export const uploadFile = async (req, res) => {
 
 export const downloadFile = async (req, res) => {
     try {
-        const { remotePath, localPath } = req.body
-        if (!remotePath || !localPath) {
-            return res.status(400).json({ message: "remotePath und localPath sind erforderlich." })
+      const fileName = req.query.fileName;
+      if (!fileName) {
+        return res
+          .status(400)
+          .json({ message: "fileName ist erforderlich." });
+      }
+  
+      // 1. Lokales Temp-Verzeichnis unter process.cwd()/tmp
+      const localDir = path.resolve(process.cwd(), "tmp");
+      if (!fs.existsSync(localDir)) {
+        fs.mkdirSync(localDir, { recursive: true });
+      }
+      const localPath = path.join(localDir, fileName);
+  
+      // 2. Datei vom FTP-Server herunterladen
+      await ftpService.downloadFile(
+        path.posix.join("/", fileName), // Remote-Pfad
+        localPath // Lokaler Pfad
+      );
+  
+      // 3. Datei an den Client senden
+      res.download(localPath, fileName, (err) => {
+        if (err) {
+          console.error("Fehler beim Senden der Datei:", err);
+          if (!res.headersSent) {
+            return res
+              .status(500)
+              .json({ message: "Fehler beim Senden der Datei." });
+          }
+        } else {
+          // Temp-Datei aufräumen
+          fs.unlink(localPath, (unlinkErr) => {
+            if (unlinkErr) {
+              console.warn("Konnte temporäre Datei nicht löschen:", unlinkErr);
+            }
+          });
         }
-        await ftpService.downloadFile(remotePath, localPath)
-        res.json({ message: "Datei erfolgreich heruntergeladen." })
+      });
     } catch (error) {
-        res.status(500).json({ message: error.message })
+      console.error("Download-Error:", error);
+      res.status(500).json({ message: error.message });
     }
-}
-
+  };
+  
 export const deleteFile = async (req, res) => {
     try {
         const fileName = req.query.fileName
@@ -72,46 +108,7 @@ export const deleteFile = async (req, res) => {
             return res.status(400).json({ message: "remotePath ist erforderlich." })
         }
         await ftpService.deleteFile(fileName)
-        res.json({ message: "success", command: "delete", fileName: fileName })
-    } catch (error) {
-        res.status(500).json({ message: error.message })
-    }
-}
-
-export const createFolder = async (req, res) => {
-    try {
-        const { remotePath } = req.body
-        if (!remotePath) {
-            return res.status(400).json({ message: "remotePath ist erforderlich." })
-        }
-        await ftpService.createFolder(remotePath)
-        res.json({ message: "Ordner erfolgreich erstellt." })
-    } catch (error) {
-        res.status(500).json({ message: error.message })
-    }
-}
-
-export const moveFile = async (req, res) => {
-    try {
-        const { oldPath, newPath } = req.body
-        if (!oldPath || !newPath) {
-            return res.status(400).json({ message: "oldPath und newPath sind erforderlich." })
-        }
-        await ftpService.moveFile(oldPath, newPath)
-        res.json({ message: "Datei erfolgreich verschoben/umbenannt." })
-    } catch (error) {
-        res.status(500).json({ message: error.message })
-    }
-}
-
-export const clearFolder = async (req, res) => {
-    try {
-        const { remoteDir } = req.body
-        if (!remoteDir) {
-            return res.status(400).json({ message: "remoteDir ist erforderlich." })
-        }
-        await ftpService.clearFolder(remoteDir)
-        res.json({ message: "Ordnerinhalt erfolgreich gelöscht." })
+        res.json({ message: "success", command: "deleteFile", fileName: fileName })
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
