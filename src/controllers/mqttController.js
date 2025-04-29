@@ -2,6 +2,26 @@ import mqttService from '../services/mqttService.js';
 
 //https://github.com/Doridian/OpenBambuAPI
 
+async function getState () {
+  const sequence_id = `get-state__${Date.now()}`;
+  const payload = {
+    pushing: {
+      sequence_id,
+      command: 'pushall',
+      version: 1,
+      push_target: 1
+    }
+  };
+
+  // send & wait for report
+  const report = await mqttService.request(
+    payload,
+    sequence_id
+  );
+
+  return report;
+}
+
 export async function printFile3mf(req, res, next) {
   try {
    
@@ -37,6 +57,11 @@ export async function printFile3mf(req, res, next) {
       }
     };
 
+    //const report = await getState();
+    //if(!report) {
+    //  throw new Error('No state report received');
+    //}
+
     const report = await mqttService.request(
       payload,
       sequence_id
@@ -62,7 +87,6 @@ export async function getAccessCode(req, res, next) {
 
     // send & wait for report
     const report = await mqttService.request(
-      mqttService.topics.request,
       payload,
       sequence_id
     );
