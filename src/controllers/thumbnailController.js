@@ -46,7 +46,7 @@ export const generateThumbnails = async (req, res) => {
         console.log(`Herunterladen von ${file.name} abgeschlossen.`);
   
         // 5. Thumbnail extrahieren
-        const baseName = path.parse(file.name).name;
+        const baseName =file.name;
         const thumbnailFileName = `${baseName}.png`;
         const thumbnailPath = path.resolve(thumbDir, thumbnailFileName);
         await thumbnailService.extractThumbnail(localFilePath, thumbnailPath);

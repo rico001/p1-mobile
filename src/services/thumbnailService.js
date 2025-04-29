@@ -30,7 +30,7 @@ class ThumbnailService {
    */
   async __extractThumbnailWithImage2Stl(
     filePath,
-    { width = 1024, height = 768, fullPage = false, timeoutMs = 500000 } = {}
+    { width = 768, height = 768, fullPage = false, timeoutMs = 500000 } = {}
   ) {
     const viewerUrl = 'https://imagetostl.com/de/3mf-online-ansehen'
     let browser;
@@ -112,6 +112,7 @@ class ThumbnailService {
         `
       });
 
+      await delay(1000); // Warte 1 Sekunde
       const buffer = await canvas.screenshot({ type: 'png' });
       return buffer;
 
