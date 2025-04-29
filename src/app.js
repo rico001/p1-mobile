@@ -1,6 +1,7 @@
 import express from 'express';
 import mqttRoutes from './routes/mqttRoutes.js';
 import ftpRoutes from './routes/ftpRoutes.js';
+import thumbanailRoutes from './routes/thumbnailRoutes.js';
 
 
 const app = express();
@@ -12,6 +13,6 @@ app.use((req, res, next) => {
 
 app.use('/api/mqtt', mqttRoutes);
 app.use('/api/ftp', ftpRoutes);
-app.use('/thumbnails', express.static('thumbnails'));
+app.use('/api/thumbnails', thumbanailRoutes);
 
 export default app;
