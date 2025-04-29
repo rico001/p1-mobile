@@ -88,6 +88,27 @@ class PuppeteerService {
       // Screenshot des Canvas-Elements erstellen 
       const canvas = await page.$('canvas#oea');
       if (!canvas) throw new Error('Canvas element not found');
+
+      await page.addStyleTag({
+        content: `
+          /* Erst mal alles unsichtbar machen */
+          body * {
+            visibility: hidden !important;
+            background: #292929 !important;
+          }
+          ins {
+            display: none !important;
+          }
+          /* und nur dein Canvas wieder sichtbar machen */
+          canvas#oea {
+            visibility: visible !important;
+            /* damit es oben liegt */
+            position: relative !important;
+            z-index: 9999 !important;
+          }
+        `
+      });
+
       const buffer = await canvas.screenshot({ type: 'png' });
       return buffer;
 
