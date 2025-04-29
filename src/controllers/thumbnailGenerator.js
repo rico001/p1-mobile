@@ -15,7 +15,7 @@ export const generateThumbnails = async (req, res) => {
         );
 
         // Erstelle lokale Temp- und Thumbnails-Ordner
-        const tmpDir = path.resolve(process.cwd(), 'tmp');
+        const tmpDir = path.resolve(process.cwd(), 'files');
         const thumbDir = path.resolve(process.cwd(), 'thumbnails');
         await fs.mkdir(tmpDir, { recursive: true });
         await fs.mkdir(thumbDir, { recursive: true });
