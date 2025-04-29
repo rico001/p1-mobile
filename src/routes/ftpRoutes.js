@@ -6,6 +6,7 @@ const router = Router()
 
 // GET Routen
 router.get("/list-files", listFiles)
+router.get("/delete-file", deleteFile)
 // POST Routen
 router.post("/upload", uploadFile)
 router.post("/download", downloadFile)

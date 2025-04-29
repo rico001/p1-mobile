@@ -15,4 +15,7 @@ app.use('/api/mqtt', mqttRoutes);
 app.use('/api/ftp', ftpRoutes);
 app.use('/api/thumbnails', thumbanailRoutes);
 
+//public for thumbnails
+app.use('/thumbnails', express.static('thumbnails'));
+
 export default app;
