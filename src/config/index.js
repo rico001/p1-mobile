@@ -22,6 +22,13 @@ const config = {
     password: process.env.FTP_PASSWORD,
     secure: process.env.FTP_SECURE
   },
+  puppeteer: {
+    headless: process.env.PUPPETEER_HEADLESS === 'true',
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox'
+    ]
+  },
 
 };
 console.log('[Config] Konfiguration geladen:', config);
