@@ -11,7 +11,7 @@ app.use((req, res, next) => {
     next();
   });
 
-app.use('/api/mqtt', mqttRoutes);
+//app.use('/api/mqtt', mqttRoutes);
 app.use('/api/ftp', ftpRoutes);
 app.use('/api/thumbnail', thumbanailRoutes);
 
