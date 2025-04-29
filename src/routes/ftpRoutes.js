@@ -7,12 +7,8 @@ const router = Router()
 // GET Routen
 router.get("/list-files", listFiles)
 router.get("/delete-file", deleteFile)
+router.get("/download-file", downloadFile)
 // POST Routen
 router.post("/upload", uploadFile)
-router.post("/download", downloadFile)
-router.post("/delete", deleteFile)
-router.post("/create-folder", createFolder)
-router.post("/move", moveFile)
-router.post("/clear-folder", clearFolder)
 
 export default router
