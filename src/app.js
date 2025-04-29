@@ -17,5 +17,7 @@ app.use('/api/thumbnail', thumbanailRoutes);
 
 //public for thumbnails
 app.use('/thumbnails', express.static('thumbnails'));
+// a simple upload test
+app.use('/upload', express.static('src/public/upload.html'));
 
 export default app;

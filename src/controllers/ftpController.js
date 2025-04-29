@@ -57,19 +57,31 @@ export const listFiles = async (req, res) => {
     }
 */
 
-//TODO impl with multer
 export const uploadFile = async (req, res) => {
     try {
-        const fileName = req.query.fileName
-        if (!localPath || !remotePath) {
-            return res.status(400).json({ message: "localPath und remotePath sind erforderlich." })
-        }
-        await ftpService.uploadFile("/", fileName)
-        res.json({ message: "Datei erfolgreich hochgeladen." })
+      // 2. Prüfen, ob Multer eine Datei liefert
+      if (!req.file) {
+        return res.status(400).json({ message: "Keine Datei im Feld 'file' gefunden." });
+      }
+  
+      // 3. Pfade setzen
+      const localPath  = path.resolve(process.cwd(), "files", req.file.originalname); // z. B. '/tmp/meinedatei.txt'
+      const remotePath = path.posix.join("/", req.file.originalname); // z. B. '/meinedatei.txt'
+  
+      // 4. Upload über deinen FTP-Service
+      await ftpService.uploadFile(localPath, remotePath);
+  
+      // 5. Optional: lokale Datei löschen
+      fs.unlink(localPath, err => {
+        if (err) console.warn('Löschen der lokalen Datei fehlgeschlagen:', err);
+      });
+  
+      res.json({ message: "Datei erfolgreich hochgeladen." });
     } catch (error) {
-        res.status(500).json({ message: error.message })
+      console.error('Upload-Fehler:', error);
+      res.status(500).json({ message: error.message });
     }
-}
+  };
 
 
 export const downloadFile = async (req, res) => {
@@ -82,7 +94,7 @@ export const downloadFile = async (req, res) => {
       }
   
       // 1. Lokales Temp-Verzeichnis unter process.cwd()/tmp
-      const localDir = path.resolve(process.cwd(), "tmp");
+      const localDir = path.resolve(process.cwd(), "files");
       if (!fs.existsSync(localDir)) {
         fs.mkdirSync(localDir, { recursive: true });
       }

@@ -36,17 +36,20 @@ class FTPService {
             await this.connect()
             return await this.client.list(remoteDir)
         } catch (error) {
+            await this.close()
             throw new Error("Fehler beim Listen der Dateien: " + error.message)
         }
     }
 
     async uploadFile(localPath, remotePath) {
         try {
-            await this.connect()
-            await this.client.uploadFrom(localPath, remotePath)
-            console.log(`Datei hochgeladen: ${localPath} -> ${remotePath}`)
-        } catch (error) {
-            throw new Error("Fehler beim Upload: " + error.message)
+            await this.connect();
+            await this.client.uploadFrom(localPath, remotePath);
+            console.log(`Datei hochgeladen: ${localPath} -> ${remotePath}`);
+        } catch (err) {
+            throw new Error("Fehler beim FTP-Upload: " + err.message);
+        } finally {
+            this.client.close();
         }
     }
 
@@ -56,6 +59,7 @@ class FTPService {
             await this.client.downloadTo(localPath, remotePath)
             console.log(`Datei heruntergeladen: ${remotePath} -> ${localPath}`)
         } catch (error) {
+            await this.close()
             throw new Error("Fehler beim Download: " + error.message)
         }
     }
@@ -66,49 +70,11 @@ class FTPService {
             await this.client.remove(remotePath)
             console.log(`Datei gelöscht: ${remotePath}`)
         } catch (error) {
+            await this.close()
             throw new Error("Fehler beim Löschen der Datei: " + error.message)
         }
     }
 
-    async createFolder(remotePath) {
-        try {
-            await this.connect()
-            await this.client.ensureDir(remotePath)
-            console.log(`Ordner erstellt (oder bereits vorhanden): ${remotePath}`)
-        } catch (error) {
-            throw new Error("Fehler beim Erstellen des Ordners: " + error.message)
-        }
-    }
-
-    async moveFile(oldPath, newPath) {
-        try {
-            await this.connect()
-            await this.client.rename(oldPath, newPath)
-            console.log(`Datei verschoben/umbenannt: ${oldPath} -> ${newPath}`)
-        } catch (error) {
-            throw new Error("Fehler beim Verschieben der Datei: " + error.message)
-        }
-    }
-
-    async clearFolder(remoteDir) {
-        try {
-            await this.connect()
-            const files = await this.client.list(remoteDir)
-            for (const file of files) {
-                const filePath = `${remoteDir}/${file.name}`
-                if (file.isDirectory) {
-                    await this.clearFolder(filePath)
-                    await this.client.removeDir(filePath)
-                    console.log(`Ordner gelöscht: ${filePath}`)
-                } else {
-                    await this.client.remove(filePath)
-                    console.log(`Datei gelöscht: ${filePath}`)
-                }
-            }
-        } catch (error) {
-            throw new Error("Fehler beim Leeren des Ordners: " + error.message)
-        }
-    }
 }
 
 export default new FTPService()
