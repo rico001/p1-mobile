@@ -2,6 +2,7 @@ import express from 'express';
 import mqttRoutes from './routes/mqttRoutes.js';
 import ftpRoutes from './routes/ftpRoutes.js';
 
+
 const app = express();
 app.use(express.json());
 app.use((req, res, next) => {

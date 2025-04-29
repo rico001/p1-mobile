@@ -8,7 +8,7 @@ export const listFiles = async (req, res) => {
         const fileType = req.query.type || null // Typ aus Query holen (z.B. "pdf" oder "jpg")
 
         const files = await ftpService.listFiles(remoteDir)
-        
+
 
         let filteredFiles = files
 
@@ -28,6 +28,10 @@ export const listFiles = async (req, res) => {
     }
 }
 
+export const generateThumbnails = async (req, res) => {
+//1. downloader das entsprechende file 2. nutze pupperteer um Thumbnails zu generieren 2. speichere es im ordner thumbnails <filename>__thumbnail.png
+
+}
 
 export const uploadFile = async (req, res) => {
     try {
