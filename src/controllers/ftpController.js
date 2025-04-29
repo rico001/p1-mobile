@@ -38,68 +38,6 @@ export const listFiles = async (req, res) => {
     }
 }
 
-export const generateThumbnails = async (req, res) => {
-    try {
-        const remoteDir = req.query.path || '/';
-        const fileType = req.query.type || '3mf';
-        const files = await ftpService.listFiles(remoteDir);
-        const targets = files.filter(f =>
-            f.name.toLowerCase().endsWith(`.${fileType.toLowerCase()}`)
-        );
-
-        // Erstelle lokale Temp- und Thumbnails-Ordner
-        const tmpDir = path.resolve(process.cwd(), 'tmp');
-        const thumbDir = path.resolve(process.cwd(), 'thumbnails');
-        await fs.mkdir(tmpDir, { recursive: true });
-        await fs.mkdir(thumbDir, { recursive: true });
-
-        const results = [];
-        for (const file of targets) {
-            const local3mf = path.resolve(tmpDir, file.name);
-            const thumbnailFileName = `${file.name}__thumbnail.png`;
-            const thumbnailPath = path.resolve(thumbDir, thumbnailFileName);
-
-            // 1. Lade Datei vom FTP-Server
-            await ftpService.downloadFile(
-                path.posix.join(remoteDir, file.name),
-                local3mf
-            );
-
-            // 2. Generiere Thumbnail via PuppeteerService synchron
-            let buffer;
-            try {
-                buffer = await PuppeteerService.screenshot3mf(
-                    local3mf,
-                    { width: 800, height: 600, fullPage: false }
-                );
-            } catch (error) {
-                console.error(`Fehler beim Generieren des Thumbnails für ${file.name}:`, error);
-                // Lösche lokale 3MF-Datei und fahre fort
-                await fs.unlink(local3mf).catch(() => { });
-                continue;
-            }
-
-            // 3. Speichere Thumbnail lokal
-            await fs.writeFile(thumbnailPath, buffer);
-
-            // 4. Optional: Lade Thumbnail zurück auf FTP (uncomment, falls benötigt)
-            // await ftpService.uploadFile(
-            //   thumbnailPath,
-            //   path.posix.join(remoteDir, 'thumbnails', thumbnailFileName)
-            // );
-
-            // 5. Lösche lokale 3MF-Datei
-            await fs.unlink(local3mf);
-
-            results.push({ file: file.name, thumbnail: thumbnailPath });
-        }
-
-        res.json(results);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-};
-
 export const uploadFile = async (req, res) => {
     try {
         const { localPath, remotePath } = req.body

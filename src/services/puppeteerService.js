@@ -1,6 +1,8 @@
 import puppeteer from 'puppeteer';
 import { config } from '../config/index.js'; // Stelle sicher, dass config/index.js existiert und export const config enthält
 
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 class PuppeteerService {
   constructor(
     puppeteerConfig = config.puppeteer || {}
@@ -23,11 +25,11 @@ class PuppeteerService {
    * @param {string} viewerUrl - URL der Viewer-Seite
    * @returns {Promise<Buffer>} Puffer des Screenshots
    */
-  async screenshot3mf(
+  async imageBy3mfWithImage2Stl(
     filePath,
-    { width = 1024, height = 768, fullPage = false, timeoutMs = 120000 } = {},
-    viewerUrl = 'https://imagetostl.com/de/3mf-online-ansehen'
+    { width = 1024, height = 768, fullPage = false, timeoutMs = 500000 } = {}
   ) {
+    const viewerUrl = 'https://imagetostl.com/de/3mf-online-ansehen'
     let browser;
     let page;
     try {
@@ -61,6 +63,20 @@ class PuppeteerService {
       // Nur Canvas-Element screenshot
       // get element with class name "lg" und display none
       const lgElement = await page.$('.lg');
+      // 2mal klicken: <span id="sr" class="x" title="Hineinzoomen"><img src="/c/i/vzin.png"></span>
+      const zoomInButton = await page.$('#sr');
+      if (zoomInButton) {
+        await zoomInButton.click();
+        await delay(1000); // Warte 1 Sekunde
+        //await zoomInButton.click();
+        //await delay(1000); // Warte 1 Sekunde
+      }
+      // 1 mal klicken: <span id="jl" class="x cj" title="Ganzer Bildschirm"><img src="/c/i/vmax.png"></span>
+      const fullScreenButton = await page.$('#jl');
+      if (fullScreenButton) {
+        await fullScreenButton.click();
+        //await delay(1000); // Warte 1 Sekunde
+      }
       if (lgElement) {
         await page.evaluate(el => el.style.display = 'none', lgElement);
       }
