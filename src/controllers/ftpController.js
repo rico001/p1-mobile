@@ -57,9 +57,10 @@ export const listFiles = async (req, res) => {
     }
 */
 
+//TODO impl with multer
 export const uploadFile = async (req, res) => {
     try {
-        const fileName
+        const fileName = req.query.fileName
         if (!localPath || !remotePath) {
             return res.status(400).json({ message: "localPath und remotePath sind erforderlich." })
         }
