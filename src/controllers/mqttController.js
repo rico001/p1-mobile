@@ -63,13 +63,14 @@ export async function printFile3mf(req, res, next) {
     //}
 
     const report = await mqttService.request(
-      //payload,
+      payload,
       sequence_id
     );
 
     res.json({
       report
     });
+    
   } catch (err) {
     next(err);
   }
