@@ -30,10 +30,22 @@ export const listFiles = async (req, res) => {
                 path.posix.join('/thumbnails', thumbnailFiles.find(thumbnail => thumbnail.startsWith(file.name))) :
                 null,
             operations: {
-                download: path.posix.join('/api/ftp/download-file?fileName=' + file.name),
-                delete: path.posix.join('/api/ftp/delete-file?fileName=' + file.name),
-                refreshThumbnail: path.posix.join('/api/thumbnail/files?fileName=' + file.name),
-                print: path.posix.join('/api/mqtt/print-file?fileName=' + file.name)
+                download: {
+                    method: "GET",
+                    path: path.posix.join('/api/ftp/download-file?fileName=' + file.name)
+                },
+                delete: {
+                    method: "GET",
+                    path: path.posix.join('/api/ftp/delete-file?fileName=' + file.name)
+                },
+                refreshThumbnail: {
+                    method: "GET",
+                    path: path.posix.join('/api/thumbnail/files?fileName=' + file.name)
+                },
+                print: {
+                    method: "GET",
+                    path: path.posix.join('/api/mqtt/print-file?fileName=' + file.name)
+                }
             }
         }))
 
