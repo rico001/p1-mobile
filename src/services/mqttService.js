@@ -63,11 +63,12 @@ findSequenceId(obj) {
 _onMessage(topic, message) {
   let json = JSON.parse(message.toString());
   const seqId = this.findSequenceId(json);
+  console.log("message", json);
   if (topic === this.config.topics.report && seqId && this._responseCallbacks.has(seqId)) {
     const resolve = this._responseCallbacks.get(seqId);
     console.log("_responseCallbacks", this._responseCallbacks);
     this._responseCallbacks.delete(seqId);
-    console.log("_responseCallbacks", this._responseCallbacks);
+    //console.log("_responseCallbacks", this._responseCallbacks);
     resolve(json);
   }
 }

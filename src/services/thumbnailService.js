@@ -127,11 +127,13 @@ class ThumbnailService {
     const zip = new AdmZip(filePath);
     const zipEntries = zip.getEntries();
 
+    console.log("--------- 3mf Inhalte ---------");
     const thumbnailEntry = zipEntries.find(entry => {
       console.log(entry.entryName)
       return entry.entryName.toLowerCase().endsWith('.png');
     });
-
+    console.log("--------- Ende 3mf Inhalte ---------");
+    
     if (thumbnailEntry) {
       const thumbnailBuffer = thumbnailEntry.getData(); // Buffer direkt zurückgeben
       return thumbnailBuffer;

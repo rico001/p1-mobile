@@ -100,3 +100,46 @@ export async function getAccessCode(req, res, next) {
     next(err);
   }
 }
+
+///api/mqtt/move-print-head?value=-1&axis=x
+export async function movePrintHead(req, res, next) {
+  try {
+
+    //get x from query in double
+    const value = parseFloat(req.query.value);
+    //to uppercase
+    const axis = req.query.axis.toUpperCase();
+
+    if(value > 5 || value < -5) {
+      return res.status(400).json({ message: 'value must be between -5 and 5' });
+    }
+
+    const sequence_id = `move-right__${Date.now()}`;
+    const payload = {
+      print: { 
+        sequence_id, 
+        command: 'gcode_line',
+        param: 'M211 S \n' +
+          'M211 X1 Y1 Z1\n' +
+          'M1002 push_ref_mode\n' +
+          'G91 \n' +
+          `G1 ${axis}${value} F3000\n` +
+          'M1002 pop_ref_mode\n' +
+          'M211 R\n',
+      }
+    };
+
+    // send & wait for report
+    const report = await mqttService.request(
+      payload,
+      sequence_id
+    );
+
+    res.json({
+      report
+    });
+
+  } catch (err) {
+    next(err);
+  }
+}
