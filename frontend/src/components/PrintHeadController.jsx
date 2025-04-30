@@ -9,9 +9,12 @@ import {
   FormControl,
   InputLabel,
   IconButton,
+  Typography,
   CircularProgress
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import LightbulbOutlineIcon from '@mui/icons-material/LightbulbOutline';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -19,29 +22,47 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { usePrintHead } from '../hooks/usePrintHead';
 
 export default function PrintHeadController() {
-  const [axisMode, setAxisMode] = useState('xy'); // 'xy' or 'z'
+  const [axisMode, setAxisMode] = useState('xy');
   const [step, setStep] = useState(1);
-  const { move, isMoving, home, isHoming } = usePrintHead();
+  const [lightOn, setLightOn] = useState(false);
+  const {
+    move,
+    isMoving,
+    home,
+    isHoming,
+    setLight,
+    isSettingLight
+  } = usePrintHead();
 
-  const loading = isMoving || isHoming;
-
-  const handleAxisToggle = (_, val) => {
-    if (val) setAxisMode(val);
-  };
-
-  const handleStepChange = e => {
-    setStep(Number(e.target.value));
-  };
+  const loading = isMoving || isHoming || isSettingLight;
 
   return (
     <Box sx={{ width: 220, mx: 'auto', textAlign: 'center' }}>
+      {/* Licht-Toggle */}
+      <Box sx={{ mt: 2, mb: 4 }}>
+        {isSettingLight
+          ? <CircularProgress size={24} />
+          : <IconButton
+            color={lightOn ? 'warning' : 'primary'}
+            disabled={loading}
+            onClick={() => {
+              const val = lightOn ? 'off' : 'on';
+              setLight(val);
+              setLightOn(!lightOn);
+            }}
+          >
+            {lightOn ? <LightbulbIcon /> : <LightbulbOutlineIcon />}
+          </IconButton>
+        }
+      </Box>
+
       <FormControl size="small" fullWidth sx={{ mb: 2 }}>
-        <InputLabel id="step-select-label">Schritt</InputLabel>
+        <InputLabel id="step-label">Schritt</InputLabel>
         <Select
-          labelId="step-select-label"
+          labelId="step-label"
           value={step}
           label="Schritt"
-          onChange={handleStepChange}
+          onChange={e => setStep(Number(e.target.value))}
         >
           {[1, 2, 3, 4, 5].map(n => (
             <MenuItem key={n} value={n}>{n}</MenuItem>
@@ -52,7 +73,7 @@ export default function PrintHeadController() {
       <ToggleButtonGroup
         value={axisMode}
         exclusive
-        onChange={handleAxisToggle}
+        onChange={(_, val) => val && setAxisMode(val)}
         size="small"
         fullWidth
         color="primary"
@@ -62,17 +83,15 @@ export default function PrintHeadController() {
         <ToggleButton value="z">Z</ToggleButton>
       </ToggleButtonGroup>
 
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr',
-          gridTemplateRows: '1fr 1fr 1fr',
-          gap: 1,
-          justifyItems: 'center',
-          alignItems: 'center',
-        }}
-      >
-        {/* Up: Y+ or Z- */}
+      <Box sx={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr 1fr',
+        gridTemplateRows: '1fr 1fr 1fr',
+        gap: 1,
+        justifyItems: 'center',
+        alignItems: 'center'
+      }}>
+        {/* Up */}
         <Box />
         <IconButton
           color="primary"
@@ -100,15 +119,13 @@ export default function PrintHeadController() {
         {/* Home */}
         {isHoming
           ? <CircularProgress size={24} />
-          : (
-            <IconButton
-              color="primary"
-              disabled={loading}
-              onClick={() => home()}
-            >
-              <HomeIcon />
-            </IconButton>
-          )
+          : <IconButton
+            color="primary"
+            disabled={loading}
+            onClick={() => home()}
+          >
+            <HomeIcon />
+          </IconButton>
         }
 
         {/* Right */}
@@ -120,7 +137,7 @@ export default function PrintHeadController() {
           <ArrowForwardIosIcon />
         </IconButton>
 
-        {/* Down: Y- or Z+ */}
+        {/* Down */}
         <Box />
         <IconButton
           color="primary"
@@ -136,6 +153,7 @@ export default function PrintHeadController() {
         </IconButton>
         <Box />
       </Box>
+
     </Box>
   );
 }
