@@ -1,7 +1,9 @@
 //middlewares/errorHandler.js
 
 const errorHandler = (err, req, res, next) => {
-    console.error(err.stack);
+    if(err.message === 'Nur .3mf-Dateien sind erlaubt!') {
+        return res.status(500).json({ message: "Nur 3mf-Dateien sind erlaubt." });
+    }
     res.status(500).json({
         error: {
             message: err.message,

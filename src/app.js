@@ -3,6 +3,7 @@ import mqttRoutes from './routes/mqttRoutes.js';
 import ftpRoutes from './routes/ftpRoutes.js';
 import thumbanailRoutes from './routes/thumbnailRoutes.js';
 import path from 'path';
+import errorHandler from './middlewares/errorHandler.js';
 
 
 const app = express();
@@ -27,4 +28,7 @@ app.use(express.static(frontendDist));
 app.get('*', (req, res) => {
   res.sendFile(path.join(frontendDist, 'index.html'));
 });
+
+app.use(errorHandler);
+
 export default app;
