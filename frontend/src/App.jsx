@@ -13,7 +13,7 @@ function App() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <Header title="3D Drucker Steuerung" />
+      <Header title="Bambu Mobile" />
 
       <Box sx={{ flexGrow: 1, overflow: 'auto', p: 2 }}>
         <Routes>
