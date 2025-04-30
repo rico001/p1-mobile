@@ -18,3 +18,9 @@ export async function movePrintHeadHome() {
     }
     return res.json();
 }
+
+export async function setLight(value) {
+    const res = await fetch(`/api/mqtt/set-light?value=${value}`, { method: 'GET' });
+    if (!res.ok) throw new Error(`Set light failed: ${res.statusText}`);
+    return res.json();
+  }

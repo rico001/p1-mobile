@@ -180,3 +180,49 @@ export const movePrintHeadHome = async (req, res, next) => {
     next(err);
   }
 }
+
+/**
+system: {
+    command: 'ledctrl',
+    led_node: 'chamber_light',
+    sequence_id: '24',
+    led_mode: 'off',
+    led_on_time: 500,
+    led_off_time: 500,
+    loop_times: 0,
+    interval_time: 0,
+    reason: 'success',
+    result: 'success'
+  }
+ */
+export const setLight = async (req, res, next) => {
+  try {
+    const mode = req.query.value || 'on';
+    const sequence_id = `light-on__${Date.now()}`;
+    const payload = {
+      system: { 
+        sequence_id, 
+        command: 'ledctrl',
+        led_node: 'chamber_light',
+        led_mode: mode,
+        led_on_time: 500,
+        led_off_time: 500,
+        loop_times: 0,
+        interval_time: 0
+      }
+    }
+
+    // send & wait for report
+    const report = await mqttService.request(
+      payload,
+      sequence_id
+    );
+
+    res.json({
+      report
+    });
+
+  } catch (err) {
+    next(err);
+  }
+}
