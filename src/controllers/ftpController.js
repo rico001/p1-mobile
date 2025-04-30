@@ -67,7 +67,7 @@ export const uploadFile = async (req, res) => {
         const remotePath = path.posix.join("/", req.file.originalname); // z. B. '/meinedatei.txt'
         await ftpService.uploadFile(filelocalPath, remotePath);
 
-        const thumbnailPath = path.resolve(process.cwd(), "thumbnails", path.parse(req.file.originalname).name + ".png");
+        const thumbnailPath = path.resolve(process.cwd(), "thumbnails", req.file.originalname + ".png");
         await ThumbnailService.extractThumbnail(filelocalPath, thumbnailPath);
 
         res.json({ message: "Datei erfolgreich hochgeladen." });
