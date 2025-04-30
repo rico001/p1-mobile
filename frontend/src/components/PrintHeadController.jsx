@@ -36,13 +36,13 @@ export default function PrintHeadController() {
   };
 
   return (
-    <Box sx={{ width: 200, mx: 'auto', textAlign: 'center' }}>
+    <Box sx={{ width: 220, mx: 'auto', textAlign: 'center' }}>
       <FormControl size="small" fullWidth sx={{ mb: 2 }}>
-        <InputLabel id="step-select-label">Schritt</InputLabel>
+        <InputLabel id="step-select-label">Schritt(e)</InputLabel>
         <Select
           labelId="step-select-label"
           value={step}
-          label="Schritt(e)"
+          label="Schritt"
           onChange={handleStepChange}
         >
           {[1,2,3,4,5].map(n => (
@@ -57,6 +57,7 @@ export default function PrintHeadController() {
         onChange={handleAxisToggle}
         size="small"
         fullWidth
+        color="primary"
         sx={{ mb: 2 }}
       >
         <ToggleButton value="xy">X/Y</ToggleButton>
@@ -76,6 +77,7 @@ export default function PrintHeadController() {
         {/* Up: Y+ or Z- */}
         <Box />
         <IconButton
+          color="primary"
           onClick={() =>
             move(
               axisMode === 'z' ? 'z' : 'y',
@@ -90,6 +92,7 @@ export default function PrintHeadController() {
 
         {/* Left/Right: X */}
         <IconButton
+          color="primary"
           disabled={axisMode === 'z' || mutation.isLoading}
           onClick={() => move('x', -step)}
         >
@@ -100,6 +103,7 @@ export default function PrintHeadController() {
           : <Box />
         }
         <IconButton
+          color="primary"
           disabled={axisMode === 'z' || mutation.isLoading}
           onClick={() => move('x', step)}
         >
@@ -109,6 +113,7 @@ export default function PrintHeadController() {
         {/* Down: Y- or Z+ */}
         <Box />
         <IconButton
+          color="primary"
           onClick={() =>
             move(
               axisMode === 'z' ? 'z' : 'y',
