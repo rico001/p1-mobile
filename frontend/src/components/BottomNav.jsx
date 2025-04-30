@@ -13,7 +13,7 @@ function BottomNav({ value, onChange }) {
         onChange={(event, newValue) => onChange(newValue)}
       >
         <BottomNavigationAction label="Modelle" value="/models" icon={<ViewInArIcon />} />
-        <BottomNavigationAction label="Drucker" value="/drucker" icon={<PrintIcon />} />
+        <BottomNavigationAction label="Drucker" value="/printer" icon={<PrintIcon />} />
         <BottomNavigationAction label="Logbuch" value="/logbuch" icon={<BookIcon />} />
       </BottomNavigation>
     </Paper>
