@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, CircularProgress, Alert } from '@mui/material';
+import { Box, CircularProgress, Alert, ToggleButton, Button } from '@mui/material';
 import ModelCard from '../components/ModelCard';
 import { useModels } from '../hooks/useModels';
 import UploadButton from '../components/UploadBttn';
@@ -39,6 +39,8 @@ export default function Models() {
                         auto-fit,
                         minmax(${MIN_CARD_WIDTH}px, ${MAX_CARD_WIDTH}px)
                     )`,
+                justifyContent: 'center',
+                alignItems: 'center',
                 gap: `${GRID_GAP}px`,
                 p: 2,
             }}

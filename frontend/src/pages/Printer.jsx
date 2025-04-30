@@ -4,10 +4,17 @@ import PrintHeadController from '../components/PrintHeadController';
 
 function Printer() {
   return (
-    <>
-      <Typography variant="h4" gutterBottom>Drucker</Typography>
+    <div
+      style={{
+        width: '90%',
+        maxWidth: '97%',
+        margin: 'auto',
+        textAlign: 'center',
+        padding: '20px',
+      }}
+    >
       <PrintHeadController />
-    </>
+    </div>
   );
 }
 

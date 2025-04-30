@@ -114,7 +114,7 @@ export async function movePrintHead(req, res, next) {
       return res.status(400).json({ message: 'value must be between -5 and 5' });
     }
 
-    const sequence_id = `move-right__${Date.now()}`;
+    const sequence_id = `move-print-head__${Date.now()}`;
     const payload = {
       print: { 
         sequence_id, 
@@ -128,6 +128,43 @@ export async function movePrintHead(req, res, next) {
           'M211 R\n',
       }
     };
+
+    // send & wait for report
+    const report = await mqttService.request(
+      payload,
+      sequence_id
+    );
+
+    res.json({
+      report
+    });
+
+  } catch (err) {
+    next(err);
+  }
+}
+
+/*
+print: {
+    command: 'gcode_line',
+    sequence_id: '3',
+    param: 'G28 \n',
+    reason: 'success',
+    result: 'success'
+  }
+
+*/
+export const movePrintHeadHome = async (req, res, next) => {
+  try {
+
+    const sequence_id = `move-print-head-home__${Date.now()}`;
+    const payload = {
+      print: { 
+        sequence_id, 
+        command: 'gcode_line',
+        param: 'G28 \n',
+      }
+    }
 
     // send & wait for report
     const report = await mqttService.request(
