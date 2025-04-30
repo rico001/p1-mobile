@@ -8,7 +8,16 @@ const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, 'files/'),
     filename: (req, file, cb) => cb(null, file.originalname)
 });
-const upload = multer({ storage });
+// fileFilter: nur .3mf-Dateien zulassen
+const fileFilter = (req, file, cb) => {
+    if (file.originalname.toLowerCase().endsWith('.3mf')) {
+        cb(null, true); // akzeptieren
+    } else {
+        cb(new Error('Nur .3mf-Dateien sind erlaubt!'), false); // ablehnen
+    }
+};
+
+const upload = multer({ storage, fileFilter });
 const router = Router()
 
 // GET Routen
