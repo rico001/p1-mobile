@@ -9,9 +9,9 @@ import {
   FormControl,
   InputLabel,
   IconButton,
-  Typography,
   CircularProgress
 } from '@mui/material';
+import HomeIcon from '@mui/icons-material/Home';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -21,31 +21,29 @@ import { usePrintHead } from '../hooks/usePrintHead';
 export default function PrintHeadController() {
   const [axisMode, setAxisMode] = useState('xy'); // 'xy' or 'z'
   const [step, setStep] = useState(1);
-  const mutation = usePrintHead();
+  const { move, isMoving, home, isHoming } = usePrintHead();
+
+  const loading = isMoving || isHoming;
 
   const handleAxisToggle = (_, val) => {
     if (val) setAxisMode(val);
   };
 
-  const handleStepChange = (e) => {
+  const handleStepChange = e => {
     setStep(Number(e.target.value));
-  };
-
-  const move = (axis, value) => {
-    mutation.mutate({ axis, value });
   };
 
   return (
     <Box sx={{ width: 220, mx: 'auto', textAlign: 'center' }}>
       <FormControl size="small" fullWidth sx={{ mb: 2 }}>
-        <InputLabel id="step-select-label">Schritt(e)</InputLabel>
+        <InputLabel id="step-select-label">Schritt</InputLabel>
         <Select
           labelId="step-select-label"
           value={step}
           label="Schritt"
           onChange={handleStepChange}
         >
-          {[1,2,3,4,5].map(n => (
+          {[1, 2, 3, 4, 5].map(n => (
             <MenuItem key={n} value={n}>{n}</MenuItem>
           ))}
         </Select>
@@ -71,41 +69,53 @@ export default function PrintHeadController() {
           gridTemplateRows: '1fr 1fr 1fr',
           gap: 1,
           justifyItems: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
         }}
       >
         {/* Up: Y+ or Z- */}
         <Box />
         <IconButton
           color="primary"
+          disabled={loading}
           onClick={() =>
-            move(
-              axisMode === 'z' ? 'z' : 'y',
-              axisMode === 'z' ? -step : step
-            )
+            move({
+              axis: axisMode === 'z' ? 'z' : 'y',
+              value: axisMode === 'z' ? -step : step
+            })
           }
-          disabled={mutation.isLoading}
         >
           <ArrowUpwardIcon />
         </IconButton>
         <Box />
 
-        {/* Left/Right: X */}
+        {/* Left */}
         <IconButton
           color="primary"
-          disabled={axisMode === 'z' || mutation.isLoading}
-          onClick={() => move('x', -step)}
+          disabled={axisMode === 'z' || loading}
+          onClick={() => move({ axis: 'x', value: -step })}
         >
           <ArrowBackIosNewIcon />
         </IconButton>
-        {mutation.isLoading
+
+        {/* Home */}
+        {isHoming
           ? <CircularProgress size={24} />
-          : <Box />
+          : (
+            <IconButton
+              color="primary"
+              disabled={loading}
+              onClick={() => home()}
+            >
+              <HomeIcon />
+            </IconButton>
+          )
         }
+
+        {/* Right */}
         <IconButton
           color="primary"
-          disabled={axisMode === 'z' || mutation.isLoading}
-          onClick={() => move('x', step)}
+          disabled={axisMode === 'z' || loading}
+          onClick={() => move({ axis: 'x', value: step })}
         >
           <ArrowForwardIosIcon />
         </IconButton>
@@ -114,13 +124,13 @@ export default function PrintHeadController() {
         <Box />
         <IconButton
           color="primary"
+          disabled={loading}
           onClick={() =>
-            move(
-              axisMode === 'z' ? 'z' : 'y',
-              axisMode === 'z' ? step : -step
-            )
+            move({
+              axis: axisMode === 'z' ? 'z' : 'y',
+              value: axisMode === 'z' ? step : -step
+            })
           }
-          disabled={mutation.isLoading}
         >
           <ArrowDownwardIcon />
         </IconButton>
