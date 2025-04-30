@@ -39,7 +39,7 @@ const ModelCard = ({ model, onAction }) => {
       <Box
         sx={{
           flex: 1,
-          backgroundImage: `url(${thumbnail})`,
+          backgroundImage: `url("${thumbnail}")`,
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}

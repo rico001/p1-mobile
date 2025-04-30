@@ -25,5 +25,6 @@ export function useModels() {
     error: modelsQuery.error,
     performAction: actionMutation.mutate,
     isActionLoading: actionMutation.isLoading,
+    refetch: modelsQuery.refetch,
   };
 }
