@@ -1,10 +1,9 @@
+// src/components/ModelCard.jsx
 import React, { memo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import {
   Card,
-  CardMedia,
-  CardContent,
-  CardActions,
+  Box,
   IconButton,
   Typography
 } from '@mui/material';
@@ -16,8 +15,8 @@ import PrintIcon from '@mui/icons-material/Print';
 const ModelCard = ({ model, onAction }) => {
   const { name, size, thumbnail, operations } = model;
 
-  const handle = useCallback(
-    (actionKey) => {
+  const handleAction = useCallback(
+    actionKey => {
       const { method, path } = operations[actionKey];
       onAction({ method, path });
     },
@@ -27,60 +26,75 @@ const ModelCard = ({ model, onAction }) => {
   return (
     <Card
       sx={{
-        width: '100%',          // füllt das Grid-Item
-        aspectRatio: '1 / 1',   // immer quadratisch
-        
-        display: 'grid',
-        gridTemplateRows: '1fr auto auto',
+        width: '100%',
+        aspectRatio: '1 / 1',
+        display: 'flex',
+        flexDirection: 'column',
         borderRadius: 2,
         boxShadow: 3,
-        overflow: 'hidden',
+        overflow: 'hidden'
       }}
     >
       {/* Bildbereich */}
-      <CardMedia
-        component="div"
+      <Box
         sx={{
-          gridRow: '1 / 2',
+          flex: 1,
           backgroundImage: `url(${thumbnail})`,
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundPosition: 'center'
         }}
       />
 
       {/* Content-Bereich */}
-      <CardContent sx={{ gridRow: '2 / 3', p: 1 }}>
-        <Typography variant="subtitle1" noWrap title={name}>
+      <Box sx={{ p: 1 }}>
+        <Typography
+          variant="subtitle1"
+          noWrap
+          title={name}
+          sx={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap'
+          }}
+        >
           {name}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           {(size / 1024).toFixed(2)} KB
         </Typography>
-      </CardContent>
+      </Box>
 
       {/* Aktionen-Bereich */}
-      <CardActions
-        disableSpacing
+      <Box
         sx={{
-          gridRow: '3 / 4',
+          display: 'flex',
           justifyContent: 'space-around',
           py: 1,
-          px: 1,
+          px: 1
         }}
       >
-        <IconButton onClick={() => handle('download')} title="Download">
+        {/* Download öffnet Link in neuem Tab */}
+        <IconButton
+          component="a"
+          href={operations.download.path}
+          download
+          rel="noopener noreferrer"
+          title="Download"
+        >
           <DownloadIcon />
         </IconButton>
-        <IconButton onClick={() => handle('print')} title="Drucken">
+
+        {/* Die anderen Aktionen bleiben AJAX-basiert */}
+        <IconButton onClick={() => handleAction('print')} title="Drucken">
           <PrintIcon />
         </IconButton>
-        <IconButton onClick={() => handle('refreshThumbnail')} title="Thumbnail aktualisieren">
+        <IconButton onClick={() => handleAction('refreshThumbnail')} title="Thumbnail aktualisieren">
           <RefreshIcon />
         </IconButton>
-        <IconButton onClick={() => handle('delete')} title="Löschen">
+        <IconButton onClick={() => handleAction('delete')} title="Löschen">
           <DeleteIcon />
         </IconButton>
-      </CardActions>
+      </Box>
     </Card>
   );
 };
@@ -90,9 +104,9 @@ ModelCard.propTypes = {
     name: PropTypes.string.isRequired,
     size: PropTypes.number.isRequired,
     thumbnail: PropTypes.string.isRequired,
-    operations: PropTypes.object.isRequired,
+    operations: PropTypes.object.isRequired
   }).isRequired,
-  onAction: PropTypes.func.isRequired,
+  onAction: PropTypes.func.isRequired
 };
 
 export default memo(ModelCard);
