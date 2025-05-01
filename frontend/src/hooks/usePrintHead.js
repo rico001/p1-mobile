@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { movePrintHead, movePrintHeadHome, setLight, getAmsState } from '../api/printer';
+import { movePrintHead, movePrintHeadHome, setLight, getAmsState, getLightState } from '../api/printer';
 
 export function usePrintHead() {
     const moveMutation = useMutation({
@@ -32,6 +32,15 @@ export function usePrintHead() {
         staleTime: 1000 * 60, // 1 Minute
     });
 
+    const lightStateQuery = useQuery({
+        queryKey: ['lightState'],
+        queryFn: getLightState,
+        onError: err => {
+            console.error('Get light state error:', err);
+        },
+        staleTime: 1000 * 60, // 1 Minute
+    });
+
     return {
         // Mutations
         move: moveMutation.mutate,
@@ -43,5 +52,7 @@ export function usePrintHead() {
         // Queries
         amsState: stateQuery.data,
         isAmsStateLoading: stateQuery.isLoading,
+        lightState: lightStateQuery.data,
+        isLightStateLoading: lightStateQuery.isLoading,
     };
 }

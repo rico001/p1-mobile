@@ -20,6 +20,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { usePrintHead } from '../hooks/usePrintHead';
+import LightToggle from './LightToggle';
 
 export default function PrintHeadController() {
   const [axisMode, setAxisMode] = useState('xy');
@@ -38,22 +39,9 @@ export default function PrintHeadController() {
 
   return (
     <Box sx={{ width: 220, mx: 'auto', textAlign: 'center' }}>
-      {/* Licht-Toggle */}
+
       <Box sx={{ mt: 2, mb: 4 }}>
-        {isSettingLight
-          ? <CircularProgress size={24} />
-          : <IconButton
-            color={lightOn ? 'warning' : 'primary'}
-            disabled={loading}
-            onClick={() => {
-              const val = lightOn ? 'off' : 'on';
-              setLight(val);
-              setLightOn(!lightOn);
-            }}
-          >
-            {lightOn ? <LightbulbIcon /> : <LightbulbOutlineIcon />}
-          </IconButton>
-        }
+        <LightToggle />
       </Box>
 
       <FormControl size="small" fullWidth sx={{ mb: 2 }}>
