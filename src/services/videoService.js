@@ -1,4 +1,0 @@
-class VideoService {
-    async videoStream(){
-    }
-}

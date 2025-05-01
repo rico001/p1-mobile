@@ -22,6 +22,9 @@ const config = {
     password: process.env.FTP_PASSWORD,
     secure: process.env.FTP_SECURE
   },
+  video: {
+    videoStreamUrl: process.env.VIDEO_STREAM_URL,
+  },
   puppeteer: {
     headless: process.env.PUPPETEER_HEADLESS === 'true',
     args: [
