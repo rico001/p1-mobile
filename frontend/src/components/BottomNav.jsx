@@ -14,7 +14,7 @@ function BottomNav({ value, onChange }) {
       >
         <BottomNavigationAction label="Modelle" value="/models" icon={<ViewInArIcon />} />
         <BottomNavigationAction label="Drucker" value="/printer" icon={<PrintIcon />} />
-        <BottomNavigationAction label="Logbuch" value="/logbuch" icon={<BookIcon />} />
+        {/*<BottomNavigationAction label="Logbuch" value="/logbuch" icon={<BookIcon />} />*/}
       </BottomNavigation>
     </Paper>
   );
