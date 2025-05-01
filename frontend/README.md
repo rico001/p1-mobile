@@ -1,16 +1,24 @@
 # TODOs
 Prio: !!!
 
+appbar:
+an/aus-Schalter für Drucker
+via konfigurierbaren webhook
+
+ci-cd:
+auto build with dockerfile
+
 PrinterTab:
 wlan-verbindung qualität anzeigen
-
-Printjobs-Tab:
-printer status anzeigen (field: print_type_update: idle oder local)
-pausieren, beenden von aktuellen printjobs
+printer status anzeigen (field: print_type: idle oder local)
+pausieren, beenden, fortsetzen von aktuellen printjobs mit cmd
 printer geschwindigkeit ändern via api
 modelname vom printjob mit bild (field: gcode_file)
 verbleibende Zeit/layer (fields: mc_percent, mc_remaining_time, layer_num, total_layer_num)
 status für nozzle und bed: (fields: nozzle_temper, bed_temper, bed_target_temper, nozzle_target_temper)
+
+AMS-Tab:
+AMS-infos hier anzeigen, statt im print
 
 FTP-Files
 unbenennen existierender files
@@ -18,12 +26,6 @@ warnung wenn ein file bereits mit gleichem namen besteht, überschreiben-Frage, 
 
 Logbuch-Tab
 sämtliche eingehende mqtt reports werden gelistet mit timestamp
-
-!!! Hauptschalter in der Appbar
-//via webhook die definiert werden kann
-
-ci-cd:
-auto build with dockerfile
 
 
 STATE BEISPIEL: {
