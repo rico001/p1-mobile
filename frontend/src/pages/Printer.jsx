@@ -11,7 +11,7 @@ function Printer() {
         maxWidth: '97%',
         margin: 'auto',
         textAlign: 'center',
-        padding: '20px',
+        paddingTop: '40px',
       }}
     >
       <PrinterStream />

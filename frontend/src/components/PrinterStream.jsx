@@ -19,12 +19,10 @@ export default function PrinterStream() {
         onClick={handleOpen}
         sx={{
           display: 'block',
-          width: '100%',
-          maxWidth: '350px',
-          height: 'auto',
-          userSelect: 'none',
+          width: 'auto',
+          minWidth: '200px',
+          height: '130px',
           margin: 'auto',
-          backgroundColor: 'hsl(0, 0%, 25%)',
           borderRadius: '10px',
           cursor: 'pointer'
         }}
@@ -33,7 +31,7 @@ export default function PrinterStream() {
       {/* Vollbild-Dialog */}
       <Dialog
         open={previewOpen}
-        onClose={handleClose}
+        onClick={handleClose}
         maxWidth={false}
         PaperProps={{
           sx: {
@@ -47,20 +45,6 @@ export default function PrinterStream() {
           sx: { backgroundColor: 'rgba(0, 0, 0, 0.6)' }
         }}
       >
-        {/* Schließen-Button oben rechts */}
-        <IconButton
-          onClick={handleClose}
-          sx={{
-            position: 'absolute',
-            top: 8,
-            right: 8,
-            color: '#fff',
-            zIndex: 1
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-
         {/* Dialog-Inhalt: Stream fast fullscreen */}
         <DialogContent
           sx={{
