@@ -3,8 +3,7 @@ import { config } from '../config/index.js'; // Stelle sicher, dass config/index
 import AdmZip from 'adm-zip'; // Stelle sicher, dass adm-zip installiert ist
 import path from 'path';
 import fs from 'fs';
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+import { delay } from '../utils/functions.js';
 
 class ThumbnailService {
   constructor(

@@ -6,3 +6,5 @@ export function generateClientId(length = 16) {
     }
     return id;
 }
+
+export const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));

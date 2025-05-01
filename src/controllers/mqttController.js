@@ -2,24 +2,30 @@ import mqttService from '../services/mqttService.js';
 
 //https://github.com/Doridian/OpenBambuAPI
 
-async function getState () {
-  const sequence_id = `get-state__${Date.now()}`;
+export async function getState (req, res, next) {
+  const sequence_id = `pushall__${Date.now()}`;
   const payload = {
     pushing: {
-      sequence_id,
-      command: 'pushall',
-      version: 1,
-      push_target: 1
+        sequence_id: sequence_id,
+        command: "pushall",
+        version: 1,
+        push_target: 1
     }
   };
 
   // send & wait for report
+  /*
   const report = await mqttService.request(
     payload,
-    sequence_id
+    sequence_id,
+    10000
   );
+  */
+  const report = await mqttService.getLastStateReport(payload);
 
-  return report;
+  res.json({
+    report
+  });
 }
 
 export async function printFile3mf(req, res, next) {
@@ -181,20 +187,6 @@ export const movePrintHeadHome = async (req, res, next) => {
   }
 }
 
-/**
-system: {
-    command: 'ledctrl',
-    led_node: 'chamber_light',
-    sequence_id: '24',
-    led_mode: 'off',
-    led_on_time: 500,
-    led_off_time: 500,
-    loop_times: 0,
-    interval_time: 0,
-    reason: 'success',
-    result: 'success'
-  }
- */
 export const setLight = async (req, res, next) => {
   try {
     const mode = req.query.value || 'on';

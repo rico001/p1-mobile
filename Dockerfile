@@ -9,15 +9,21 @@ WORKDIR /app
 COPY package*.json ./
 
 # Installieren Sie Server-Abhängigkeiten im Root-Verzeichnis
+#print workdir and content
+RUN echo "Current working directory: $(pwd)" && ls -la
 RUN npm install
 
 # Wechseln Sie zum Verzeichnis "app/"
-WORKDIR /app/app
+WORKDIR /app/frontend
 
 # Kopieren Sie die Dateien package.json und package-lock.json im Verzeichnis "app/"
 COPY frontend/. ./
 
 # Installieren Sie Abhängigkeiten für die React-App im Verzeichnis "app/"
+
+
+
+
 RUN npm install
 
 # app bauen
