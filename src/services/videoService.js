@@ -1,0 +1,4 @@
+class VideoService {
+    async videoStream(){
+    }
+}
