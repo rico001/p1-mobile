@@ -1,6 +1,7 @@
 import React from 'react';
 import { Typography } from '@mui/material';
 import PrintHeadController from '../components/PrintHeadController';
+import PrinterStream from '../components/PrinterStream';
 
 function Printer() {
   return (
@@ -13,6 +14,7 @@ function Printer() {
         padding: '20px',
       }}
     >
+      <PrinterStream />
       <PrintHeadController />
     </div>
   );
