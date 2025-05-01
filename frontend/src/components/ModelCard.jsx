@@ -137,20 +137,6 @@ const ModelCard = ({ model, onAction }) => {
           sx: { backgroundColor: 'rgba(0, 0, 0, 0.6)' }
         }}
       >
-        {/* Schließen-Button */}
-        <IconButton
-          onClick={handleClosePreview}
-          aria-label="close"
-          sx={{
-            position: 'absolute',
-            top: 16,
-            right: 16,
-            color: '#fff',
-            zIndex: 1
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
 
         {/* Bildvorschau zentriert und nahezu fullscreen */}
         <DialogContent
@@ -159,7 +145,6 @@ const ModelCard = ({ model, onAction }) => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            width: '100vw',
             height: '100vh',
           }}
         >
@@ -168,8 +153,7 @@ const ModelCard = ({ model, onAction }) => {
             src={thumbnail}
             alt={`Vorschau von ${name}`}
             sx={{
-              maxWidth: '95vw',
-              maxHeight: '95vh',
+              width: '90%',
               objectFit: 'contain',
               boxShadow: 4,
               borderRadius: 1,
