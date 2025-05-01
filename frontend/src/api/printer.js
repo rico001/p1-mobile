@@ -56,7 +56,7 @@ export async function getAmsState(value) {
     ],
 */
 export async function getLightState() {
-    const res = await fetch('/api/mqtt/light-state', {
+    const res = await fetch('/api/mqtt/state', {
         method: 'GET',
     });
     if (!res.ok) {
@@ -67,7 +67,8 @@ export async function getLightState() {
     if (!data || !data.report || !data.report.lights_report) {
         throw new Error('Invalid light state response');
     }
-    const lightState = data.report.lights_report[0].mode == 'on';
+    const lightState = data.report.lights_report[0].mode;
+
     return lightState;
 }
   

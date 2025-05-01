@@ -23,7 +23,8 @@ export default function PrinterStream() {
           height: '130px',
           margin: 'auto',
           borderRadius: '10px',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          backgroundColor: '#4c4c4c6b',
         }}
       />
 
