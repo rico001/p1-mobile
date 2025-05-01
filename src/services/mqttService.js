@@ -74,7 +74,7 @@ class MqttService extends EventEmitter {
   _onMessage(topic, message) {
     let json = JSON.parse(message.toString());
     const seqId = this.findSequenceId(json);
-  
+
     // 1) normale Antwort-Callbacks
     if (
       topic === this.config.topics.report &&
@@ -87,32 +87,72 @@ class MqttService extends EventEmitter {
       resolve(json);
       return;
     }
-  
+
     // 2) push_status: Merge und Broadcast
-    console.log("json", json);
+    //console.log("json", json);
     if (json?.print?.command === 'push_status') {
-      // Nur Felder übernehmen, die definiert sind (≠ undefined)
+      // Nur definierte Felder
       const updatedFields = Object.fromEntries(
         Object.entries(json.print).filter(([_, v]) => v !== undefined)
       );
-      //console.log("updatedFields", updatedFields);
-  
-      // Merge
-      this.state = {
-        ...this.state,
-        ...updatedFields
-      };
-  
-      if (updatedFields.hasOwnProperty('print_type')) {
-        console.log("new print_type", this.state.print_type);
-        websocketService.broadcast({
-          type: "print_type_update",
-          payload: this.state.print_type
-        });
-      }
+
+      const prevState = { ...(this.state || {}) };
+      this.state = { ...prevState, ...updatedFields };
+
+      this._broadcastUpdatedFields(updatedFields, prevState);
     }
   }
-  
+
+  deepObjectKeys = {
+    // Beispiel: lights_report ist ein Array von Objekten {node, mode}
+    lights_report: ({ newVal, oldVal }) => {
+      const firstLight = newVal[0];
+      if (!firstLight) return; // nichts zu tun, wenn kein Eintrag
+      const prevFirst = (oldVal || [])[0] || {};
+      if (firstLight.mode !== prevFirst.mode) {
+        websocketService.broadcast({
+          type: `${firstLight.node}_mode_update`,
+          payload: { mode: firstLight.mode }
+        });
+        console.log(`new ${firstLight.node}.mode`, firstLight.mode);
+      }
+    }
+    // Hier später einfach weitere Custom-Logiken hinzufügen...
+  };
+
+
+  flatKeys = [
+    'print_type', 'wifi_signal',
+    'nozzle_temper','nozzle_target_temper',
+    'bed_temper','bed_target_temper',
+    'mc_percent','mc_remaining_time',
+    'layer_num','total_layer_num',
+    'gcode_file'
+  ];
+  _broadcastUpdatedFields(updatedFields, prevState) {
+    Object.entries(updatedFields).forEach(([key, newVal]) => {
+      const oldVal = prevState[key];
+
+      // 1) Gibt es einen Custom-Broadcaster?
+      if (this.deepObjectKeys[key]) {
+        this.deepObjectKeys[key]({ newVal, oldVal });
+        return;
+      }
+
+      // 2) Ist der Key in defaultKeys?
+      if (this.flatKeys.includes(key)) {
+        const changed = newVal !== oldVal;
+        if (changed) {
+          websocketService.broadcast({
+            type: `${key}_update`,
+            payload: newVal
+          });
+          console.log(`new ${key}`, newVal);
+        }
+      }
+      // 3) Sonstige Keys werden ignoriert
+    });
+  }
 
 
   publish(topic, payload) {
