@@ -1,6 +1,7 @@
 import express from 'express';
 import mqttRoutes from './routes/mqttRoutes.js';
 import ftpRoutes from './routes/ftpRoutes.js';
+import videoRoutes from './routes/videoRoutes.js';
 import thumbanailRoutes from './routes/thumbnailRoutes.js';
 import path from 'path';
 import errorHandler from './middlewares/errorHandler.js';
@@ -16,6 +17,7 @@ app.use((req, res, next) => {
 app.use('/api/mqtt', mqttRoutes);
 app.use('/api/ftp', ftpRoutes);
 app.use('/api/thumbnail', thumbanailRoutes);
+app.use('/api/video/', videoRoutes);
 
 //public for thumbnails
 app.use('/thumbnails', express.static('thumbnails'));

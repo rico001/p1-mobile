@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Box, Dialog, DialogContent, IconButton } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { Box, Dialog, DialogContent } from '@mui/material';
 
 export default function PrinterStream() {
   const [previewOpen, setPreviewOpen] = useState(false);
-  const src = "http://localhost:1984/api/stream.mjpeg?src=p1s";
+  const src = "/api/video/video-stream";
 
   const handleOpen = () => setPreviewOpen(true);
   const handleClose = () => setPreviewOpen(false);
