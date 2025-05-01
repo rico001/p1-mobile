@@ -19,3 +19,6 @@ sämtliche eingehende mqtt reports werden gelistet mit timestamp
 
 !!! Hauptschalter in der Appbar
 //via webhook die definiert werden kann
+
+ci-cd:
+auto build with dockerfile
