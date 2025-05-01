@@ -6,10 +6,9 @@ import App from './App';
 import './main.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-
 const theme = createTheme({
   palette: {
-   
+
   },
 });
 

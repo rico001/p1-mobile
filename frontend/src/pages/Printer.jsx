@@ -1,8 +1,8 @@
 import React from 'react';
-import { Typography } from '@mui/material';
 import PrintHeadController from '../components/PrintHeadController';
 import PrinterStream from '../components/PrinterStream';
 import AutomaticMaterialSystemState from '../components/AutomaticMaterialSystemState';
+import PrinterStatus from '../components/PrinterStatus';
 
 function Printer() {
   return (
@@ -16,6 +16,7 @@ function Printer() {
       }}
     >
       <PrinterStream />
+      <PrinterStatus />
       <AutomaticMaterialSystemState boxes={[
         { text: 'AMS 1', color: '#4caf50' },
         { text: 'AMS 2', color: '#2196f3' },

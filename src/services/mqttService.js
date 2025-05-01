@@ -1,4 +1,3 @@
-// mqttService.js
 import fs from 'fs';
 import mqtt from 'mqtt';
 import EventEmitter from 'events';
@@ -104,7 +103,6 @@ class MqttService extends EventEmitter {
   }
 
   deepObjectKeys = {
-    // Beispiel: lights_report ist ein Array von Objekten {node, mode}
     lights_report: ({ newVal, oldVal }) => {
       const firstLight = newVal[0];
       if (!firstLight) return; // nichts zu tun, wenn kein Eintrag
@@ -112,12 +110,11 @@ class MqttService extends EventEmitter {
       if (firstLight.mode !== prevFirst.mode) {
         websocketService.broadcast({
           type: `${firstLight.node}_mode_update`,
-          payload: { mode: firstLight.mode }
+          payload: firstLight.mode
         });
         console.log(`new ${firstLight.node}.mode`, firstLight.mode);
       }
     }
-    // Hier später einfach weitere Custom-Logiken hinzufügen...
   };
 
 
