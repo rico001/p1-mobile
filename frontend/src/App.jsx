@@ -13,7 +13,7 @@ function App() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <Header title="Bambu Mobile" />
+      <Header title="Bambu Mobile!!!!!!!" />
 
       <Box sx={{ flexGrow: 1, overflow: 'auto', p: 2 }}>
         <Routes>
