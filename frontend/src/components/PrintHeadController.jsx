@@ -40,23 +40,9 @@ export default function PrintHeadController() {
   return (
     <Box sx={{ width: 220, mx: 'auto', textAlign: 'center' }}>
 
-      <Box sx={{ mt: 2, mb: 4 }}>
+      <Box sx={{ mt: 2 }}>
         <LightToggle />
       </Box>
-
-      <FormControl size="small" fullWidth sx={{ mb: 2 }}>
-        <InputLabel id="step-label">Schritt</InputLabel>
-        <Select
-          labelId="step-label"
-          value={step}
-          label="Schritt"
-          onChange={e => setStep(Number(e.target.value))}
-        >
-          {[1, 2, 3, 4, 5].map(n => (
-            <MenuItem key={n} value={n}>{n}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
 
       <ToggleButtonGroup
         value={axisMode}
@@ -65,16 +51,34 @@ export default function PrintHeadController() {
         size="small"
         fullWidth
         color="primary"
-        sx={{ mb: 2 }}
+        sx={{ mb: 2, backgroundColor: '#4040404a'}}
       >
         <ToggleButton value="xy">X/Y</ToggleButton>
         <ToggleButton value="z">Z</ToggleButton>
       </ToggleButtonGroup>
 
+      <FormControl size="small">
+        <Select
+          labelId="step-label"
+          value={step}
+          onChange={e => setStep(Number(e.target.value))}
+          sx={{ mb: 1, backgroundColor: '#4040404a' }}
+        >
+          {[1, 2, 3, 4, 5].map(n => (
+            <MenuItem key={n} value={n}>{n}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
       <Box sx={{
         display: 'grid',
         gridTemplateColumns: '1fr 1fr 1fr',
         gridTemplateRows: '1fr 1fr 1fr',
+        width: '180px',
+        margin: 'auto',
+        height: '180px',
+        backgroundColor: '#4040404a',
+        borderRadius: '100%',
         gap: 1,
         justifyItems: 'center',
         alignItems: 'center'
@@ -110,6 +114,7 @@ export default function PrintHeadController() {
           : <IconButton
             color="primary"
             disabled={loading}
+            sx={{ backgroundColor: '#4040404a', p: 2 }}
             onClick={() => home()}
           >
             <HomeIcon />
