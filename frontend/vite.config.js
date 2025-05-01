@@ -8,6 +8,7 @@ export default defineConfig({
       '/api': 'http://localhost:3000',
       '/thumbnail': 'http://localhost:3000',
       '/files': 'http://localhost:3000',
+      '/public': 'http://localhost:3000',
 
     }
   }  

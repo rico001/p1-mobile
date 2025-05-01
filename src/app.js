@@ -21,8 +21,8 @@ app.use('/api/video/', videoRoutes);
 
 //public for thumbnails
 app.use('/thumbnails', express.static('thumbnails'));
-// a simple upload test
-app.use('/upload', express.static('src/public/upload.html'));
+// serve all files in folder "public" as static files
+app.use('/public', express.static('public'));
 
 // Frontend
 const frontendDist = path.join(process.cwd(), 'frontend', 'dist');

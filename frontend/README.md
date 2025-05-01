@@ -8,6 +8,7 @@ Printjobs-Tab:
 printer status anzeigen (idle, print, finish etc)
 pausieren, beenden von aktuellen printjobs
 printer geschwindigkeit ändern via api
+modelname vom printjob mit bild
 verbleibende Zeit/layer 
 
 FTP-Files
