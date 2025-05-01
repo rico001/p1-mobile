@@ -6,6 +6,7 @@ import BottomNav from './components/BottomNav';
 import Models from './pages/Models';
 import Printer from './pages/Printer';
 import Log from './pages/Log';
+import Toaster from './components/Toaster';
 
 function App() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ function App() {
           {/*<Route path="/log" element={<Log />} />*/}
         </Routes>
       </Box>
-
+      <Toaster />
       <BottomNav
         value={location.pathname}
         onChange={(newValue) => navigate(newValue)}

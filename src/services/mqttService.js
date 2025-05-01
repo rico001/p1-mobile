@@ -4,6 +4,7 @@ import mqtt from 'mqtt';
 import EventEmitter from 'events';
 import { config } from '../config/index.js';
 import { delay, generateClientId } from '../utils/functions.js';
+import websocketService from './websocketService.js';
 
 class MqttService extends EventEmitter {
   constructor(mqttConfig = config.mqtt) {
@@ -73,22 +74,45 @@ class MqttService extends EventEmitter {
   _onMessage(topic, message) {
     let json = JSON.parse(message.toString());
     const seqId = this.findSequenceId(json);
-    //console.log("message", json);
-    if (topic === this.config.topics.report && seqId && this._responseCallbacks.has(seqId) && json?.print?.command !== 'push_status') {
+  
+    // 1) normale Antwort-Callbacks
+    if (
+      topic === this.config.topics.report &&
+      seqId &&
+      this._responseCallbacks.has(seqId) &&
+      json?.print?.command !== 'push_status'
+    ) {
       const resolve = this._responseCallbacks.get(seqId);
-      console.log("_responseCallbacks", this._responseCallbacks);
       this._responseCallbacks.delete(seqId);
-      //console.log("_responseCallbacks", this._responseCallbacks);
       resolve(json);
+      return;
     }
+  
+    // 2) push_status: Merge und Broadcast
+    console.log("json", json);
     if (json?.print?.command === 'push_status') {
-      //merge new state with old state
+      // Nur Felder übernehmen, die definiert sind (≠ undefined)
+      const updatedFields = Object.fromEntries(
+        Object.entries(json.print).filter(([_, v]) => v !== undefined)
+      );
+      //console.log("updatedFields", updatedFields);
+  
+      // Merge
       this.state = {
         ...this.state,
-        ...json.print
+        ...updatedFields
       };
+  
+      if (updatedFields.hasOwnProperty('print_type')) {
+        console.log("new print_type", this.state.print_type);
+        websocketService.broadcast({
+          type: "print_type_update",
+          payload: this.state.print_type
+        });
+      }
     }
   }
+  
 
 
   publish(topic, payload) {
