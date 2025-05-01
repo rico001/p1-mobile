@@ -1,4 +1,3 @@
-// src/components/PrintHeadController.jsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -7,14 +6,10 @@ import {
   Select,
   MenuItem,
   FormControl,
-  InputLabel,
   IconButton,
-  Typography,
   CircularProgress
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
-import LightbulbIcon from '@mui/icons-material/Lightbulb';
-import LightbulbOutlineIcon from '@mui/icons-material/LightbulbOutline';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -146,7 +141,6 @@ export default function PrintHeadController() {
         </IconButton>
         <Box />
       </Box>
-
     </Box>
   );
 }
