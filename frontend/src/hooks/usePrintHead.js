@@ -1,5 +1,5 @@
-import { useMutation } from '@tanstack/react-query';
-import { movePrintHead, movePrintHeadHome, setLight } from '../api/printHead';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { movePrintHead, movePrintHeadHome, setLight, getAmsState } from '../api/printer';
 
 export function usePrintHead() {
     const moveMutation = useMutation({
@@ -23,12 +23,25 @@ export function usePrintHead() {
         }
     });
 
+    const stateQuery = useQuery({
+        queryKey: ['amsState'],
+        queryFn: getAmsState,
+        onError: err => {
+            console.error('Get AMS state error:', err);
+        },
+        staleTime: 1000 * 60, // 1 Minute
+    });
+
     return {
+        // Mutations
         move: moveMutation.mutate,
         isMoving: moveMutation.isLoading,
         home: homeMutation.mutate,
         isHoming: homeMutation.isLoading,
         setLight: lightMutation.mutate,
         isSettingLight: lightMutation.isLoading,
+        // Queries
+        amsState: stateQuery.data,
+        isAmsStateLoading: stateQuery.isLoading,
     };
 }
