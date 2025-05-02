@@ -23,24 +23,36 @@ export default function PrinterWebSocket() {
       }
 
       const { type, payload } = msg;
-      switch (type) {
-        case 'print_type_update':
-          dispatch(setPrintType(payload));
-          toast.info(`Drucker-Status: ${payload}`);
-          break;
-        case 'wifi_signal_update':
-          dispatch(setWifiSignal(payload));
-          break;
-        case 'chamber_light_mode_update':
-          console.log('chamber_light_mode_update', payload);
-          dispatch(setLightMode(payload));
-          break;
-        default:
-          break;
+
+      if (type === 'several' && Array.isArray(payload)) {
+        payload.forEach((entry) => {
+          const { type: entryType, payload: entryPayload } = entry;
+          handleMessage(entryType, entryPayload);
+        });
+      } else {
+        handleMessage(type, payload);
       }
     },
     onClose: () => console.log('[WS] getrennt – versuche neu zu verbinden'),
   });
+
+  function handleMessage(type, payload) {
+    switch (type) {
+      case 'print_type_update':
+        dispatch(setPrintType(payload));
+        toast.info(`Drucker-Status: ${payload}`);
+        break;
+      case 'wifi_signal_update':
+        dispatch(setWifiSignal(payload));
+        break;
+      case 'chamber_light_mode_update':
+        console.log('chamber_light_mode_update', payload);
+        dispatch(setLightMode(payload));
+        break;
+      default:
+        break;
+    }
+  }
 
   return null;
 }

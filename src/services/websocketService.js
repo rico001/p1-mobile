@@ -1,10 +1,11 @@
-// services/WebSocketService.js
+// src/services/WebSocketService.js
 import { WebSocketServer } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
 
 class WebSocketService {
   constructor() {
     this.clients = new Map();
+    this.lastMessages = new Map(); 
   }
 
   init(server) {
@@ -15,6 +16,14 @@ class WebSocketService {
       this.clients.set(clientId, ws);
       ws.clientId = clientId;
 
+      // Direkt nach der Verbindung: Begrüßung
+      ws.send(JSON.stringify({ type: 'welcome', clientId }));
+
+      // Sende alle zuletzt gespeicherten Nachrichten in einer Nachricht vom Typ 'several', payload ist ein Array mit {type:..., payload: ...}
+      const payload = [...this.lastMessages.entries()].map(([type, payload]) => ({ type, payload }));
+      ws.send(JSON.stringify({ type:'several', payload }));
+      
+
       ws.on('message', (message) => {
         console.log(`[WebSocket] Nachricht von ${clientId}:`, message.toString());
       });
@@ -23,8 +32,6 @@ class WebSocketService {
         this.clients.delete(clientId);
         console.log(`[WebSocket] Client ${clientId} getrennt`);
       });
-
-      ws.send(JSON.stringify({ type: 'welcome', clientId }));
     });
 
     console.log('[WebSocket] ✅ Service gestartet');
@@ -32,6 +39,9 @@ class WebSocketService {
 
   sendToClient(clientId, message) {
     const ws = this.clients.get(clientId);
+    if (message.type) {
+      this.lastMessages.set(message.type, message.payload);
+    }
     if (ws && ws.readyState === ws.OPEN) {
       ws.send(JSON.stringify(message));
       return true;
@@ -40,6 +50,9 @@ class WebSocketService {
   }
 
   broadcast(message) {
+    if (message.type) {
+      this.lastMessages.set(message.type, message.payload);
+    }
     const data = JSON.stringify(message);
     for (const ws of this.clients.values()) {
       if (ws.readyState === ws.OPEN) {
