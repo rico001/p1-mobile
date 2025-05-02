@@ -5,6 +5,15 @@ import {
   setPrintType,
   setWifiSignal,
   setLightMode,
+  setNozzleTemper,
+  setNozzleTargetTemper,
+  setBedTemper,
+  setBedTargetTemper,
+  setMcPercent,
+  setMcRemainingTime,
+  setLayerNum,
+  setTotalLayerNum,
+  setGcodeFile,
 } from '../store/printerSlice';
 import useWebSocket from '../hooks/useWebsocket';
 
@@ -48,6 +57,33 @@ export default function PrinterWebSocket() {
       case 'chamber_light_mode_update':
         console.log('chamber_light_mode_update', payload);
         dispatch(setLightMode(payload));
+        break;
+      case 'nozzle_temper_update':
+        dispatch(setNozzleTemper(payload));
+        break;
+      case 'nozzle_target_temper_update':
+        dispatch(setNozzleTargetTemper(payload));
+        break;
+      case 'bed_temper_update':
+        dispatch(setBedTemper(payload));
+        break;
+      case 'bed_target_temper_update':
+        dispatch(setBedTargetTemper(payload));
+        break;
+      case 'mc_percent_update':
+        dispatch(setMcPercent(payload));
+        break;
+      case 'mc_remaining_time_update':
+        dispatch(setMcRemainingTime(payload));
+        break;
+      case 'layer_num_update':
+        dispatch(setLayerNum(payload));
+        break;
+      case 'total_layer_num_update':
+        dispatch(setTotalLayerNum(payload));
+        break;
+      case 'gcode_file_update':
+        dispatch(setGcodeFile(payload));
         break;
       default:
         break;
