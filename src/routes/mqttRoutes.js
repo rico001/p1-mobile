@@ -1,5 +1,15 @@
 import { Router } from 'express';
-import { printFile3mf, getAccessCode, movePrintHead, movePrintHeadHome, setLight, getState } from '../controllers/mqttController.js';
+import { 
+    printFile3mf, 
+    getAccessCode, 
+    movePrintHead, 
+    movePrintHeadHome, 
+    setLight, 
+    getState, 
+    stopPrint, 
+    pausePrint, 
+    resumePrint 
+} from '../controllers/mqttController.js';
 
 const router = Router();
 
@@ -14,4 +24,11 @@ router.get('/move-print-head-home', movePrintHeadHome);
 router.get('/state', getState);
 
 router.get('/set-light', setLight);
+
+router.get('/print/stop', stopPrint);
+
+router.get('/print/pause', pausePrint);
+
+router.get('/print/resume', resumePrint);
+
 export default router;
