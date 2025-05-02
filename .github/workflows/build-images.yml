@@ -1,6 +1,5 @@
 name: Build & Push Docker Images
 
-# löst aus bei Push auf main oder restructure-project, wenn sich Dockerfiles oder package.json ändern
 on:
   push:
     branches:
@@ -8,38 +7,41 @@ on:
       - restructure-project
     paths:
       - 'Dockerfile'
-      - 'P1Stream-main/Dockerfile'
       - 'package.json'
+      - 'p1stream-main/Dockerfile'
+      - 'p1stream-main/version.txt'
   workflow_dispatch:
 
-# damit wir das GITHUB_TOKEN zum Pushen in die Registry nutzen dürfen
 permissions:
-  contents: read    # checkout
-  packages: write   # Container Registry
+  contents: read 
+  packages: write
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      # 1) Code auschecken
+  
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2) Node.js, um später die Version zu parsen
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      # 3) Version aus package.json holen (ohne verschachtelte Quotes)
-      - name: Read package.json version
-        id: get_version
+      - name: Read root version
+        id: get_root_version
         run: |
-          VERSION=$(node -p "require('./package.json').version")
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          ROOT_VERSION=$(node -p "require('./package.json').version")
+          echo "ROOT_VERSION=$ROOT_VERSION" >> $GITHUB_ENV
 
-      # 4) Login in GHCR
+      - name: Read p1stream-main version
+        id: get_p1_version
+        run: |
+          P1_STREAM_VERSION=$(cat p1stream-main/version.txt)
+          echo "P1_STREAM_VERSION=$P1_STREAM_VERSION" >> $GITHUB_ENV
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
@@ -47,15 +49,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # 5) QEMU (optional für Multi-Arch)
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
-      # 6) Buildx aktivieren
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # 7) Root-Image bauen & pushen
       - name: Build & Push root image
         uses: docker/build-push-action@v4
         with:
@@ -63,16 +63,15 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:${{ env.VERSION }}
+            ghcr.io/bambu-p1s-mobile:latest
+            ghcr.io/bambu-p1s-mobile:${{ env.ROOT_VERSION }}
 
-      # 8) P1Stream-Main-Image bauen & pushen
-      - name: Build & Push P1Stream-main image
+      - name: Build & Push p1stream-main image
         uses: docker/build-push-action@v4
         with:
-          context: ./P1Stream-main
-          file: ./P1Stream-main/Dockerfile
+          context: ./p1stream-main
+          file: ./p1stream-main/Dockerfile
           push: true
           tags: |
             ghcr.io/${{ github.repository }}/p1stream-main:latest
-            ghcr.io/${{ github.repository }}/p1stream-main:${{ env.VERSION }}
+            ghcr.io/${{ github.repository }}/p1stream-main:${{ env.P1_STREAM_VERSION }}
