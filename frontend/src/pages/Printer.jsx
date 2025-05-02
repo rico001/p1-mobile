@@ -5,6 +5,7 @@ import AutomaticMaterialSystemState from '../components/AutomaticMaterialSystemS
 import PrinterStatus from '../components/PrinterStatus';
 import NozzleTempState from '../components/NozzleTempState';
 import BedTempState from '../components/BedTempState';
+import { Box } from '@mui/material';
 
 function Printer() {
   return (
@@ -19,14 +20,11 @@ function Printer() {
     >
       <PrinterStream />
       <PrinterStatus />
-      <NozzleTempState />
-      <BedTempState />
-      <AutomaticMaterialSystemState boxes={[
-        { text: 'AMS 1', color: '#4caf50' },
-        { text: 'AMS 2', color: '#2196f3' },
-        { text: 'AMS 3', color: '#ff9800' },
-        { text: 'AMS 4', color: '#f44336' },
-      ]} />
+      <Box display="flex" alignItems="center" gap={1} width={'200px'} justifyContent="center" sx={{ margin: 'auto' }}>
+        <NozzleTempState />
+        <BedTempState />
+      </Box>
+      <AutomaticMaterialSystemState />
       <PrintHeadController />
     </div>
   );
