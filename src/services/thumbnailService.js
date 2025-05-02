@@ -17,6 +17,12 @@ class ThumbnailService {
       headless,
       args: [...defaultArgs, ...args],
     };
+
+    //erstelle den thumbnail Ordner, falls er nicht existiert
+    const thumbnailDir = path.resolve(process.cwd(), 'thumbnails');
+    if (!fs.existsSync(thumbnailDir)) {
+      fs.mkdirSync(thumbnailDir, { recursive: true });
+    }
   }
 
   /**
