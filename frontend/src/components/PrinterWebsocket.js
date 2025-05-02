@@ -18,6 +18,9 @@ import {
 import useWebSocket from '../hooks/useWebsocket';
 
 const getWebSocketUrl = () => {
+  if (window.location.hostname === 'localhost') {
+    return 'ws://localhost:3000';
+  }
   const domain = window.location.hostname;
   const port = window.location.port;
   const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
