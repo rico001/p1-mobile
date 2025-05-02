@@ -9,7 +9,6 @@ export default function NozzleTempState() {
     (state) => state.printer
   );
 
-  //max 1 stelle nach komma zb 210.0
   let current = roundToOneDecimal(nozzleTemper);
   let target = roundToOneDecimal(nozzleTargetTemper);
   const isAtTarget = current >= target;
