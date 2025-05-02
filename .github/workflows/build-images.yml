@@ -1,0 +1,63 @@
+name: Build Docker Images
+
+on:
+  push:
+    branches:
+      - main
+      - restructure-project
+    paths:
+      - 'Dockerfile'
+      - 'P1Stream-main/Dockerfile'
+      - 'package.json'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1) Code auschecken
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2) Node (nur zum Auslesen der package.json-Version)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # 3) Version aus package.json holen und in ENV schreiben
+      - name: Read package.json version
+        id: get_version
+        run: |
+          echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
+
+      # 4) QEMU für Multi-Arch-Builds vorbereiten (optional, schadet aber nicht)
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      # 5) Docker Buildx einrichten
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # 6) Root-Dockerfile bauen
+      - name: Build root image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          # push auf Registry? hier false, sonst true + Registry/Login hinzufügen
+          push: false
+          tags: |
+            my-app:latest
+            my-app:${{ env.VERSION }}
+
+      # 7) P1Stream-Dockerfile bauen
+      - name: Build P1Stream-main image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./P1Stream-main
+          file: ./P1Stream-main/Dockerfile
+          push: false
+          tags: |
+            p1stream-main:latest
