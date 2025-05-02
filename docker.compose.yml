@@ -10,11 +10,11 @@ services:
       PRINTER_ACCESS_CODE: "88223979"
     restart: unless-stopped
 
-  bambu-http-proxy:
+  bambu-p1s-mobile:
     image: ghcr.io/rico001/bambu-p1s-mobile:latest
-    container_name: bambu-http-proxy
+    container_name: bambu-p1s-mobile
     ports:
-      - "3001:3000"
+      - "3003:3000"
     environment:
       - MQTT_BROKER_ADDRESS=mqtts://192.168.178.79:8883
       - MQTT_USERNAME=bblp
