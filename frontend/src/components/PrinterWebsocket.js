@@ -17,10 +17,16 @@ import {
 } from '../store/printerSlice';
 import useWebSocket from '../hooks/useWebsocket';
 
+const getWebSocketUrl = () => {
+  const domain = window.location.hostname;
+  const port = window.location.port;
+  const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+  return `${protocol}://${domain}:${port}`;
+}
+
 export default function PrinterWebSocket() {
   const dispatch = useDispatch();
-
-  useWebSocket('ws://localhost:3000', {
+  useWebSocket(getWebSocketUrl(), {
     onOpen: () => console.log('[WS] verbunden'),
     onMessage: event => {
       let msg;
