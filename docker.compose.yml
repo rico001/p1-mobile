@@ -1,6 +1,6 @@
 services:
   p1stream:
-    image: p1stream
+    image: ghcr.io/rico001/bambu-http-2-mqtt-proxy/p1stream-main:latest
     container_name: p1stream
     ports:
       - "1984:1984"
@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
 
   bambu-http-proxy:
-    image: bambu-http-proxy:latest    
+    image: ghcr.io/rico001/bambu-p1s-mobile:latest
     container_name: bambu-http-proxy
     ports:
       - "3001:3000"
