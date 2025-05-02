@@ -229,7 +229,11 @@ export async function stopPrint(req, res, next) {
   try {
     const sequence_id = `print-stop__${Date.now()}`;
     const payload = {
-      print: { sequence_id, command: 'stop', param: '' }
+      print: { 
+        sequence_id, 
+        command: 'stop', 
+        param: '' 
+      }
     };
     const report = await mqttService.request(payload, sequence_id);
     res.json({ report });
@@ -242,7 +246,11 @@ export async function pausePrint(req, res, next) {
   try {
     const sequence_id = `print-pause__${Date.now()}`;
     const payload = {
-      print: { sequence_id, command: 'pause', param: '' }
+      print: { 
+        sequence_id, 
+        command: 'pause', 
+        param: '' 
+      }
     };
     const report = await mqttService.request(payload, sequence_id);
     res.json({ report });
@@ -255,7 +263,11 @@ export async function resumePrint(req, res, next) {
   try {
     const sequence_id = `print-resume__${Date.now()}`;
     const payload = {
-      print: { sequence_id, command: 'resume', param: '' }
+      print: { 
+        sequence_id, 
+        command: 'resume', 
+        param: '' 
+      }
     };
     const report = await mqttService.request(payload, sequence_id);
     res.json({ report });
