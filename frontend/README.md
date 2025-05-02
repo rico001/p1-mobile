@@ -1,20 +1,29 @@
 # TODOs
 
+API: https://github.com/Doridian/OpenBambuAPI/blob/main/mqtt.md
+
 appbar:
 an/aus-Schalter für Drucker
 via konfigurierbaren webhook
 
 PrinterTab:
-printer geschwindigkeit ändern via api
+printer geschwindigkeit ändern via api, API: print.print_speed
 modelname vom printjob mit bild (field: gcode_file)
 verbleibende Zeit/layer (fields: mc_percent, mc_remaining_time, layer_num, total_layer_num)
 
 AMS-Tab:
 AMS-infos hier anzeigen, statt im print
+impl: API:print.ams_filament_setting (Dialog zum setzen von Trays im AMS)
+impl: print.unload_filament, button um Filament zu unloaden
 
 FTP-Files
 unbenennen existierender files
 warnung wenn ein file bereits mit gleichem namen besteht, überschreiben-Frage, sonst abbruch
+Beim Starten eines Prints, Dialog ob bed-levelling und co gemacht werden soll -> danach umleiten auf printer tab
+
+Kamera-Tab:
+camera.ipcam_record_set
+camera.ipcam_timelapse
 
 Logbuch-Tab
 sämtliche eingehende mqtt reports werden gelistet mit timestamp
