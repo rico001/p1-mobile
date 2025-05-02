@@ -26,7 +26,8 @@ services:
       - FTP_SECURE=implicit
       - PRINTER_SERIAL_NUMBER=
       - PRINTER_CA_CERT_PATH=cert/blcert.pem
-      - VIDEO_STREAM_URL=http://p1stream:1984/api/stream.mjpeg?src=p1s
+      - VIDEO_STREAM_URL=http://portainer-my-apps.fritz.box:3005/api/stream.mjpeg?src=p1s
+      # - lokal: VIDEO_STREAM_URL=http://localhost:1984/api/stream.mjpeg?src=p1s
       - PUPPETEER_HEADLESS=true
       - SERVER_PORT=3000
     restart: unless-stopped
