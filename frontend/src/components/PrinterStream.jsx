@@ -20,6 +20,7 @@ export default function PrinterStream() {
           sx={{
             display: 'block',
             width: '-webkit-fill-available',
+            pointerEvents: 'none',
             height: '130px',
             position: 'absolute',
             margin: 'auto',
