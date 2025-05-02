@@ -8,6 +8,7 @@ on:
     paths:
       - 'Dockerfile'
       - 'package.json'
+      - .github/workflows/build-images.yml
       - 'p1stream-main/Dockerfile'
       - 'p1stream-main/version.txt'
   workflow_dispatch:
