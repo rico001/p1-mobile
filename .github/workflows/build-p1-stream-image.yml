@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - restructure-project
+      - develop
     paths:
       - 'p1stream-main/Dockerfile'
       - 'p1stream-main/version.txt'
