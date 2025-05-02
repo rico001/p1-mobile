@@ -117,7 +117,6 @@ class MqttService extends EventEmitter {
     }
   };
 
-
   flatKeys = [
     'print_type', 'wifi_signal',
     'nozzle_temper','nozzle_target_temper',
