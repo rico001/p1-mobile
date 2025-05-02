@@ -1,22 +1,20 @@
-import React, { useState, useRef } from 'react';
+// src/components/LightToggle.jsx
+import React from 'react';
 import { IconButton, CircularProgress } from '@mui/material';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import LightbulbOutlineIcon from '@mui/icons-material/LightbulbOutline';
+import { useSelector } from 'react-redux';
 import { usePrintHead } from '../hooks/usePrintHead';
 
 export default function LightToggle() {
-  const { setLight, isSettingLight, lightState } = usePrintHead();
-  const clickCounter = useRef(0);
-  const [lightOn, setLightOn] = useState(false);
+  const { chamberLightMode } = useSelector(state => state.printer);
+  const { setLight, isSettingLight } = usePrintHead();
 
-  const isInitiallyOn = lightState === 'on';
-  const isActive = clickCounter.current === 0 ? isInitiallyOn : lightOn;
+  const isOn = chamberLightMode === 'on';
 
-  const toggleLight = () => {
-    const next = isActive ? 'off' : 'on';
+  const handleToggle = () => {
+    const next = isOn ? 'off' : 'on';
     setLight(next);
-    setLightOn(!isActive);
-    clickCounter.current += 1;
   };
 
   if (isSettingLight) {
@@ -25,11 +23,11 @@ export default function LightToggle() {
 
   return (
     <IconButton
-      color={isActive ? 'warning' : 'primary'}
-      onClick={toggleLight}
+      color={isOn ? 'warning' : 'primary'}
+      onClick={handleToggle}
       disabled={isSettingLight}
     >
-      {isActive ? <LightbulbIcon /> : <LightbulbOutlineIcon />}
+      {isOn ? <LightbulbIcon /> : <LightbulbOutlineIcon />}
     </IconButton>
   );
 }

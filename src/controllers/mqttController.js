@@ -1,4 +1,5 @@
 import mqttService from '../services/mqttService.js';
+import websocketService from '../services/websocketService.js';
 
 //https://github.com/Doridian/OpenBambuAPI
 
@@ -203,6 +204,11 @@ export const setLight = async (req, res, next) => {
         interval_time: 0
       }
     }
+
+    websocketService.broadcast({
+      type: `chamber_light_mode_update`,
+      payload: mode
+    });
 
     // send & wait for report
     const report = await mqttService.request(
