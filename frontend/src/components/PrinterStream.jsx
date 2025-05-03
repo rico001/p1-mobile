@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Dialog, DialogContent } from '@mui/material';
 
-export default function PrinterStream() {
+export default function PrinterStream( props ) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const src = "/api/video/video-stream";
 
@@ -9,7 +9,7 @@ export default function PrinterStream() {
   const handleClose = () => setPreviewOpen(false);
 
   return (
-    <>
+    <div style={{position: 'relative'}}>
       {/* Stream als klickbares Vorschaubild */}
       <div style={{ position: 'relative', width: '100%', width: 'fit-content', margin: 'auto', overflow: 'hidden' }}>
       <Box
@@ -88,6 +88,8 @@ export default function PrinterStream() {
           />
         </DialogContent>
       </Dialog>
-    </>
+      {/* chilldren */}
+      {props.children}
+    </div>
   );
 }

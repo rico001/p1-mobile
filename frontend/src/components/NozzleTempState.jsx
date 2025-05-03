@@ -19,7 +19,7 @@ export default function NozzleTempState() {
       title={isAtTarget ? 'Düse hat Zieltemperatur erreicht' : 'Düse heizt'}
       arrow
     >
-      <Box display="flex" alignItems="center" p={1} width={'fit-content'} m={'auto'}>
+      <Box display="flex" alignItems="center" width={'fit-content'}>
         <BungalowIcon sx={{ color, mr: 1, transform: 'rotate(180deg)' }} />
         <Typography variant="body2" sx={{ fontWeight: 500, color }}>
           {`${current || '-'} / ${target || '-'}°C`}

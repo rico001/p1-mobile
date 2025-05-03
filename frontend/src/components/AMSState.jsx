@@ -11,7 +11,7 @@ const getTextColorForBackground = (hexColor) => {
   return luminance > 186 ? '#000' : '#fff';
 };
 
-const AutomaticMaterialSystemState = () => {
+const AMSState = () => {
   const { ams } = useSelector((state) => state.printer);
 
   let amsStates = ams?.ams?.map(ams => ams.tray.map(tray => ({
@@ -87,4 +87,4 @@ const AutomaticMaterialSystemState = () => {
   );
 };
 
-export default AutomaticMaterialSystemState;
+export default AMSState;

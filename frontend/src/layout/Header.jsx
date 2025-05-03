@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography } from '@mui/material';
-import WlanStatus from './WlanStatus';
+import WlanStatus from '../components/WlanStatus';
 
 export default function Header({ title }) {
   return (
