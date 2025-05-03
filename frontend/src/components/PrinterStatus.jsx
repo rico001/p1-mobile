@@ -2,24 +2,23 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography, Tooltip } from '@mui/material';
-import PrintIcon from '@mui/icons-material/Print';
-import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+
+export const statusMap = {
+  local: {
+    value: 'local',
+    text: 'Druckvorgang läuft',
+    tooltip: 'Der 3D-Drucker arbeitet gerade an einem Job.',
+  },
+  idle: {
+    value: 'idle',
+    text: 'Leerlauf',
+    tooltip: 'Wartet auf neue Druckaufträge.',
+  },
+};
 
 export default function PrinterStatus() {
   const { printType } = useSelector((state) => state.printer);
-
-  // Mapping des Status zu Icon, Farbe und Text
-  const statusMap = {
-    local: {
-      text: 'Druckvorgang läuft',
-      tooltip: 'Der 3D-Drucker arbeitet gerade an einem Job.',
-    },
-    idle: {
-      text: 'Leerlauf',
-      tooltip: 'Wartet auf neue Druckaufträge.',
-    },
-  };
 
   // Fallback für unbekannte Stati
   const { text, tooltip } = statusMap[printType] || {
