@@ -14,6 +14,7 @@ import {
   setLayerNum,
   setTotalLayerNum,
   setGcodeFile,
+  setAMS
 } from '../store/printerSlice';
 import useWebSocket from '../hooks/useWebsocket';
 
@@ -93,6 +94,10 @@ export default function PrinterWebSocket() {
         break;
       case 'gcode_file_update':
         dispatch(setGcodeFile(payload));
+        break;
+      case 'ams_update':
+        console.log('ams_update', payload);
+        dispatch(setAMS(payload));
         break;
       default:
         break;
