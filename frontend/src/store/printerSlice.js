@@ -15,6 +15,9 @@ const initialState = {
   layerNum: null,
   totalLayerNum: null,
   gcodeFile: null,
+
+  //deep objects
+  ams: null,
 };
 
 const printerSlice = createSlice({
@@ -57,6 +60,9 @@ const printerSlice = createSlice({
     setGcodeFile(state, action) {
       state.gcodeFile = action.payload;
     },
+    setAMS(state, action) {
+      state.ams = action.payload;
+    }
   },
 });
 
@@ -73,6 +79,7 @@ export const {
   setLayerNum,
   setTotalLayerNum,
   setGcodeFile,
+  setAMS
 } = printerSlice.actions;
 
 export default printerSlice.reducer;
