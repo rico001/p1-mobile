@@ -32,8 +32,22 @@ const ModelCard = ({ model, onAction }) => {
 
   const handleAction = useCallback(
     actionKey => {
+      if(actionKey === 'print') {
+        //erfrage ob user sich sicher ist 
+        if(!window.confirm('Drucken?, wenn ja dann werden Sie weitergeleitet')) {
+          return;
+        }
+      } 
       const { method, path } = operations[actionKey];
       onAction({ method, path });
+      //leite danach weiter zu /printer
+      if (actionKey === 'print') {
+        //warte 2s und dann weiterleiten
+        setTimeout(() => {
+          window.location.href = '/printer';
+        }
+        , 2000);
+      }
     },
     [operations, onAction]
   );

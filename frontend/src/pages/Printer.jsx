@@ -6,6 +6,7 @@ import NozzleTempState from '../components/NozzleTempState';
 import BedTempState from '../components/BedTempState';
 import { Box } from '@mui/material';
 import PrintControls from '../components/PrintControls';
+import CurrentJob from '../components/CurrentJob';
 
 function Printer() {
   return (
@@ -18,6 +19,9 @@ function Printer() {
     >
       <PrinterStatus />
       <PrinterStream />
+      <Box display="flex" alignItems="center" gap={2} width={'230px'} justifyContent="center" sx={{ margin: 'auto' }}>
+        <CurrentJob />
+      </Box>
       <Box
         display="flex"
         justifyContent="center"
