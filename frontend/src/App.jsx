@@ -5,7 +5,8 @@ import { Provider } from 'react-redux';
 import store from './store';
 import Models from './pages/Models';
 import Printer from './pages/Printer';
-import Layout from './Layout';
+import Layout from './layout/Layout';
+import AMS from './pages/AMS';
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
           <Route index element={<Navigate to="/models" replace />} />
           <Route path="models" element={<Models />} />
           <Route path="printer" element={<Printer />} />
+          <Route path="ams" element={<AMS />} />
           {/*<Route path="logbuch" element={<Logbuch />} />*/}
         </Route>
       </Routes>

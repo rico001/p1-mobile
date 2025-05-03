@@ -1,9 +1,9 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Box } from '@mui/material';
-import PrinterWebSocket from './components/PrinterWebsocket';
-import Header from './components/Header';
-import BottomNav from './components/BottomNav';
+import PrinterWebSocket from '../components/PrinterWebsocket';
+import BottomNav from './BottomNav';
+import Header from './Header';
 
 
 export default function Layout() {
