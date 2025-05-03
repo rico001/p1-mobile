@@ -1,7 +1,16 @@
 export function roundToOneDecimal(value) {
-    const num = typeof value === 'string' ? parseFloat(value) : value;
+    const num =
+        typeof value === 'string'
+            ? parseFloat(value.replace(',', '.'))
+            : value;
+
     if (typeof num !== 'number' || isNaN(num)) {
-        return value
+        return String(value);
     }
-    return Math.round(num * 10) / 10;
+
+    if (num === 0) {
+        return null;
+    }
+
+    return num.toFixed(1);
 }
