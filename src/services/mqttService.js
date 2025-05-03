@@ -112,7 +112,18 @@ class MqttService extends EventEmitter {
           type: `${firstLight.node}_mode_update`,
           payload: firstLight.mode
         });
-        console.log(`new ${firstLight.node}.mode`, firstLight.mode);
+      }
+    },
+    ams: ({ newVal, oldVal }) => {
+      //compare with striffiy JSON
+      const newValStr = JSON.stringify(newVal?.ams);
+      const oldValStr = JSON.stringify(oldVal?.ams || {});
+      if (newValStr !== oldValStr) {
+        //log the difference
+        websocketService.broadcast({
+          type: `ams_update`,
+          payload: newVal
+        });
       }
     }
   };
@@ -132,6 +143,7 @@ class MqttService extends EventEmitter {
       // 1) Gibt es einen Custom-Broadcaster?
       if (this.deepObjectKeys[key]) {
         this.deepObjectKeys[key]({ newVal, oldVal });
+        console.log(`new ${key}`, newVal);
         return;
       }
 
@@ -152,7 +164,6 @@ class MqttService extends EventEmitter {
 
 
   publish(topic, payload) {
-    console.log("publish", topic, payload);
     this.client.publish(topic, JSON.stringify(payload))
   }
 
