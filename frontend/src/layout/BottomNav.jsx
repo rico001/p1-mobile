@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Paper, BottomNavigation, BottomNavigationAction } from '@mui/material';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
 import PrintIcon from '@mui/icons-material/Print';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
 // import BookIcon from '@mui/icons-material/Book';
 
 export default function BottomNav() {
@@ -26,6 +27,11 @@ export default function BottomNav() {
           label="Drucker"
           value="/printer"
           icon={<PrintIcon />}
+        />
+        <BottomNavigationAction
+          label="AMS"
+          value="/ams"
+          icon={<AccountTreeIcon />}
         />
         {/* <BottomNavigationAction label="Logbuch" value="/logbuch" icon={<BookIcon />} /> */}
       </BottomNavigation>

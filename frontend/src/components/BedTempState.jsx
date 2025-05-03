@@ -19,7 +19,7 @@ export default function BedTempState() {
         title={isAtTarget ? 'Bett hat Zieltemperatur erreicht' : 'Bett heizt'}
         arrow
       >
-        <Box display="flex" alignItems="center" p={1} width={'fit-content'} m={'auto'}>
+        <Box display="flex" alignItems="center" width={'fit-content'}>
           <BorderAllIcon sx={{ color, mr: 1 }} />
           <Typography variant="body2" sx={{ fontWeight: 500, color }}>
             {`${current || '-'} / ${target || '-'}°C`}
