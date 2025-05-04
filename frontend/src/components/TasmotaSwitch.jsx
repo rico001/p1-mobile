@@ -19,6 +19,17 @@ export default function TasmotaSwitch() {
     isToggling,
   } = useTasmota();
 
+  const handleToggle = () => {
+    const confirmation = confirm(
+      isOn
+        ? 'Sind Sie sicher, dass Sie das Gerät ausschalten möchten?'
+        : 'Sind Sie sicher, dass Sie das Gerät einschalten möchten?'
+    );
+    if (confirmation) {
+      toggle();
+    }
+  };
+
   if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" p={2}>
@@ -26,6 +37,7 @@ export default function TasmotaSwitch() {
       </Box>
     );
   }
+
   if (error) {
     return <Typography color="error">Fehler: {error.message}</Typography>;
   }
@@ -33,19 +45,19 @@ export default function TasmotaSwitch() {
   return (
     <Box display="flex" alignItems="center" p={2} gap={1}>
       <Tooltip title={isOn ? 'Ausschalten' : 'Einschalten'}>
-        <span>
+        
           <IconButton
-            onClick={toggle}
+            onClick={handleToggle}
             disabled={isToggling}
             aria-label={isOn ? 'Ausschalten' : 'Einschalten'}
             color={isOn ? 'success' : 'error'}
           >
             {isToggling
               ? <CircularProgress size={24} />
-              : <PowerSettingsNewIcon />
+              : <PowerSettingsNewIcon color='white' sx={{ background: 'white', borderRadius: '50%', padding: '2px' }} />
             }
           </IconButton>
-        </span>
+
       </Tooltip>
     </Box>
   );

@@ -124,12 +124,13 @@ class MqttService extends EventEmitter {
           type: `ams_update`,
           payload: newVal
         });
-        return
+       
         //for test purpose
-        websocketService.broadcast({
-          type: `gcode_file_update`,
-          payload: 'running_test.3mf'
-        });
+        //mc_remaining_time, mc_percent, layer_num, total_layer_num
+        //websocketService.broadcast({
+        //  type: `mc_remaining_time_update`,
+        //  payload: 4
+        //});
       }
     }
   };

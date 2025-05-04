@@ -2,13 +2,8 @@
 
 API: https://github.com/Doridian/OpenBambuAPI/blob/main/mqtt.md
 
-appbar:
-an/aus-Schalter für Drucker
-via konfigurierbaren webhook
-
 PrinterTab:
 printer geschwindigkeit ändern via api, API: print.print_speed
-verbleibende Zeit/layer (fields: mc_percent, mc_remaining_time, layer_num, total_layer_num)
 
 AMS-Tab:
 AMS-infos hier anzeigen, statt im print
