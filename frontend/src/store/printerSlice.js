@@ -15,7 +15,7 @@ const initialState = {
   layerNum: null,
   totalLayerNum: null,
   gcodeFile: null,
-  spdLvl: null,
+  spdLvl: 2,
 
   //deep objects
   ams: null,
@@ -65,7 +65,7 @@ const printerSlice = createSlice({
       state.ams = action.payload;
     },
     setSpdLvl(state, action) {
-      state.spdLvl = action.payload || 3;
+      state.spdLvl = action.payload;
     }
   },
 });
