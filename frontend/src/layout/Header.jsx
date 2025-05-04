@@ -1,6 +1,7 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography } from '@mui/material';
 import WlanStatus from '../components/WlanStatus';
+import TasmotaSwitch from '../components/TasmotaSwitch';
 
 export default function Header({ title }) {
   return (
@@ -10,8 +11,7 @@ export default function Header({ title }) {
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           {title}
         </Typography>
-
-        {/* WLAN-Status immer rechts */}
+        <TasmotaSwitch/>
         <WlanStatus />
       </Toolbar>
     </AppBar>
