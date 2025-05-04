@@ -125,13 +125,6 @@ class MqttService extends EventEmitter {
           type: `ams_update`,
           payload: newVal
         });
-       
-        //for test purpose
-        //mc_remaining_time, mc_percent, layer_num, total_layer_num
-        //websocketService.broadcast({
-        //  type: `mc_remaining_time_update`,
-        //  payload: 4
-        //});
       }
     }
   };
