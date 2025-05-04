@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography } from '@mui/material';
-import WlanStatus from '../components/WlanStatus';
+import WlanStatus from '../components/sensors/WlanStatus';
 import TasmotaSwitch from '../components/TasmotaSwitch';
 
 export default function Header({ title }) {

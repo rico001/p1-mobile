@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography, Tooltip } from '@mui/material';
 import BungalowIcon from '@mui/icons-material/Bungalow';
-import { roundToOneDecimal } from '../utils/functions';
+import { roundToOneDecimal } from '../../utils/functions';
 
 export default function NozzleTempState() {
   const { nozzleTemper, nozzleTargetTemper } = useSelector(
