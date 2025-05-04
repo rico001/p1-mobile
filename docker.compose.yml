@@ -24,6 +24,7 @@ services:
       - FTP_PASSWORD=88223979
       - FTP_PORT=990
       - FTP_SECURE=implicit
+      - TASMOTA_SWITCH_IP=192.168.178.100
       - PRINTER_SERIAL_NUMBER=01P00C4C0800240
       - PRINTER_CA_CERT_PATH=cert/blcert.pem
       - VIDEO_STREAM_URL=http://portainer-my-apps.fritz.box:3005/api/stream.mjpeg?src=p1s
