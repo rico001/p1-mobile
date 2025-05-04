@@ -7,14 +7,13 @@ import {
   Typography,
   Dialog,
   DialogContent,
-  AppBar,
-  Toolbar
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PrintIcon from '@mui/icons-material/Print';
+import StepperDialog from './StepperDialog';
+import { useNavigate } from 'react-router-dom';
 
 function bytesToKB(bytes) {
   const kb = bytes / 1024;
@@ -29,28 +28,25 @@ function bytesToMB(bytes) {
 const ModelCard = ({ model, onAction }) => {
   const { name, size, thumbnail, operations } = model;
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleAction = useCallback(
     actionKey => {
-      if(actionKey === 'print') {
-        //erfrage ob user sich sicher ist 
-        if(!window.confirm('Drucken?, wenn ja dann werden Sie weitergeleitet')) {
-          return;
-        }
-      } 
       const { method, path } = operations[actionKey];
       onAction({ method, path });
-      //leite danach weiter zu /printer
-      if (actionKey === 'print') {
-        //warte 2s und dann weiterleiten
-        setTimeout(() => {
-          window.location.href = '/printer';
-        }
-        , 2000);
-      }
     },
     [operations, onAction]
   );
+
+  const handleConfirmPrint = useCallback((printJobConfig) => {
+    console.log('printJobConfig:', printJobConfig);
+    //handleAction('print');
+    setTimeout(() => {
+      navigate('/printer');
+    }
+    , 2000);
+  }, [handleAction]);
 
   const handleThumbnailClick = () => setPreviewOpen(true);
   const handleClosePreview = () => setPreviewOpen(false);
@@ -121,7 +117,7 @@ const ModelCard = ({ model, onAction }) => {
           </IconButton>
 
           {/* Die anderen Aktionen bleiben AJAX-basiert */}
-          <IconButton onClick={() => handleAction('print')} title="Drucken">
+          <IconButton onClick={() => setModalOpen(true)} title="Drucken">
             <PrintIcon />
           </IconButton>
           <IconButton onClick={() => handleAction('refreshThumbnail')} title="Thumbnail aktualisieren">
@@ -176,6 +172,7 @@ const ModelCard = ({ model, onAction }) => {
           />
         </DialogContent>
       </Dialog>
+      <StepperDialog name={name} thumbnail={thumbnail} open={modalOpen} onClose={() => setModalOpen(false)} onConfirm={handleConfirmPrint} />
     </>
   );
 };
