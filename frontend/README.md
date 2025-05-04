@@ -8,7 +8,6 @@ via konfigurierbaren webhook
 
 PrinterTab:
 printer geschwindigkeit ändern via api, API: print.print_speed
-modelname vom printjob mit bild (field: gcode_file)
 verbleibende Zeit/layer (fields: mc_percent, mc_remaining_time, layer_num, total_layer_num)
 
 AMS-Tab:
