@@ -8,8 +8,16 @@ export default function CurrentJob() {
     (state) => state.printer
   );
 
-  if(printType === statusMap.idle.value) {
-    return '';
+  if (printType === statusMap.idle.value) {
+    return (<Tooltip
+      title={"aktueller Druck"}
+    >
+      <Box display="flex" alignItems="center" width={'fit-content'} height={'40px'}>
+        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+          {statusMap.idle.text}
+        </Typography>
+      </Box>
+    </Tooltip>)
   }
 
   return (

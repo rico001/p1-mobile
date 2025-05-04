@@ -20,7 +20,6 @@ import LightToggle from './LightToggle';
 export default function PrintHeadController() {
   const [axisMode, setAxisMode] = useState('xy');
   const [step, setStep] = useState(1);
-  const [lightOn, setLightOn] = useState(false);
   const {
     move,
     isMoving,
@@ -57,7 +56,7 @@ export default function PrintHeadController() {
           labelId="step-label"
           value={step}
           onChange={e => setStep(Number(e.target.value))}
-          sx={{ mb: 1, backgroundColor: '#4040404a' }}
+          sx={{ mb: 1, color:"primary", backgroundColor: '#4040404a' }}
         >
           {[1, 2, 3, 4, 5].map(n => (
             <MenuItem key={n} value={n}>{n}</MenuItem>
