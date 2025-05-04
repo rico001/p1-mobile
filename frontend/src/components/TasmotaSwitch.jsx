@@ -1,0 +1,52 @@
+// src/components/TasmotaSwitch.jsx
+import React from 'react';
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
+import {
+  Box,
+  IconButton,
+  CircularProgress,
+  Typography,
+  Tooltip,
+} from '@mui/material';
+import { useTasmota } from '../hooks/useTasmota';
+
+export default function TasmotaSwitch() {
+  const {
+    isOn,
+    isLoading,
+    error,
+    toggle,
+    isToggling,
+  } = useTasmota();
+
+  if (isLoading) {
+    return (
+      <Box display="flex" justifyContent="center" p={2}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+  if (error) {
+    return <Typography color="error">Fehler: {error.message}</Typography>;
+  }
+
+  return (
+    <Box display="flex" alignItems="center" p={2} gap={1}>
+      <Tooltip title={isOn ? 'Ausschalten' : 'Einschalten'}>
+        <span>
+          <IconButton
+            onClick={toggle}
+            disabled={isToggling}
+            aria-label={isOn ? 'Ausschalten' : 'Einschalten'}
+            color={isOn ? 'success' : 'error'}
+          >
+            {isToggling
+              ? <CircularProgress size={24} />
+              : <PowerSettingsNewIcon />
+            }
+          </IconButton>
+        </span>
+      </Tooltip>
+    </Box>
+  );
+}

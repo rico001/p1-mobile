@@ -32,6 +32,9 @@ const config = {
       '--disable-setuid-sandbox'
     ]
   },
+  tasmota: {
+    ip: process.env.TASMOTA_SWITCH_IP,
+  },
 
 };
 console.log('[Config] Konfiguration geladen:', config);
