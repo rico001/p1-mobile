@@ -9,6 +9,9 @@ export function LayerState() {
     const { layerNum, totalLayerNum, printType } = useSelector(
         (state) => state.printer
     );
+    if (statusMap.idle.value === printType) {
+      return null;
+    }
 
     return (
         <Tooltip
