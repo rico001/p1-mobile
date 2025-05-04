@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, Dialog, DialogContent, FormControl, Select, MenuItem } from '@mui/material';
 import { useSelector } from 'react-redux';
+import { useLocalStorage } from '../hooks/userLocalStorage';
 
 export default function PrinterStream(props) {
   const { currentPage } = useSelector((state) => state.ui);
@@ -9,7 +10,7 @@ export default function PrinterStream(props) {
   const src_1 = "/api/video/video-stream-1";
   const src_2 = "/api/video/video-stream-2";
 
-  const [currentSrc, setCurrentSrc] = useState(src_1);
+  const [currentSrc, setCurrentSrc] = useLocalStorage('printerStreamSrc', src_1);
   const [previewOpen, setPreviewOpen] = useState(false);
 
   const previewRef = useRef(null);
