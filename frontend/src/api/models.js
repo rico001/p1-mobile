@@ -6,8 +6,8 @@ export async function fetchModels() {
   return response.json();
 }
 
-export async function performModelAction({ method, path }) {
-  const response = await fetch(path, { method });
+export async function performModelAction({ method, path, query = '' }) {
+  const response = await fetch(path + query, { method });
   if (!response.ok) {
     throw new Error(`Aktion fehlgeschlagen: ${response.statusText}`);
   }

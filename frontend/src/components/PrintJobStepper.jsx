@@ -102,12 +102,6 @@ export default function PrintJobStepper({ onClose, onConfirm }) {
           </Step>
         ))}
       </Stepper>
-      {activeStep === steps.length && (
-        <Box sx={{ p: 3 }}>
-          <Typography>Alle Schritte abgeschlossen - Sie können das Dialogfenster schließen.</Typography>
-          <MuiButton onClick={handleReset} sx={{ mt: 1 }}>Zurück zum Anfang</MuiButton>
-        </Box>
-      )}
     </Box>
   );
 }

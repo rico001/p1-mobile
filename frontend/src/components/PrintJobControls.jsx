@@ -29,7 +29,7 @@ export default function PrintJobControls() {
  
       <IconButton
         color="primary"
-        onClick={stopPrint}
+        onClick={(e) => confirm('Aktuellen Druckvorgang wirklich abbrechen?') && stopPrint()}
         disabled={isStopping || !isPrinting}
         sx={{ p:0 }}
       >
@@ -37,8 +37,8 @@ export default function PrintJobControls() {
       </IconButton>
 
       <IconButton
-        color="primary"
-        onClick={pausePrint}
+        color="primary" 
+        onClick={(e) => confirm('Aktuellen Druckvorgang wirklich pausieren?') && pausePrint()}
         disabled={isPausing || !isPrinting}
         sx={{ pr:2, pl:2 }}
       >
@@ -47,7 +47,7 @@ export default function PrintJobControls() {
 
       <IconButton
         color="primary"
-        onClick={resumePrint}
+        onClick={(e) => confirm('Aktuellen Druckvorgang wirklich fortsetzen?') && resumePrint()}
         disabled={isResuming || !isPrinting}
         sx={{ p:0 }}
       >

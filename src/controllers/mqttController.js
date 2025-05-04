@@ -36,6 +36,7 @@ export async function printFile3mf(req, res, next) {
     const bed_levelling = req.query.bed_levelling;
     const flow_cali = req.query.flow_cali;
     const vibration_cali = req.query.vibration_cali;
+    console.log('printFile3mf, query:', req.query);
 
     if (!fileName) {
       return res.status(400).json({ message: 'fileName is required' });
