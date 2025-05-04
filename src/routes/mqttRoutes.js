@@ -8,7 +8,8 @@ import {
     getState, 
     stopPrint, 
     pausePrint, 
-    resumePrint 
+    resumePrint,
+    setPrintSpeed
 } from '../controllers/mqttController.js';
 
 const router = Router();
@@ -30,5 +31,7 @@ router.get('/print/stop', stopPrint);
 router.get('/print/pause', pausePrint);
 
 router.get('/print/resume', resumePrint);
+
+router.get('/print/set-speed', setPrintSpeed);
 
 export default router;

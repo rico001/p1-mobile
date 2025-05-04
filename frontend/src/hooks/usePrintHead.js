@@ -7,7 +7,8 @@ import {
     getLightState,
     stopPrint,
     pausePrint,
-    resumePrint
+    resumePrint,
+    setPrintSpeed
 } from '../api/printer.js';
 
 
@@ -30,6 +31,14 @@ export function usePrintHead() {
         mutationFn: setLight,
         onError: err => {
             console.error('Print-head light error:', err);
+        }
+    });
+
+    //speed-modes: 1 = silent, 2 = standard, 3 = sport, 4 = ludicrous
+    const speedMutation = useMutation({
+        mutationFn: setPrintSpeed,
+        onError: err => {
+            console.error('Print-head speed error:', err);
         }
     });
 
@@ -77,6 +86,10 @@ export function usePrintHead() {
         // Light control
         setLight: lightMutation.mutate,
         isSettingLight: lightMutation.isLoading,
+
+        // Speed control
+        setSpeed: speedMutation.mutate,
+        isSettingSpeed: speedMutation.isLoading,
 
         // Print control
         stopPrint: stopMutation.mutate,

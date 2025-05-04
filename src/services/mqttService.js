@@ -97,6 +97,7 @@ class MqttService extends EventEmitter {
 
       const prevState = { ...(this.state || {}) };
       this.state = { ...prevState, ...updatedFields };
+      //console.log('new state', this.state);
 
       this._broadcastUpdatedFields(updatedFields, prevState);
     }
@@ -141,7 +142,7 @@ class MqttService extends EventEmitter {
     'bed_temper','bed_target_temper',
     'mc_percent','mc_remaining_time',
     'layer_num','total_layer_num',
-    'gcode_file'
+    'gcode_file','spd_lvl'
   ];
   _broadcastUpdatedFields(updatedFields, prevState) {
     Object.entries(updatedFields).forEach(([key, newVal]) => {

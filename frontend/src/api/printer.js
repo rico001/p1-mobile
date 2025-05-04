@@ -25,6 +25,15 @@ export async function setLight(value) {
     return res.json();
 }
 
+export async function setPrintSpeed(value) {
+    //speed-modes: 1 = silent, 2 = standard, 3 = sport, 4 = ludicrous
+    const res = await fetch(`/api/mqtt/print/set-speed?value=${value}`, { method: 'GET' });
+    if (!res.ok) {
+        throw new Error(`Set print speed failed: ${res.statusText}`);
+    }
+    return res.json();
+}
+
 export async function getAmsState(value) {
     const res = await fetch('/api/mqtt/state', {
         method: 'GET',

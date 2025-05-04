@@ -8,6 +8,8 @@ import PrintJobControls from '../components/PrintJobControls';
 import CurrentJob from '../components/CurrentJob';
 import { PrintProgressState } from '../components/sensors/PrintProgressState';
 import { LayerState } from '../components/sensors/LayerState';
+import SpeedSelector from '../components/SpeedSelector';
+import LightToggle from '../components/LightToggle';
 
 function Printer() {
   return (
@@ -28,24 +30,36 @@ function Printer() {
         alignItems="center"
         gap={1}
         width={'150px'}
-        sx={{ 
-          margin: 'auto', 
-          pb: '8px', 
+        sx={{
+          margin: 'auto',
+          pb: '8px',
           pt: '8px',
           mb: '10px',
-          borderRadius: '15px 15px 15px 15px',
-          backgroundColor: '#4040404a', 
+          borderRadius: '15px 15px 15px 15px'
         }}
       >
         <PrintJobControls />
       </Box>
-      <Box display="flex" alignItems="center" gap={2} width={'260px'} justifyContent="center" sx={{ margin: 'auto' }}>
+      <Box display="flex" alignItems="center" gap={2} width={'260px'} justifyContent="center" sx={{ margin: 'auto', mb: 1 }}>
         <NozzleTempState />
         <BedTempState />
       </Box>
-      <Box display="flex" alignItems="center" gap={2} width={'260px'} justifyContent="center" sx={{ margin: 'auto', mt:1 }}>
+      <Box display="flex" alignItems="center" gap={2} width={'260px'} justifyContent="center" sx={{ margin: 'auto', mt: 1 }}>
         <PrintProgressState />
         <LayerState />
+      </Box>
+      <Box
+        sx={{
+          margin: 'auto',
+          pb: '8px',
+          pt: '8px',
+          mb: '10px',
+        }}
+      >
+        <SpeedSelector />
+      </Box>
+      <Box sx={{ mt: 2 }}>
+        <LightToggle />
       </Box>
       <PrintHeadController />
     </div>

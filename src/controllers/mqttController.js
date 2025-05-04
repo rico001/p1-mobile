@@ -277,3 +277,21 @@ export async function resumePrint(req, res, next) {
   }
 }
 
+export async function setPrintSpeed(req, res, next) {
+  try {
+    //speed-modes: 1 = silent, 2 = standard, 3 = sport, 4 = ludicrous
+    const speed = req.query.speed || '2';
+    const sequence_id = `print-speed__${Date.now()}`;
+    const payload = {
+      print: { 
+        sequence_id, 
+        command: 'print_speed', 
+        param: speed 
+      }
+    };
+    const report = await mqttService.request(payload, sequence_id);
+    res.json({ report });
+  } catch (err) {
+    next(err);
+  }
+}

@@ -11,6 +11,10 @@ export function PrintProgressState() {
         (state) => state.printer
     );
 
+    if (statusMap.idle.value === printType) {
+        return null;
+    }
+    
     return (
         <Tooltip
             title={"Druckfortschritt"}
