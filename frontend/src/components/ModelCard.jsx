@@ -14,6 +14,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import PrintIcon from '@mui/icons-material/Print';
 import StepperDialog from './StepperDialog';
 import { useNavigate } from 'react-router-dom';
+import { confirmDialog, objectToQueryString } from '../utils/functions';
 
 function bytesToKB(bytes) {
   const kb = bytes / 1024;
@@ -32,16 +33,28 @@ const ModelCard = ({ model, onAction }) => {
   const navigate = useNavigate();
 
   const handleAction = useCallback(
-    actionKey => {
+    (actionKey, query) => {
+      if(actionKey === 'delete') {
+        const confirm = confirmDialog(`Möchten Sie ${name} wirklich löschen?`);
+        if (!confirm) {
+          return;
+        }
+      }
+      if (actionKey === 'download') {
+        const confirm = confirmDialog(`Möchten Sie ${name} wirklich herunterladen?`);
+        if (!confirm) {
+          return;
+        } 
+      }
       const { method, path } = operations[actionKey];
-      onAction({ method, path });
+      onAction({ method, path, query })
     },
     [operations, onAction]
   );
 
   const handleConfirmPrint = useCallback((printJobConfig) => {
-    console.log('printJobConfig:', printJobConfig);
-    //handleAction('print');
+    const query = objectToQueryString(printJobConfig);
+    handleAction('print', query);
     setTimeout(() => {
       navigate('/printer');
     }
