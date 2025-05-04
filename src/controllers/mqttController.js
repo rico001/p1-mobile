@@ -292,7 +292,7 @@ export async function setPrintSpeed(req, res, next) {
     console.log('setPrintSpeed', payload);
     const report = await mqttService.request(payload, sequence_id);
     websocketService.broadcast({
-      type: `spd_lvl`,
+      type: `spd_lvl_update`,
       payload: parseInt(speed)
     });
     res.json({ report });
