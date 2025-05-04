@@ -41,8 +41,9 @@ export default function PrinterStream( props ) {
             minWidth: '200px',
             height: '130px',
             borderRadius: '10px',
+            border: '3px solid #4040404a',
             cursor: 'pointer',
-            backgroundColor: '#4c4c4c6b',
+            backgroundColor: '#4040404a',
           }}
         />
       </div>

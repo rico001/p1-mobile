@@ -12,7 +12,6 @@ export default function BedTempState() {
     const current = roundToOneDecimal(bedTemper);
     const target = roundToOneDecimal(bedTargetTemper);
     const isAtTarget = current >= target;
-    const color = isAtTarget ? 'success.main' : 'warning.main';
   
     return (
       <Tooltip
@@ -20,8 +19,8 @@ export default function BedTempState() {
         arrow
       >
         <Box display="flex" alignItems="center" width={'fit-content'}>
-          <BorderAllIcon sx={{ color, mr: 1 }} />
-          <Typography variant="body2" sx={{ fontWeight: 500, color }}>
+          <BorderAllIcon sx={{ mr: 1 }} />
+          <Typography variant="body2" sx={{ fontWeight: 500 }}>
             {`${current || '-'} / ${target || '-'}°C`}
           </Typography>
         </Box>

@@ -12,7 +12,6 @@ export default function NozzleTempState() {
   let current = roundToOneDecimal(nozzleTemper);
   let target = roundToOneDecimal(nozzleTargetTemper);
   const isAtTarget = current >= target;
-  const color = isAtTarget ? 'success.main' : 'warning.main';
 
   return (
     <Tooltip
@@ -20,8 +19,8 @@ export default function NozzleTempState() {
       arrow
     >
       <Box display="flex" alignItems="center" width={'fit-content'}>
-        <BungalowIcon sx={{ color, mr: 1, transform: 'rotate(180deg)' }} />
-        <Typography variant="body2" sx={{ fontWeight: 500, color }}>
+        <BungalowIcon sx={{ mr: 1, transform: 'rotate(180deg)' }} />
+        <Typography variant="body2" sx={{ fontWeight: 500 }}>
           {`${current || '-'} / ${target || '-'}°C`}
         </Typography>
       </Box>
