@@ -17,7 +17,7 @@ import PrintJobStepper from './PrintJobStepper';
 export default function StepperDialog({ name, thumbnail, onConfirm, open, onClose }) {
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Druckauftrag: <strong>{ name }</strong></DialogTitle>
+      <DialogTitle margin={'auto'}>Druckauftrag: { name }</DialogTitle>
       <img
         src={thumbnail}
         alt="Bambu Lab Logo"
