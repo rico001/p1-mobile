@@ -2,9 +2,6 @@
 
 API: https://github.com/Doridian/OpenBambuAPI/blob/main/mqtt.md
 
-PrinterTab:
-printer geschwindigkeit ändern via api, API: print.print_speed
-
 AMS-Tab:
 AMS-infos hier anzeigen, statt im print
 impl: API:print.ams_filament_setting (Dialog zum setzen von Trays im AMS)
