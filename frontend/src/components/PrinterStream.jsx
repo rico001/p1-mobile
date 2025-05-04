@@ -1,79 +1,105 @@
-import React, { useState } from 'react';
-import { Box, Dialog, DialogContent } from '@mui/material';
+import React, { useState, useRef, useEffect } from 'react';
+import { Box, Dialog, DialogContent, FormControl, Select, MenuItem } from '@mui/material';
+import { useSelector } from 'react-redux';
 
-export default function PrinterStream( props ) {
-  const [previewOpen, setPreviewOpen] = useState(false);
+export default function PrinterStream(props) {
+  const { currentPage } = useSelector((state) => state.ui);
+  console.log("PrinterStream page", currentPage);
+
   const src_1 = "/api/video/video-stream-1";
   const src_2 = "/api/video/video-stream-2";
+
+  const [currentSrc, setCurrentSrc] = useState(src_1);
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  const previewRef = useRef(null);
+  const fullscreenRef = useRef(null);
 
   const handleOpen = () => setPreviewOpen(true);
   const handleClose = () => setPreviewOpen(false);
 
-  return (
-    <div style={{position: 'relative'}}>
-      {/* Stream als klickbares Vorschaubild */}
-      <Box
-          component="img"
-          src={src_2}
-          alt="Printer Stream-2"
-          onClick={handleOpen}
-          sx={{
-            display: 'block',
-            width: '-webkit-fill-available',
-            height: '130px',
-            cursor: 'pointer',
-            backgroundColor: '#000',
-            margin: 'auto',
-            borderRadius: '10px',
-            backgroundColor: '#4040404a',
-            width: '200px',
-            height: '130px',
-            cursor: 'pointer',
-          }}
-        />
+  if (currentPage !== 'printer') {
+    console.log("PrinterStream page not printer", currentPage);
+    return null;
+  }
 
-      {/* Vollbild-Dialog */}
+  return (
+    <div style={{ position: 'relative', display: 'inline-block' }}>
+      <FormControl
+        variant="filled"
+        size="small"
+        sx={{
+          position: 'absolute',
+          top: 6,
+          right: 6,
+          zIndex: 10,
+          width: '35px',
+          textAlign: 'center',
+          backgroundColor: 'rgba(255, 255, 255, 0.5)',
+          borderRadius: 0.5,
+          boxShadow: 1,
+          '& .MuiFilledInput-root': {
+            backgroundColor: 'transparent',
+            padding: '0 !important',
+          },
+        }}
+      >
+        <Select
+          value={currentSrc}
+          onChange={(e) => setCurrentSrc(e.target.value)}
+          sx={{
+            fontSize: '0.6rem',
+            padding: 0,
+            width: 'px',
+            '& .MuiSelect-select': {
+              padding: '0 4px',
+            },
+          }}
+          disableUnderline
+          IconComponent={() => null}
+        >
+          <MenuItem sx={{ minHeight: 10, fontSize: '0.75rem', py: 0 }} value={src_1}>Cam-1</MenuItem>
+          <MenuItem sx={{ minHeight: 10, fontSize: '0.75rem', py: 0 }} value={src_2}>Cam-2</MenuItem>
+        </Select>
+      </FormControl>
+
+      <Box
+        component="img"
+        src={currentSrc}
+        alt="Printer Stream Preview"
+        ref={previewRef}
+        onClick={handleOpen}
+        sx={{
+          display: 'block',
+          cursor: 'pointer',
+          width: '200px',
+          height: '130px',
+          backgroundColor: '#4040404a',
+          borderRadius: '10px',
+          margin: 'auto',
+        }}
+      />
+
+      {/* Fullscreen Dialog */}
       <Dialog
         open={previewOpen}
         onClick={handleClose}
         maxWidth={false}
-        PaperProps={{
-          sx: {
-            backgroundColor: 'transparent',
-            boxShadow: 'none',
-            m: 0,
-            position: 'relative'
-          }
-        }}
-        BackdropProps={{
-          sx: { backgroundColor: 'rgba(0, 0, 0, 0.6)' }
-        }}
+        PaperProps={{ sx: { backgroundColor: 'transparent', boxShadow: 'none', m: 0, position: 'relative' } }}
+        BackdropProps={{ sx: { backgroundColor: 'rgba(0, 0, 0, 0.6)' } }}
       >
-        {/* Dialog-Inhalt: Stream fast fullscreen */}
         <DialogContent
-          sx={{
-            p: 0,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100vh'
-          }}
+          sx={{ p: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
         >
           <Box
             component="img"
-          
+            src={currentSrc}
             alt="Printer Stream Fullscreen"
-            sx={{
-              width: '90%',
-              objectFit: 'contain',
-              boxShadow: 4,
-              borderRadius: 1,
-              backgroundColor: '#fff',
-            }}
+            ref={fullscreenRef}
+            sx={{ width: '90%', objectFit: 'contain', boxShadow: 4, borderRadius: 1, backgroundColor: '#fff' }}
           />
         </DialogContent>
       </Dialog>
-      {/* chilldren */}
       {props.children}
     </div>
   );
