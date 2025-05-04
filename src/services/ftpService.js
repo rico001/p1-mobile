@@ -61,7 +61,6 @@ class FTPService {
             await this.connect()
             console.log(`Datei umbenannt: ${oldPath} -> ${rootPath + newPath}`)
             await this.client.rename(rootPath + oldPath, rootPath + newPath)
-            console.log(`Datei umbenannt: ${rootPath + oldPath} -> ${rootPath + newPath}`)
         }
         catch (error) {
             await this.close()

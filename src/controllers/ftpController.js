@@ -103,11 +103,11 @@ export const uploadFile = async (req, res) => {
 export const renameFile = async (req, res) => {
     try {
         const { oldFileName, newFileName } = req.query;
+        //check 3mf
         console.log("renameFile", oldFileName + "->" +  newFileName)
-
-        await ftpService.renameFile(oldFileName, newFileName)
+        await ftpService.renameFile(oldFileName, newFileName + ".3mf")
         const oldThumbnailPath = path.resolve(process.cwd(), "thumbnails", oldFileName + ".png");
-        const newThumbnailPath = path.resolve(process.cwd(), "thumbnails", newFileName + ".png");
+        const newThumbnailPath = path.resolve(process.cwd(), "thumbnails", newFileName + ".3mf.png");
         ThumbnailService.renameThumbnail(oldThumbnailPath, newThumbnailPath)
         res.json({ message: "success", command: "renameFile", fileName: newFileName })
     } catch (error) {
