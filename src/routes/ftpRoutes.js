@@ -1,7 +1,7 @@
 // ftpRoutes.js
 import { Router } from "express"
 import multer from "multer"
-import { uploadFile, downloadFile, deleteFile, listFiles } from "../controllers/ftpController.js"
+import { uploadFile, downloadFile, deleteFile, listFiles, renameFile } from "../controllers/ftpController.js"
 
 // init multer and set storage
 const storage = multer.diskStorage({
@@ -24,6 +24,7 @@ const router = Router()
 router.get("/list-files", listFiles)
 router.get("/delete-file", deleteFile)
 router.get("/download-file", downloadFile)
+router.get("/rename-file", renameFile)
 
 // POST Routen
 router.post(
