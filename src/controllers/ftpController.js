@@ -62,6 +62,9 @@ export const uploadFile = async (req, res) => {
             return res.status(400).json({ message: "Keine Datei im Feld 'file' gefunden." });
         }
 
+        if (await ftpService.fileExists(req.file.originalname)) {
+            return res.status(400).json({ message: "Dateinname bereits vergeben." });
+        }
         // 3. Pfade setzen
         const filelocalPath = path.resolve(process.cwd(), "files", req.file.originalname); // z. B. '/tmp/meinedatei.txt'
         const remotePath = path.posix.join("/", req.file.originalname); // z. B. '/meinedatei.txt'
