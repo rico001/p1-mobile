@@ -16,9 +16,15 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { usePrintHead } from '../hooks/usePrintHead';
 import LightToggle from './LightToggle';
+import { statusMap } from './PrinterStatus';
+import { useSelector } from 'react-redux';
 
 export default function PrintHeadController() {
   const [axisMode, setAxisMode] = useState('xy');
+  const { printType } = useSelector((state) => state.printer);
+  if (statusMap.local.value === printType) {
+    return null;
+  }
   const [step, setStep] = useState(1);
   const {
     move,
@@ -34,10 +40,6 @@ export default function PrintHeadController() {
   return (
     <Box sx={{ width: 220, mx: 'auto', textAlign: 'center' }}>
 
-      <Box sx={{ mt: 2 }}>
-        <LightToggle />
-      </Box>
-
       <ToggleButtonGroup
         value={axisMode}
         exclusive
@@ -45,7 +47,7 @@ export default function PrintHeadController() {
         size="small"
         fullWidth
         color="primary"
-        sx={{ mb: 2, backgroundColor: '#4040404a'}}
+        sx={{ mb: 2, backgroundColor: '#4040404a' }}
       >
         <ToggleButton value="xy">X/Y</ToggleButton>
         <ToggleButton value="z">Z</ToggleButton>
@@ -56,7 +58,7 @@ export default function PrintHeadController() {
           labelId="step-label"
           value={step}
           onChange={e => setStep(Number(e.target.value))}
-          sx={{ mb: 1, color:"primary", backgroundColor: '#4040404a' }}
+          sx={{ mb: 1, color: "primary", backgroundColor: '#4040404a' }}
         >
           {[1, 2, 3, 4, 5].map(n => (
             <MenuItem key={n} value={n}>{n}</MenuItem>
