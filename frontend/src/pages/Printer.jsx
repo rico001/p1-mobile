@@ -1,7 +1,6 @@
 import React from 'react';
 import PrintHeadController from '../components/PrintHeadController';
 import PrinterStream from '../components/PrinterStream';
-import PrinterStatus from '../components/PrinterStatus';
 import NozzleTempState from '../components/NozzleTempState';
 import BedTempState from '../components/BedTempState';
 import { Box } from '@mui/material';
@@ -32,7 +31,7 @@ function Printer() {
           pb: '8px', 
           pt: '8px',
           mb: '10px',
-          borderRadius: '0px 0px 15px 15px',
+          borderRadius: '15px 15px 15px 15px',
           backgroundColor: '#4040404a', 
         }}
       >
