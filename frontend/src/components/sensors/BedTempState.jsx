@@ -1,7 +1,7 @@
 import { Box, Tooltip, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import BorderAllIcon from '@mui/icons-material/BorderAll';
-import { roundToOneDecimal } from "../utils/functions";
+import { roundToOneDecimal } from "../../utils/functions";
 
 
 export default function BedTempState() {

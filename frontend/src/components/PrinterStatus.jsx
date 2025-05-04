@@ -30,9 +30,9 @@ export default function PrinterStatus() {
   return (
     <Tooltip title={tooltip} arrow>
       <Box style={{ position: 'relative', width: '100%', width: 'fit-content', margin: 'auto' }}>
-            <Typography>
-              {text}
-            </Typography>
+        <Typography>
+          {text}
+        </Typography>
       </Box>
     </Tooltip>
   );
