@@ -8,7 +8,6 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  CircularProgress,
   Typography,
   Alert
 } from '@mui/material';
@@ -48,6 +47,9 @@ export default function UploadFabDialog({ uploadUrl, onUploaded }) {
         body: formData
       });
       const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.message || 'Fehler beim Upload');
+      }
       setMessage(json.message || 'Upload erfolgreich');
       onUploaded?.();
       // Automatisch Dialog nach kurzer Zeit schließen
@@ -78,7 +80,7 @@ export default function UploadFabDialog({ uploadUrl, onUploaded }) {
       {/* Dialog für Datei-Auswahl und Upload */}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Datei hochladen</DialogTitle>
-        <DialogContent dividers>
+        <DialogContent dividers sx={{ width: 400 }}>
           <Button variant="contained" component="label">
             Datei wählen
             <input
@@ -109,7 +111,7 @@ export default function UploadFabDialog({ uploadUrl, onUploaded }) {
             onClick={handleUpload}
             disabled={!file || loading}
             variant="contained"
-            startIcon={loading ? <CircularProgress size={16} /> : null}
+            loading={loading}
           >
             OK
           </Button>
