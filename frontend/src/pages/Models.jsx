@@ -3,7 +3,6 @@ import { Box, CircularProgress, Alert, ToggleButton, Button } from '@mui/materia
 import ModelCard from '../components/ModelCard';
 import { useModels } from '../hooks/useModels';
 import UploadButton from '../components/UploadBttn';
-import PrintJobStepper from '../components/PrintJobStepper';
 
 // Grid-Konfiguration
 const MIN_CARD_WIDTH = 150;  // minimale Karten-Breite
@@ -59,7 +58,6 @@ export default function Models() {
                     <CircularProgress size={24} />
                 </Box>
             )}
-            <PrintJobStepper />
         </Box>
     );
 }
