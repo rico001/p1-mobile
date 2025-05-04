@@ -23,7 +23,8 @@ const config = {
     secure: process.env.FTP_SECURE
   },
   video: {
-    videoStreamUrl: process.env.VIDEO_STREAM_URL,
+    videoStreamUrl1: process.env.VIDEO_STREAM_URL_1,
+    videoStreamUrl2: process.env.VIDEO_STREAM_URL_2,
   },
   puppeteer: {
     headless: process.env.PUPPETEER_HEADLESS === 'true',

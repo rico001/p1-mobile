@@ -3,7 +3,8 @@ import { Box, Dialog, DialogContent } from '@mui/material';
 
 export default function PrinterStream( props ) {
   const [previewOpen, setPreviewOpen] = useState(false);
-  const src = "/api/video/video-stream";
+  const src_1 = "/api/video/video-stream-1";
+  const src_2 = "/api/video/video-stream-2";
 
   const handleOpen = () => setPreviewOpen(true);
   const handleClose = () => setPreviewOpen(false);
@@ -11,42 +12,25 @@ export default function PrinterStream( props ) {
   return (
     <div style={{position: 'relative'}}>
       {/* Stream als klickbares Vorschaubild */}
-      <div style={{ position: 'relative', width: '100%', width: 'fit-content', margin: 'auto', overflow: 'hidden' }}>
       <Box
           component="img"
-          src={"/public/axis-overlay-xy.svg"}
-          alt="Printer Stream"
+          src={src_2}
+          alt="Printer Stream-2"
           onClick={handleOpen}
           sx={{
             display: 'block',
             width: '-webkit-fill-available',
-            pointerEvents: 'none',
             height: '130px',
-            position: 'absolute',
+            cursor: 'pointer',
+            backgroundColor: '#000',
             margin: 'auto',
             borderRadius: '10px',
-            cursor: 'pointer',
-            top: '37px',
-            left: '30px',
-          }}
-        />
-        <Box
-          component="img"
-          src={src}
-          alt="Printer Stream"
-          onClick={handleOpen}
-          sx={{
-            display: 'block',
-            width: 'auto',
-            minWidth: '200px',
-            height: '130px',
-            borderRadius: '10px',
-            border: '3px solid #4040404a',
-            cursor: 'pointer',
             backgroundColor: '#4040404a',
+            width: '200px',
+            height: '130px',
+            cursor: 'pointer',
           }}
         />
-      </div>
 
       {/* Vollbild-Dialog */}
       <Dialog
@@ -77,7 +61,7 @@ export default function PrinterStream( props ) {
         >
           <Box
             component="img"
-            src={src}
+          
             alt="Printer Stream Fullscreen"
             sx={{
               width: '90%',
