@@ -22,9 +22,6 @@ import { useSelector } from 'react-redux';
 export default function PrintHeadController() {
   const [axisMode, setAxisMode] = useState('xy');
   const { printType } = useSelector((state) => state.printer);
-  if (statusMap.local.value === printType) {
-    return null;
-  }
   const [step, setStep] = useState(1);
   const {
     move,
@@ -36,6 +33,10 @@ export default function PrintHeadController() {
   } = usePrintHead();
 
   const loading = isMoving || isHoming || isSettingLight;
+
+  if (statusMap.local.value === printType) {
+    return null;
+  }
 
   return (
     <Box sx={{ width: 220, mx: 'auto', textAlign: 'center' }}>

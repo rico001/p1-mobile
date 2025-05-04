@@ -23,11 +23,10 @@ export default function LightToggle() {
 
   return (
     <IconButton
-      color={isOn ? 'warning' : 'primary'}
       onClick={handleToggle}
       disabled={isSettingLight}
     >
-      {isOn ? <LightbulbIcon /> : <LightbulbOutlineIcon />}
+      {isOn ? <LightbulbIcon sx={{ color: '#fffbe3' }} /> : <LightbulbOutlineIcon />}
     </IconButton>
   );
 }
