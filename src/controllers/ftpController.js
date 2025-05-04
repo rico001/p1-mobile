@@ -62,8 +62,13 @@ export const uploadFile = async (req, res) => {
             return res.status(400).json({ message: "Keine Datei im Feld 'file' gefunden." });
         }
 
+        //check if file is 3mf
+        if (!req.file.originalname.toLowerCase().endsWith(".3mf")) {
+            return res.status(400).json({ message: "Nur 3mf-Dateien sind erlaubt." });
+        }
+
         if (await ftpService.fileExists(req.file.originalname)) {
-            return res.status(400).json({ message: "Dateinname bereits vergeben." });
+            return res.status(409).json({ message: "Dateinname bereits vergeben.", type: "fileExists" });
         }
         // 3. Pfade setzen
         const filelocalPath = path.resolve(process.cwd(), "files", req.file.originalname); // z. B. '/tmp/meinedatei.txt'
@@ -71,12 +76,23 @@ export const uploadFile = async (req, res) => {
         await ftpService.uploadFile(filelocalPath, remotePath);
 
         const thumbnailPath = path.resolve(process.cwd(), "thumbnails", req.file.originalname + ".png");
-        await ThumbnailService.extractThumbnail(filelocalPath, thumbnailPath);
-
+        try {
+            await ThumbnailService.extractThumbnail(filelocalPath, thumbnailPath);
+        } catch (error) {
+            console.error(`Fehler beim Generieren des Thumbnails für ${filelocalPath}`, error);
+        }
         res.json({ message: "Datei erfolgreich hochgeladen." });
     } catch (error) {
         console.error('Upload-Fehler:', error);
         res.status(500).json({ message: error.message });
+    } finally {
+        // 4. Lokale Datei löschen
+        const filelocalPath = path.resolve(process.cwd(), "files", req.file.originalname);
+        fs.unlink(filelocalPath, (err) => {
+            if (err) {
+                console.error("Fehler beim Löschen der Datei:", err);
+            }
+        });
     }
 };
 
