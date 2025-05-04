@@ -1,20 +1,23 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  printType: null,
-  wifiSignal: null,
-  chamberLightMode: null,
+  printType: 'idle',
+  wifiSignal: 'k.A.',
+  chamberLightMode: 'off',
 
-  nozzleTemper: null,
-  nozzleTargetTemper: null,
+  nozzleTemper: '-',
+  nozzleTargetTemper: '-',
   
-  bedTemper: null,
-  bedTargetTemper: null,
-  mcPercent: null,
-  mcRemainingTime: null,
-  layerNum: null,
-  totalLayerNum: null,
-  gcodeFile: null,
+  bedTemper: '-',
+  bedTargetTemper: '-',
+
+  mcPercent: '-',
+  mcRemainingTime: '-',
+
+  layerNum: '-',
+  totalLayerNum: '-',
+
+  gcodeFile: 'k.A.',
   spdLvl: 2,
 
   //deep objects

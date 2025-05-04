@@ -27,8 +27,8 @@ services:
       - TASMOTA_SWITCH_IP=192.168.178.100
       - PRINTER_SERIAL_NUMBER=01P00C4C0800240
       - PRINTER_CA_CERT_PATH=cert/blcert.pem
-      - VIDEO_STREAM_URL=http://portainer-my-apps.fritz.box:3005/api/stream.mjpeg?src=p1s
-      # - lokal: VIDEO_STREAM_URL=http://localhost:1984/api/stream.mjpeg?src=p1s
+      - VIDEO_STREAM_URL_1=http://portainer-my-apps.fritz.box:3005/api/stream.mjpeg?src=p1s
+      - VIDEO_STREAM_URL_2=http://192.168.178.55:81/stream #esp-32-cam
       - PUPPETEER_HEADLESS=true
       - SERVER_PORT=3000
     restart: unless-stopped
