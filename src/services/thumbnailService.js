@@ -23,6 +23,11 @@ class ThumbnailService {
     if (!fs.existsSync(thumbnailDir)) {
       fs.mkdirSync(thumbnailDir, { recursive: true });
     }
+    //erstelle files Ordner, falls er nicht existiert
+    const filesDir = path.resolve(process.cwd(), 'files');
+    if (!fs.existsSync(filesDir)) {
+      fs.mkdirSync(filesDir, { recursive: true });
+    }
   }
 
   /**
