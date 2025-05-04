@@ -54,9 +54,7 @@ export default function PrintJobStepper({ onClose, onConfirm }) {
       <Stepper activeStep={activeStep} orientation="vertical">
         {steps.map((step, idx) => (
           <Step key={step.label}>
-            <StepLabel
-              optional={idx === steps.length - 1 ? <Typography variant="caption">Druck</Typography> : null}
-            >
+            <StepLabel>
               {step.label}
             </StepLabel>
             <StepContent>
