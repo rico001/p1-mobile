@@ -128,6 +128,16 @@ class ThumbnailService {
     }
   }
 
+  async renameThumbnail(oldPath, newPath) {
+    try {
+      await fs.promises.rename(oldPath, newPath);
+      console.log(`Thumbnail ${oldPath} umbenannt in ${newPath}`);
+    }
+    catch (error) {
+      console.error(`Fehler beim Umbenennen des Thumbnails ${oldPath}:`, error);
+    }
+  }
+
   async __extractThumbnailFrom3mf(filePath) {
     const zip = new AdmZip(filePath);
     const zipEntries = zip.getEntries();

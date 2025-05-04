@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PrintIcon from '@mui/icons-material/Print';
 import StepperDialog from './StepperDialog';
@@ -60,6 +61,14 @@ const ModelCard = ({ model, onAction }) => {
     }
     , 2000);
   }, [handleAction]);
+
+  const handleRename = useCallback(() => {
+    const newFileName = prompt('Bitte neuen Dateinamen eingeben:', name);
+    if (newFileName && newFileName !== name) {
+      const query = objectToQueryString({ newFileName });
+      handleAction('rename', query);
+    }
+  }, [handleAction, name]);
 
   const handleThumbnailClick = () => setPreviewOpen(true);
   const handleClosePreview = () => setPreviewOpen(false);
@@ -135,6 +144,9 @@ const ModelCard = ({ model, onAction }) => {
           </IconButton>
           <IconButton onClick={() => handleAction('refreshThumbnail')} title="Thumbnail aktualisieren">
             <RefreshIcon />
+          </IconButton>
+          <IconButton onClick={() => handleRename()} title="Umbenennen">
+            <DriveFileRenameOutlineIcon />
           </IconButton>
           <IconButton onClick={() => handleAction('delete')} title="Löschen">
             <DeleteIcon />

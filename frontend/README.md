@@ -15,11 +15,6 @@ AMS-infos hier anzeigen, statt im print
 impl: API:print.ams_filament_setting (Dialog zum setzen von Trays im AMS)
 impl: print.unload_filament, button um Filament zu unloaden
 
-FTP-Files
-unbenennen existierender files
-warnung wenn ein file bereits mit gleichem namen besteht, überschreiben-Frage, sonst abbruch
-Beim Starten eines Prints, Dialog ob bed-levelling und co gemacht werden soll -> danach umleiten auf printer tab
-
 Kamera-Tab:
 camera.ipcam_record_set
 camera.ipcam_timelapse

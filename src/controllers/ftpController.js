@@ -45,6 +45,10 @@ export const listFiles = async (req, res) => {
                 print: {
                     method: "GET",
                     path: path.posix.join('/api/mqtt/print-file?fileName=' + file.name)
+                },
+                rename: {
+                    method: "GET",
+                    path: path.posix.join('/api/ftp/rename-file?oldFileName=' + file.name)
                 }
             }
         }))
@@ -95,6 +99,21 @@ export const uploadFile = async (req, res) => {
         });
     }
 };
+
+export const renameFile = async (req, res) => {
+    try {
+        const { oldFileName, newFileName } = req.query;
+        console.log("renameFile", oldFileName + "->" +  newFileName)
+
+        await ftpService.renameFile(oldFileName, newFileName)
+        const oldThumbnailPath = path.resolve(process.cwd(), "thumbnails", oldFileName + ".png");
+        const newThumbnailPath = path.resolve(process.cwd(), "thumbnails", newFileName + ".png");
+        ThumbnailService.renameThumbnail(oldThumbnailPath, newThumbnailPath)
+        res.json({ message: "success", command: "renameFile", fileName: newFileName })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
 
 
 export const downloadFile = async (req, res) => {

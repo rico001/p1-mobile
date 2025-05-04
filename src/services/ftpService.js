@@ -55,6 +55,20 @@ class FTPService {
         }
     }
 
+    async renameFile(oldPath, newPath) {
+        try {
+            
+            await this.connect()
+            console.log(`Datei umbenannt: ${oldPath} -> ${rootPath + newPath}`)
+            await this.client.rename(rootPath + oldPath, rootPath + newPath)
+            console.log(`Datei umbenannt: ${rootPath + oldPath} -> ${rootPath + newPath}`)
+        }
+        catch (error) {
+            await this.close()
+            throw new Error("Fehler beim Umbenennen der Datei: " + error.message)
+        }
+    }
+
     async uploadFile(localPath, remotePath) {
         try {
             await this.connect();
