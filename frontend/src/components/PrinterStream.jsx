@@ -1,25 +1,61 @@
 import React, { useState, useRef } from 'react';
-import { Box, Dialog, DialogContent } from '@mui/material';
+import { Box, Dialog, DialogContent, IconButton } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
+
+const transparentImg = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAgKAAAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==';
 
 export default function PrinterStream(props) {
-
-  const src = "/api/video/video-stream";
-
+  const baseSrc = "/api/video/video-stream";
+  const [reloadKey, setReloadKey] = useState(Date.now());
+  const [showTransparent, setShowTransparent] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
-
-  const previewRef = useRef(null);
   const fullscreenRef = useRef(null);
 
   const handleOpen = () => setPreviewOpen(true);
   const handleClose = () => setPreviewOpen(false);
 
+  const handleError = (e) => {
+    e.currentTarget.onerror = null;
+    e.currentTarget.src = transparentImg;
+  };
+
+  const src = showTransparent
+    ? transparentImg
+    : `${baseSrc}?reload=${reloadKey}`;
+
+  const reloadStream = () => {
+
+    setShowTransparent(true);
+
+    setTimeout(() => {
+      setReloadKey(Date.now());
+      setShowTransparent(false);
+    }, 1500);
+  };
+
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>
+      <IconButton
+        size="small"
+        onClick={reloadStream}
+        sx={{
+          position: 'absolute',
+          top: 8,
+          right: 8,
+          zIndex: 2,
+          bgcolor: 'rgba(0,0,0,0.5)',
+          color: '#fff',
+          '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' }
+        }}
+      >
+        <RefreshIcon fontSize="small" />
+      </IconButton>
+
       <Box
         component="img"
         src={src}
         alt="Printer Stream Preview"
-        ref={previewRef}
+        onError={handleError}
         onClick={handleOpen}
         sx={{
           display: 'block',
@@ -32,13 +68,16 @@ export default function PrinterStream(props) {
         }}
       />
 
-      {/* Fullscreen Dialog */}
       <Dialog
         open={previewOpen}
         onClick={handleClose}
         maxWidth={false}
-        PaperProps={{ sx: { backgroundColor: 'transparent', boxShadow: 'none', m: 0, position: 'relative' } }}
-        BackdropProps={{ sx: { backgroundColor: 'rgba(0, 0, 0, 0.6)' } }}
+        PaperProps={{
+          sx: { backgroundColor: 'transparent', boxShadow: 'none', m: 0, position: 'relative' }
+        }}
+        BackdropProps={{
+          sx: { backgroundColor: 'rgba(0, 0, 0, 0.6)' }
+        }}
       >
         <DialogContent
           sx={{ p: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
@@ -52,6 +91,7 @@ export default function PrinterStream(props) {
           />
         </DialogContent>
       </Dialog>
+
       {props.children}
     </div>
   );
