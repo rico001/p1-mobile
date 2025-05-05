@@ -4,6 +4,9 @@ import TasmotaService from '../services/tasmotaService.js';
 export async function getTasmotaSwitch(req, res) {
   try {
     const state = await TasmotaService.getStatus();
+    if (state === null) {
+      return res.status(502).json({ error: 'Tasmota-Status konnte nicht abgerufen werden', switch: null });
+    }
     res.json({ switch: state });
   } catch (err) {
     console.error(err);
