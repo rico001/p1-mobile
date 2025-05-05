@@ -11,15 +11,15 @@ import errorHandler from './middlewares/errorHandler.js';
 const app = express();
 app.use(express.json());
 app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
-    next();
-  });
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+  next();
+});
 
 app.use('/api/mqtt', mqttRoutes);
 app.use('/api/ftp', ftpRoutes);
 app.use('/api/thumbnail', thumbanailRoutes);
 app.use('/api/tasmota', tasmotaRoutes);
-app.use('/api/video/', videoRoutes);
+app.use('/api/video', videoRoutes);
 
 
 //public for thumbnails
