@@ -5,6 +5,7 @@ services:
     ports:
       - "3003:3000" #change to your desired port(s)
     environment:
+      - TASMOTA_SWITCH_IP=192.168.178.100 #change to your Tasmota switch IP
       - PRINTER_SERIAL_NUMBER=01P00C4C0800240 #change to your printer serial number
       - PRINTER_IP=192.168.178.79 #change to your printer IP
       - PRINTER_VIDEO_PORT=6000
