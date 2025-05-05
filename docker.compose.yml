@@ -14,21 +14,16 @@ services:
     image: ghcr.io/rico001/bambu-p1s-mobile:latest
     container_name: bambu-p1s-mobile
     ports:
-      - "3003:3000"
+      - "3003:3000" #change to your desired port(s)
     environment:
-      - MQTT_BROKER_ADDRESS=mqtts://192.168.178.79:8883
-      - MQTT_USERNAME=bblp
-      - MQTT_PASSWORD=88223979
-      - FTP_HOST=192.168.178.79
-      - FTP_USER=bblp
-      - FTP_PASSWORD=88223979
-      - FTP_PORT=990
-      - FTP_SECURE=implicit
-      - TASMOTA_SWITCH_IP=192.168.178.100
-      - PRINTER_SERIAL_NUMBER=01P00C4C0800240
+      - PRINTER_SERIAL_NUMBER=01P00C4C0800240 #change to your printer serial number
+      - PRINTER_IP=192.168.178.79 #change to your printer IP
+      - PRINTER_VIDEO_PORT=6000
+      - PRINTER_MQTT_PORT=8883
+      - PRINTER_FTP_PORT=990
+      - PRINTER_USER=bblp
+      - PRINTER_ACCESS_CODE=88223979 #change to your printer access code
       - PRINTER_CA_CERT_PATH=cert/blcert.pem
-      - VIDEO_STREAM_URL_1=http://portainer-my-apps.fritz.box:3005/api/stream.mjpeg?src=p1s
-      - VIDEO_STREAM_URL_2=http://192.168.178.55:81/stream #esp-32-cam
       - PUPPETEER_HEADLESS=true
-      - SERVER_PORT=3000
+      - SERVER_PORT=3000 #change to your desired port
     restart: unless-stopped
