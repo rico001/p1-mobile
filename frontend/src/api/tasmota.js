@@ -3,7 +3,9 @@ const PROXY_BASE = '/api/tasmota';
 
 export async function getTasmotaSwitch() {
   const res = await fetch(`${PROXY_BASE}/status`);
-  if (!res.ok) throw new Error('Fehler beim Abrufen des Status');
+  if (!res.ok) {
+    return null
+  }
   // alias "switch" -> switchState
   const { switch: switchState } = await res.json();
   return switchState;

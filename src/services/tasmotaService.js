@@ -11,7 +11,7 @@ class TasmotaService {
     const url = `http://${this.ip}/cm?cmnd=Power%20Status`;
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error('Fehler beim Abrufen des Status');
+      return null;
     }
     const data = await response.json();
     return data.POWER1 === 'ON'

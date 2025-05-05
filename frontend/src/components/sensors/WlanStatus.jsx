@@ -27,7 +27,7 @@ export default function WlanStatus() {
   }
 
   return (
-    <Box display="flex" alignItems="center" p={0.5} pr={2} bgcolor={'background.paper'} borderRadius={1}>
+    <Box display="flex" alignItems="center" p={0.5} bgcolor={'background.paper'} borderRadius={1} minWidth={100}>
       <WifiIcon sx={{ color, mr: 1 }} />
       <Typography variant="body2" sx={{ color, fontWeight: 500 }}>
         {wifiSignal}

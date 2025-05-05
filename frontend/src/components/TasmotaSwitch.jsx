@@ -1,5 +1,5 @@
 // src/components/TasmotaSwitch.jsx
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import {
   Box,
@@ -11,53 +11,47 @@ import {
 import { useTasmota } from '../hooks/useTasmota';
 
 export default function TasmotaSwitch() {
-  const {
-    isOn,
-    isLoading,
-    error,
-    toggle,
-    isToggling,
-  } = useTasmota();
+  const { isOn, isLoading, error, toggle, isToggling } = useTasmota();
 
-  const handleToggle = () => {
-    const confirmation = confirm(
-      isOn
-        ? 'Sind Sie sicher, dass Sie das Gerät ausschalten möchten?'
-        : 'Sind Sie sicher, dass Sie das Gerät einschalten möchten?'
-    );
-    if (confirmation) {
+  // derive display props from isOn in one place
+  const status = useMemo(() => {
+    if (isOn === null) {
+      return { color: 'default', title: 'Gerät ist nicht erreichbar', disabled: true };
+    }
+    return isOn
+      ? { color: 'success', title: 'Gerät ist eingeschaltet', disabled: false }
+      : { color: 'error',   title: 'Gerät ist ausgeschaltet', disabled: false };
+  }, [isOn]);
+
+  // memoized toggle handler with confirmation
+  const handleToggle = useCallback(() => {
+    const action = isOn ? 'ausschalten' : 'einschalten';
+    if (window.confirm(`Sind Sie sicher, dass Sie das Gerät ${action} möchten?`)) {
       toggle();
     }
-  };
-
-  if (isLoading) {
-    return (
-      <Box display="flex" justifyContent="center" p={2}>
-        <CircularProgress />
-      </Box>
-    );
-  }
+  }, [isOn, toggle]);
 
   if (error) {
-    return <Typography color="error">Fehler: {error.message}</Typography>;
+    return (
+      <Typography color="error" p={2}>
+        Fehler: {error.message}
+      </Typography>
+    );
   }
 
   return (
     <Box display="flex" alignItems="center" p={2} gap={1}>
-      <Tooltip title={isOn ? 'Ausschalten' : 'Einschalten'}>
-        
+      <Tooltip title={status.title} arrow>
           <IconButton
             onClick={handleToggle}
-            disabled={isToggling}
-            aria-label={isOn ? 'Ausschalten' : 'Einschalten'}
-            color={isOn ? 'success' : 'error'}
+            disabled={isToggling || status.disabled}
+            aria-label={status.title}
+            color={status.color}
           >
             {isToggling
               ? <CircularProgress size={24} />
-              : <PowerSettingsNewIcon color='white' sx={{ background: 'white', borderRadius: '50%', padding: '2px' }} />
-            }
+              : <PowerSettingsNewIcon  color='white' sx={{ background: 'white', borderRadius: '50%', padding: '2px' }} />}
           </IconButton>
-
       </Tooltip>
     </Box>
   );
