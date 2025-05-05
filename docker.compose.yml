@@ -16,3 +16,5 @@ services:
       - PUPPETEER_HEADLESS=true
       - SERVER_PORT=3000 #change to your desired port
     restart: unless-stopped
+    volumes:
+      - ./thumbnails:/app/thumbnails
