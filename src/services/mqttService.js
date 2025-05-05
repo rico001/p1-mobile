@@ -144,7 +144,7 @@ class MqttService extends EventEmitter {
       // 1) Gibt es einen Custom-Broadcaster?
       if (this.deepObjectKeys[key]) {
         this.deepObjectKeys[key]({ newVal, oldVal });
-        console.log(`new ${key}`, newVal);
+        //console.log(`new ${key}`, newVal);
         return;
       }
 
@@ -156,7 +156,7 @@ class MqttService extends EventEmitter {
             type: `${key}_update`,
             payload: newVal
           });
-          console.log(`new ${key}`, newVal);
+          //console.log(`new ${key}`, newVal);
         }
       }
       // 3) Sonstige Keys werden ignoriert

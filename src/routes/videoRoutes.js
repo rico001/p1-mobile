@@ -1,10 +1,9 @@
 import { Router } from 'express';
-import { videoStream1, videoStream2 } from '../controllers/videoController.js';
+import { videoStream } from '../controllers/videoController.js';
 
 const router = Router();
 
 // GET http://localhost:3000/video-stream
-router.get('/video-stream-1', videoStream1);
-router.get('/video-stream-2', videoStream2);
+router.get('/video-stream', videoStream);
 
 export default router;

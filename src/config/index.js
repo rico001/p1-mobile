@@ -5,9 +5,9 @@ dotenv.config();
 const config = {
   port: process.env.SERVER_PORT || 3000,
   mqtt: {
-    brokerUrl: process.env.MQTT_BROKER_ADDRESS,
-    username: process.env.MQTT_USERNAME,
-    password: process.env.MQTT_PASSWORD,
+    brokerUrl: `mqtts://${process.env.PRINTER_IP}:${process.env.PRINTER_MQTT_PORT}`,
+    username: process.env.PRINTER_USER,
+    password: process.env.PRINTER_ACCESS_CODE,
     serialNumber: process.env.PRINTER_SERIAL_NUMBER,
     caCertPath: path.join(process.cwd(), process.env.PRINTER_CA_CERT_PATH),
     topics: {
@@ -16,15 +16,17 @@ const config = {
     }
   },
   ftp: {
-    host: process.env.FTP_HOST,
-    user: process.env.FTP_USER,
-    port : process.env.FTP_PORT,
-    password: process.env.FTP_PASSWORD,
-    secure: process.env.FTP_SECURE
+    host: process.env.PRINTER_IP,
+    user: process.env.PRINTER_USER,
+    port : process.env.PRINTER_FTP_PORT,
+    password: process.env.PRINTER_ACCESS_CODE,
+    secure: 'implicit'
   },
   video: {
-    videoStreamUrl1: process.env.VIDEO_STREAM_URL_1,
-    videoStreamUrl2: process.env.VIDEO_STREAM_URL_2,
+    user: process.env.PRINTER_USER,
+    password: process.env.PRINTER_ACCESS_CODE,
+    ip: process.env.PRINTER_IP,
+    port: process.env.PRINTER_VIDEO_PORT,
   },
   puppeteer: {
     headless: process.env.PUPPETEER_HEADLESS === 'true',

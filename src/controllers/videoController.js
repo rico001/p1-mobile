@@ -1,68 +1,86 @@
-import http from 'http';
-import https from 'https';
-import { URL } from 'url';
+import tls from 'tls';
 import { config } from '../config/index.js';
 
-export const videoStream1 = (req, res) => {
+export const videoStream = (req, res) => {
 
-  const upstream = config.video.videoStreamUrl1;
+  // HTTP-Response auf MJPEG einstellen
+  res.writeHead(200, {
+    'Content-Type': 'multipart/x-mixed-replace; boundary=--frame',
+    'Cache-Control': 'no-cache',
+    'Connection': 'close'
+  });
 
-  // Wähle das passende Modul
-  const client = upstream.includes('https') ? https : http;
+  // TLS-Verbindung zum Drucker
+  const socket = tls.connect({
+    host: config.video.ip,
+    port: config.video.port || 6000,
+    rejectUnauthorized: false // falls selbstsigniertes Zertifikat
+  }, () => {
+    // Auth-Paket zusammenbauen
+    const usernameBuf = Buffer.alloc(32, 0);
+    usernameBuf.write(config.video.user || 'bblp');
+    const passwordBuf = Buffer.alloc(32, 0);
+    passwordBuf.write(config.video.password);
 
-  client.get(upstream, upstreamRes => {
-    // Status und Header übernehmen
-    res.writeHead(upstreamRes.statusCode, upstreamRes.headers);
-    // Stream weiterschieben
-    upstreamRes.pipe(res);
-  }).on('error', err => {
-    console.error('Proxy-Fehler:', err);
-    if (!res.headersSent) {
-      res.status(502).send('Fehler beim Laden des Streams');
-    } else {
-      res.end();
+    const authBuf = Buffer.alloc(4 + 4 + 4 + 4 + 32 + 32);
+    let offset = 0;
+    authBuf.writeUInt32LE(0x40, offset);       offset += 4; // Payload size
+    authBuf.writeUInt32LE(0x3000, offset);     offset += 4; // Type
+    authBuf.writeUInt32LE(0, offset);          offset += 4; // Flags
+    authBuf.writeUInt32LE(0, offset);          offset += 4; // Reserved
+    usernameBuf.copy(authBuf, offset);         offset += 32; // Username
+    passwordBuf.copy(authBuf, offset);                      // Password
+
+    socket.write(authBuf);
+  });
+
+  // State für Parsen
+  let buffer = Buffer.alloc(0);
+  let expectingHeader = true;
+  let bytesNeeded = 16; // erst Header
+
+  socket.on('data', chunk => {
+    buffer = Buffer.concat([buffer, chunk]);
+
+    while (buffer.length >= bytesNeeded) {
+      if (expectingHeader) {
+        // Header auslesen
+        const payloadSize = buffer.readUInt32LE(0);
+        buffer = buffer.slice(16);
+        expectingHeader = false;
+        bytesNeeded = payloadSize;
+      } else {
+        // komplettes JPEG-Payload da
+        const jpg = buffer.slice(0, bytesNeeded);
+        buffer = buffer.slice(bytesNeeded);
+        expectingHeader = true;
+        bytesNeeded = 16;
+
+        // Verifikation der Magic Bytes
+        if (
+          jpg[0] === 0xFF && jpg[1] === 0xD8 &&
+          jpg[jpg.length - 2] === 0xFF && jpg[jpg.length - 1] === 0xD9
+        ) {
+          // Frame an Client senden
+          res.write(`--frame\r\n`);
+          res.write(`Content-Type: image/jpeg\r\n`);
+          res.write(`Content-Length: ${jpg.length}\r\n\r\n`);
+          res.write(jpg);
+          res.write('\r\n');
+        } else {
+          console.warn('Ungültiges JPEG-Frame empfangen');
+        }
+      }
     }
   });
-};
 
-
-export const videoStream2 = (req, res) => {
-  const camUrl = new URL('http://192.168.178.55:81/stream');
-  const client = camUrl.protocol === 'https:' ? https : http;
-
-  console.log('Proxy verbindet zu ESP32-CAM:', camUrl.href);
-
-  const request = client.get(camUrl, (camRes) => {
-    if (camRes.statusCode !== 200) {
-      console.error(`ESP32 antwortet mit ${camRes.statusCode}`);
-      res.statusCode = 502;
-      return res.end('ESP32 streamt nicht');
-    }
-
-    // Weiterleiten der korrekten Content-Type mit boundary
-    res.writeHead(200, {
-      'Content-Type': camRes.headers['content-type'] || 'multipart/x-mixed-replace',
-      'Cache-Control': 'no-cache',
-      'Connection': 'close',
-      'Pragma': 'no-cache',
-    });
-
-    camRes.pipe(res);
-
-    // Verbindung sauber abbrechen, wenn Client schließt
-    req.on('close', () => {
-      console.log('Client hat Verbindung geschlossen – Proxy beendet Stream');
-      camRes.destroy?.(); // optional
-      request.destroy();  // trennt Verbindung zur Kamera
-    });
+  socket.on('error', err => {
+    console.error('Socket-Fehler:', err);
+    res.end();
   });
 
-  request.on('error', (err) => {
-    console.error('Fehler beim ESP32-Stream:', err.message);
-    res.statusCode = 500;
-    res.end('Proxy-Fehler');
+  // Wenn Client die Verbindung schließt, schließen wir auch den Socket
+  req.on('close', () => {
+    socket.destroy();
   });
-
-  req.setTimeout(0);
-  res.setTimeout(0);
 };

@@ -1,16 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Box, Dialog, DialogContent, FormControl, Select, MenuItem } from '@mui/material';
-import { useSelector } from 'react-redux';
-import { useLocalStorage } from '../hooks/userLocalStorage';
+import React, { useState, useRef } from 'react';
+import { Box, Dialog, DialogContent } from '@mui/material';
 
 export default function PrinterStream(props) {
-  const { currentPage } = useSelector((state) => state.ui);
-  console.log("PrinterStream page", currentPage);
 
-  const src_1 = "/api/video/video-stream-1";
-  const src_2 = "/api/video/video-stream-2";
+  const src = "/api/video/video-stream";
 
-  const [currentSrc, setCurrentSrc] = useLocalStorage('printerStreamSrc', src_1);
   const [previewOpen, setPreviewOpen] = useState(false);
 
   const previewRef = useRef(null);
@@ -19,54 +13,11 @@ export default function PrinterStream(props) {
   const handleOpen = () => setPreviewOpen(true);
   const handleClose = () => setPreviewOpen(false);
 
-  if (currentPage !== 'printer') {
-    console.log("PrinterStream page not printer", currentPage);
-    return null;
-  }
-
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>
-      <FormControl
-        variant="filled"
-        size="small"
-        sx={{
-          position: 'absolute',
-          top: 6,
-          right: 6,
-          zIndex: 10,
-          width: '35px',
-          textAlign: 'center',
-          backgroundColor: 'rgba(255, 255, 255, 0.5)',
-          borderRadius: 0.5,
-          boxShadow: 1,
-          '& .MuiFilledInput-root': {
-            backgroundColor: 'transparent',
-            padding: '0 !important',
-          },
-        }}
-      >
-        <Select
-          value={currentSrc}
-          onChange={(e) => setCurrentSrc(e.target.value)}
-          sx={{
-            fontSize: '0.6rem',
-            padding: 0,
-            width: 'px',
-            '& .MuiSelect-select': {
-              padding: '0 4px',
-            },
-          }}
-          disableUnderline
-          IconComponent={() => null}
-        >
-          <MenuItem sx={{ minHeight: 10, fontSize: '0.75rem', py: 0 }} value={src_1}>Cam-1</MenuItem>
-          <MenuItem sx={{ minHeight: 10, fontSize: '0.75rem', py: 0 }} value={src_2}>Cam-2</MenuItem>
-        </Select>
-      </FormControl>
-
       <Box
         component="img"
-        src={currentSrc}
+        src={src}
         alt="Printer Stream Preview"
         ref={previewRef}
         onClick={handleOpen}
@@ -94,7 +45,7 @@ export default function PrinterStream(props) {
         >
           <Box
             component="img"
-            src={currentSrc}
+            src={src}
             alt="Printer Stream Fullscreen"
             ref={fullscreenRef}
             sx={{ width: '90%', objectFit: 'contain', boxShadow: 4, borderRadius: 1, backgroundColor: '#fff' }}
