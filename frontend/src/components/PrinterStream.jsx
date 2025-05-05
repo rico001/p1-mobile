@@ -24,9 +24,9 @@ export default function PrinterStream(props) {
         sx={{
           display: 'block',
           cursor: 'pointer',
-          width: '200px',
-          height: '130px',
-          backgroundColor: '#4040404a',
+          height: '123px',
+          minWidth: '218px',
+          background: '#4040404a',
           borderRadius: '10px',
           margin: 'auto',
         }}
