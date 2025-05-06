@@ -40,7 +40,7 @@ export default function TasmotaSwitch() {
   }
 
   return (
-    <Box display="flex" alignItems="center" p={2} gap={1}>
+    <Box display="flex" alignItems="center" pr={1} gap={1}>
       <Tooltip title={status.title} arrow>
           <IconButton
             onClick={handleToggle}
@@ -48,9 +48,7 @@ export default function TasmotaSwitch() {
             aria-label={status.title}
             color={status.color}
           >
-            {isToggling
-              ? <CircularProgress size={24} />
-              : <PowerSettingsNewIcon  color='white' sx={{ background: 'white', borderRadius: '50%', padding: '2px' }} />}
+            <PowerSettingsNewIcon  color='white' sx={{ background: 'white', borderRadius: '50%', padding: '2px' }} />
           </IconButton>
       </Tooltip>
     </Box>
