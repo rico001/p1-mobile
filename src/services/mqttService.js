@@ -54,6 +54,16 @@ class MqttService extends EventEmitter {
       });
     });
     this.client.on('message', this._onMessage.bind(this));
+    this.client.on('error', this._onError.bind(this));
+  }
+
+  //on connection lost
+  _onError(err) {
+    console.error('[MQTT] ❌ Verbindungsfehler:', err);
+    websocketService.broadcast({
+      type: 'wifi_signal_update',
+      payload: 'offline'
+    });
   }
 
   // Hilfsfunktion: sucht rekursiv nach sequence_id
