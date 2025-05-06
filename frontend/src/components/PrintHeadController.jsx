@@ -15,7 +15,6 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { usePrintHead } from '../hooks/usePrintHead';
-import LightToggle from './LightToggle';
 import { statusMap } from './PrinterStatus';
 import { useSelector } from 'react-redux';
 
@@ -71,9 +70,9 @@ export default function PrintHeadController() {
         display: 'grid',
         gridTemplateColumns: '1fr 1fr 1fr',
         gridTemplateRows: '1fr 1fr 1fr',
-        width: '180px',
+        width: '160px',
         margin: 'auto',
-        height: '180px',
+        height: '160px',
         backgroundColor: '#4040404a',
         borderRadius: '100%',
         gap: 1,
