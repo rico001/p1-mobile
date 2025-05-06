@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Box, Dialog, DialogContent, IconButton } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import LightToggle from './LightToggle';
 
 const transparentImg = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAgKAAAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==';
 
@@ -40,8 +41,8 @@ export default function PrinterStream(props) {
         onClick={reloadStream}
         sx={{
           position: 'absolute',
-          top: 8,
-          right: 8,
+          top: 4,
+          right: 4,
           zIndex: 2,
           bgcolor: 'rgba(0,0,0,0.5)',
           color: '#fff',
@@ -50,6 +51,10 @@ export default function PrinterStream(props) {
       >
         <RefreshIcon fontSize="small" />
       </IconButton>
+
+
+        <LightToggle />
+
 
       <Box
         component="img"

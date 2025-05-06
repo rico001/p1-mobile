@@ -58,9 +58,6 @@ function Printer() {
       >
         <SpeedSelector />
       </Box>
-      <Box sx={{ mt: 2 }}>
-        <LightToggle />
-      </Box>
       <PrintHeadController />
     </div>
   );
