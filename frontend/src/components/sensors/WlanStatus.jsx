@@ -5,6 +5,9 @@ import { useSelector } from 'react-redux';
 import { Box, Typography } from '@mui/material';
 
 const getSignalStrengthNumber = (signal) => {
+    if(signal === 'offline') {
+        return -100; 
+    }
     const signalValue = parseInt(signal || '-40dBm', 10);
     return signalValue;
 }
@@ -27,9 +30,9 @@ export default function WlanStatus() {
   }
 
   return (
-    <Box display="flex" alignItems="center" p={0.5} bgcolor={'background.paper'} borderRadius={1} minWidth={100}>
+    <Box display="flex" alignItems="center" p={0.5} bgcolor={'background.paper'} borderRadius={1} minWidth={90}>
       <WifiIcon sx={{ color, mr: 1 }} />
-      <Typography variant="body2" sx={{ color, fontWeight: 500 }}>
+      <Typography variant="body2" sx={{ color, fontWeight: 500, width: '100%', textAlign: 'center' }}>
         {wifiSignal}
       </Typography>
     </Box>
