@@ -158,7 +158,7 @@ const ModelCard = ({ model, onAction }) => {
       <Dialog
         open={previewOpen}
         onClose={() => setPreviewOpen(false)}
-        maxWidth={false}
+        onClick={() => setPreviewOpen(false)}
         PaperProps={{ sx: { backgroundColor: 'transparent', boxShadow: 'none', m: 0, position: 'relative' } }}
         BackdropProps={{ sx: { backgroundColor: 'rgba(0, 0, 0, 0.6)' } }}
       >
@@ -167,7 +167,7 @@ const ModelCard = ({ model, onAction }) => {
             component="img"
             src={thumbnail}
             alt={`Vorschau von ${name}`}
-            sx={{ width: '90%', objectFit: 'contain', boxShadow: 4, borderRadius: 1, backgroundColor: '#fff' }}
+            sx={{ width: '98%', objectFit: 'contain', boxShadow: 4, borderRadius: 1, backgroundColor: '#fff' }}
           />
         </DialogContent>
       </Dialog>

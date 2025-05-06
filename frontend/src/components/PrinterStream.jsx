@@ -76,7 +76,7 @@ export default function PrinterStream(props) {
       <Dialog
         open={previewOpen}
         onClick={handleClose}
-        maxWidth={false}
+       
         PaperProps={{
           sx: { backgroundColor: 'transparent', boxShadow: 'none', m: 0, position: 'relative' }
         }}
@@ -92,7 +92,7 @@ export default function PrinterStream(props) {
             src={src}
             alt="Printer Stream Fullscreen"
             ref={fullscreenRef}
-            sx={{ width: '90%', objectFit: 'contain', boxShadow: 4, borderRadius: 1, backgroundColor: '#fff' }}
+            sx={{ width: '98%', objectFit: 'contain', boxShadow: 4, borderRadius: 1, backgroundColor: '#fff' }}
           />
         </DialogContent>
       </Dialog>
