@@ -53,7 +53,7 @@ export default function PrinterStream(props) {
       </IconButton>
 
 
-        <LightToggle />
+      <LightToggle />
 
 
       <Box
@@ -65,18 +65,21 @@ export default function PrinterStream(props) {
         sx={{
           display: 'block',
           cursor: 'pointer',
-          height: '123px',
-          minWidth: '218px',
+          maxHeight: '250px',
+          width: '100%',
+          aspectRatio: '16/9',
           background: '#4040404a',
-          borderRadius: '10px',
           margin: 'auto',
+          objectFit: 'cover', // Optional: Bildausschnitt gut anzeigen
+          minHeight: '100px',
         }}
       />
+
 
       <Dialog
         open={previewOpen}
         onClick={handleClose}
-       
+
         PaperProps={{
           sx: { backgroundColor: 'transparent', boxShadow: 'none', m: 0, position: 'relative' }
         }}
