@@ -30,9 +30,9 @@ export default function WlanStatus() {
   }
 
   return (
-    <Box display="flex" alignItems="center" p={0.5} bgcolor={'background.paper'} borderRadius={1} minWidth={90}>
+    <Box display="flex" alignItems="center" p={0.5} bgcolor={'background.paper'} borderRadius={1} minWidth={70}>
       <WifiIcon sx={{ color }} />
-      <Typography variant="body2" sx={{ color, fontWeight: 500, width: '100%', textAlign: 'center' }}>
+      <Typography variant="body2" sx={{ color, fontWeight: 500, width: '100%', textAlign: 'center', fontSize: '0.6rem' }}>
         {wifiSignal}
       </Typography>
     </Box>
