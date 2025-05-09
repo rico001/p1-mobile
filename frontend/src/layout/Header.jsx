@@ -9,7 +9,7 @@ export default function Header({ title }) {
       {/* AppBar ist die obere Leiste */}
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', padding: '0 16px', minHeight: { xs: '40px', sm: '50px' } }}>
         {/* Titel links, nimmt den verfügbaren Platz ein */}
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+        <Typography sx={{ flexGrow: 1,  fontSize: '1rem'  }}>
           {title}
         </Typography>
         <TasmotaSwitch/>
