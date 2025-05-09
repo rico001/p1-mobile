@@ -1,35 +1,38 @@
-// src/components/TasmotaSwitch.jsx
-import React, { useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   IconButton,
-  CircularProgress,
   Typography,
   Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Button,
 } from '@mui/material';
 import { useTasmota } from '../hooks/useTasmota';
 
 export default function TasmotaSwitch() {
   const { isOn, isLoading, error, toggle, isToggling } = useTasmota();
+  const [open, setOpen] = useState(false);
 
   // derive display props from isOn in one place
   const status = useMemo(() => {
     if (isOn === null) {
-      return { color: 'default', title: 'Gerät ist nicht erreichbar', disabled: true };
+      return { color: 'default', title: 'Gerät ist nicht erreichbar', disabled: true, label: 'Offline' };
     }
     return isOn
-      ? { color: 'success', title: 'Gerät ist eingeschaltet', disabled: false }
-      : { color: 'error',   title: 'Gerät ist ausgeschaltet', disabled: false };
+      ? { color: 'success', title: 'Gerät ist eingeschaltet', disabled: false, label: 'Eingeschaltet' }
+      : { color: 'error', title: 'Gerät ist ausgeschaltet', disabled: false, label: 'Ausgeschaltet' };
   }, [isOn]);
 
-  // memoized toggle handler with confirmation
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   const handleToggle = useCallback(() => {
-    const action = isOn ? 'ausschalten' : 'einschalten';
-    if (window.confirm(`Sind Sie sicher, dass Sie das Gerät ${action} möchten?`)) {
-      toggle();
-    }
-  }, [isOn, toggle]);
+    toggle();
+  }, [toggle]);
 
   if (error) {
     return (
@@ -40,17 +43,43 @@ export default function TasmotaSwitch() {
   }
 
   return (
-    <Box display="flex" alignItems="center" pr={1} gap={1}>
-      <Tooltip title={status.title} arrow>
+    <>
+      <Box display="flex" alignItems="center" bgcolor={'background.paper'} borderRadius={100} mr={1}>
+        <Tooltip title={status.title} arrow>
+          <IconButton onClick={handleOpen} disabled={isToggling || status.disabled} color={status.color} size="small">
+            <PowerSettingsNewIcon sx={{ height: "20px", width: "auto" }} />
+          </IconButton>
+        </Tooltip>
+      </Box>
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="tasmota-switch-dialog"
+        sx={{ '& .MuiDialog-paper': { width: 'auto', minWidth: '300px' } }}
+      >
+        <DialogTitle id="tasmota-switch-dialog" sx={{ m: 0, p: 2 }}>
+          Tasmota Switch
           <IconButton
-            onClick={handleToggle}
+            aria-label="close"
+            onClick={handleClose}
+            sx={{ position: 'absolute', right: 8, top: 8, backgroundColor: 'white' }}
+            size="small"
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Button
+            onClick={() => { handleToggle(); handleClose(); }}
             disabled={isToggling || status.disabled}
-            aria-label={status.title}
+            variant="contained"
             color={status.color}
           >
-            <PowerSettingsNewIcon  color='white' sx={{ background: 'white', borderRadius: '50%', padding: '2px' }} />
-          </IconButton>
-      </Tooltip>
-    </Box>
+            {isOn ? 'Ausschalten' : 'Einschalten'}
+          </Button>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
