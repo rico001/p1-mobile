@@ -27,39 +27,47 @@ export default function PrinterStream(props) {
   return (
     <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
       <Box
-        component="img"
-        src={src}
-        alt="Printer Stream Preview"
-        onError={handleError}
-        onClick={handleOpen}
         sx={{
           display: 'block',
+          padding: { xs: '0', md: 1 },
           cursor: 'pointer',
           maxHeight: '250px',
           width: '100%',
           maxWidth: '420px',
           aspectRatio: '16/9',
-          background: '#4040404a',
-          margin: 'auto'
-        }}
-      />
-      <IconButton
-        size="small"
-        onClick={reloadStream}
-        sx={{
-          position: 'absolute',
-          top: 4,
-          right: 4,
-          zIndex: 2,
-          bgcolor: 'rgba(0,0,0,0.5)',
-          color: '#fff',
-          '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' }
-        }}
-      >
-        <RefreshIcon fontSize="small" />
-      </IconButton>
-      <LightToggle />
-
+          margin: 'auto',
+          position: 'relative',
+        }}>
+        <Box
+          component="img"
+          src={src}
+          alt="Printer Stream Preview"
+          onError={handleError}
+          onClick={handleOpen}
+          sx={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            background: '#4040404a',
+          }}
+        />
+        <IconButton
+          size="small"
+          onClick={reloadStream}
+          sx={{
+            position: 'absolute',
+            top: 4,
+            right: 4,
+            zIndex: 2,
+            bgcolor: 'rgba(0,0,0,0.5)',
+            color: '#fff',
+            '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' }
+          }}
+        >
+          <RefreshIcon fontSize="small" />
+        </IconButton>
+        <LightToggle />
+      </Box>
 
       <Dialog
         open={previewOpen}
