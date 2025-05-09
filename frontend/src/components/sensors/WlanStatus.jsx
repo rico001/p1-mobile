@@ -1,23 +1,28 @@
-// src/components/WlanStatus.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import WifiIcon from '@mui/icons-material/Wifi';
+import CloseIcon from '@mui/icons-material/Close';
 import { useSelector } from 'react-redux';
-import { Box, Typography } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  IconButton,
+} from '@mui/material';
 
 const getSignalStrengthNumber = (signal) => {
-    if(signal === 'offline') {
-        return -100; 
-    }
-    const signalValue = parseInt(signal || '-40dBm', 10);
-    return signalValue;
-}
-
+  if (signal === 'offline') {
+    return -100;
+  }
+  const parsed = parseInt(signal?.replace('dBm', ''), 10);
+  return isNaN(parsed) ? -40 : parsed;
+};
 
 export default function WlanStatus() {
   const { wifiSignal } = useSelector((state) => state.printer);
-
-  // Extrahiere numerischen Wert aus der dBm-Angabe
-  const signalValue = parseInt(getSignalStrengthNumber(wifiSignal), 10);
+  const signalValue = getSignalStrengthNumber(wifiSignal);
+  const [open, setOpen] = useState(false);
 
   // Bestimme Farbe basierend auf Signalstärke
   let color;
@@ -29,12 +34,46 @@ export default function WlanStatus() {
     color = 'error.main';          // Schwaches Signal
   }
 
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   return (
-    <Box display="flex" alignItems="center" p={0.5} bgcolor={'background.paper'} borderRadius={1} minWidth={70}>
-      <WifiIcon sx={{ color }} />
-      <Typography variant="body2" sx={{ color, fontWeight: 500, width: '100%', textAlign: 'center', fontSize: '0.6rem' }}>
-        {wifiSignal}
-      </Typography>
-    </Box>
+    <>
+
+      <Box display="flex" alignItems="center" bgcolor={'background.paper'} borderRadius={100}>
+        <IconButton onClick={handleOpen} size="small">
+          <WifiIcon sx={{ color }} />
+        </IconButton>
+      </Box>
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="wlan-status-dialog"
+        sx={{ '& .MuiDialog-paper': { width: 'auto', minWidth: '300px' } }}
+      >
+        {/* Dialog Header */}
+        <DialogTitle id="wlan-status-dialog" sx={{ m: 0, p: 2 }}>
+          WLAN Status
+          <IconButton
+            aria-label="close"
+
+            onClick={handleClose}
+            sx={{ position: 'absolute', right: 8, top: 8, backgroundColor: 'white' }}
+            size="small"
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>
+          <Box display="flex" alignItems="center" p={1}>
+            <WifiIcon sx={{ color, mr: 1 }} />
+            <Typography variant="body1" sx={{ color, fontWeight: 500, textAlign: 'center' }}>
+              {wifiSignal}
+            </Typography>
+          </Box>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

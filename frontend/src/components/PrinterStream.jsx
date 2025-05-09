@@ -29,7 +29,7 @@ export default function PrinterStream(props) {
       <Box
         sx={{
           display: 'block',
-          padding: { xs: '0', md: 1 },
+          marginTop: { xs: '0', md: 3 },
           cursor: 'pointer',
           maxHeight: '250px',
           width: '100%',
