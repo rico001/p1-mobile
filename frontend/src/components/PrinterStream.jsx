@@ -3,12 +3,9 @@ import { Box, Dialog, DialogContent, IconButton } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import LightToggle from './LightToggle';
 
-const transparentImg = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAgKAAAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==';
-
 export default function PrinterStream(props) {
   const baseSrc = "/api/video/video-stream";
   const [reloadKey, setReloadKey] = useState(Date.now());
-  const [showTransparent, setShowTransparent] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const fullscreenRef = useRef(null);
 
@@ -17,20 +14,13 @@ export default function PrinterStream(props) {
 
   const handleError = (e) => {
     e.currentTarget.onerror = null;
-    e.currentTarget.src = transparentImg;
   };
 
-  const src = showTransparent
-    ? transparentImg
-    : `${baseSrc}?reload=${reloadKey}`;
+  const src = `${baseSrc}?reload=${reloadKey}`;
 
   const reloadStream = () => {
-
-    setShowTransparent(true);
-
     setTimeout(() => {
       setReloadKey(Date.now());
-      setShowTransparent(false);
     }, 1500);
   };
 
@@ -70,8 +60,8 @@ export default function PrinterStream(props) {
           aspectRatio: '16/9',
           background: '#4040404a',
           margin: 'auto',
-          objectFit: 'cover', // Optional: Bildausschnitt gut anzeigen
-          minHeight: '100px',
+          objectFit: 'cover',
+          minHeight: '130px',
         }}
       />
 
