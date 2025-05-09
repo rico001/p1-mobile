@@ -29,8 +29,8 @@ export default function UploadFabDialog({ uploadUrl, onUploaded }) {
 
   const handleClose = () => {
     if (!loading) {
-      setOpen(false);
       resetState();
+      setOpen(false);
     }
   };
 
@@ -118,9 +118,14 @@ export default function UploadFabDialog({ uploadUrl, onUploaded }) {
           </Button>
 
           {file && (
-            <Typography variant="body2" sx={{ mt: 2 }}>
-              Aktuelle Datei: {file.name}
-            </Typography>
+            <>
+              <Typography sx={{ mt: 2 }}>
+                <strong>ausgewählte Datei:</strong>
+              </Typography>
+              <Typography>
+                {file.name}
+              </Typography>
+            </>
           )}
 
           {existsError && (
