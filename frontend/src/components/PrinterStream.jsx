@@ -25,7 +25,24 @@ export default function PrinterStream(props) {
   };
 
   return (
-    <div style={{ position: 'relative', display: 'inline-block' }}>
+    <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
+      <Box
+        component="img"
+        src={src}
+        alt="Printer Stream Preview"
+        onError={handleError}
+        onClick={handleOpen}
+        sx={{
+          display: 'block',
+          cursor: 'pointer',
+          maxHeight: '250px',
+          width: '100%',
+          maxWidth: '420px',
+          aspectRatio: '16/9',
+          background: '#4040404a',
+          margin: 'auto'
+        }}
+      />
       <IconButton
         size="small"
         onClick={reloadStream}
@@ -41,41 +58,28 @@ export default function PrinterStream(props) {
       >
         <RefreshIcon fontSize="small" />
       </IconButton>
-
-
       <LightToggle />
-
-
-      <Box
-        component="img"
-        src={src}
-        alt="Printer Stream Preview"
-        onError={handleError}
-        onClick={handleOpen}
-        sx={{
-          display: 'block',
-          cursor: 'pointer',
-          maxHeight: '250px',
-          width: '100%',
-          aspectRatio: '16/9',
-          background: '#4040404a',
-          margin: 'auto',
-          objectFit: 'cover',
-          minHeight: '130px',
-        }}
-      />
 
 
       <Dialog
         open={previewOpen}
         onClick={handleClose}
-
-        PaperProps={{
-          sx: { backgroundColor: 'transparent', boxShadow: 'none', m: 0, position: 'relative' }
-        }}
-        BackdropProps={{
-          sx: { backgroundColor: 'rgba(0, 0, 0, 0.6)' }
-        }}
+        backgroundColor="transparent"
+        PaperComponent={({ children }) => (
+          <Box
+            sx={{
+              backgroundColor: 'transparent',
+              boxShadow: 0,
+              borderRadius: 0,
+              width: '70%',
+              maxWidth: '800px',
+              height: 'auto',
+              overflow: 'hidden'
+            }}
+          >
+            {children}
+          </Box>
+        )}
       >
         <DialogContent
           sx={{ p: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
@@ -85,7 +89,7 @@ export default function PrinterStream(props) {
             src={src}
             alt="Printer Stream Fullscreen"
             ref={fullscreenRef}
-            sx={{ width: '98%', objectFit: 'contain', boxShadow: 4, borderRadius: 1, backgroundColor: '#fff' }}
+            sx={{ width: '100%', objectFit: 'contain', boxShadow: 4, borderRadius: 1, backgroundColor: '#fff', maxWidth: '100%' }}
           />
         </DialogContent>
       </Dialog>
