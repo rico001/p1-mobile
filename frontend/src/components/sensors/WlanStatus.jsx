@@ -42,7 +42,7 @@ export default function WlanStatus() {
 
       <Box display="flex" alignItems="center" bgcolor={'background.paper'} borderRadius={100}>
         <IconButton onClick={handleOpen} size="small">
-          <WifiIcon sx={{ color }} />
+          <WifiIcon sx={{ color, height: "20px", width: "auto" }} />
         </IconButton>
       </Box>
 
@@ -65,7 +65,7 @@ export default function WlanStatus() {
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent dividers>
+        <DialogContent dividers sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <Box display="flex" alignItems="center" p={1}>
             <WifiIcon sx={{ color, mr: 1 }} />
             <Typography variant="body1" sx={{ color, fontWeight: 500, textAlign: 'center' }}>
