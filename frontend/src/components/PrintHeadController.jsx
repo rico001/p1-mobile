@@ -15,12 +15,9 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { usePrintHead } from '../hooks/usePrintHead';
-import { statusMap } from './PrinterStatus';
-import { useSelector } from 'react-redux';
 
 export default function PrintHeadController() {
   const [axisMode, setAxisMode] = useState('xy');
-  const { printType } = useSelector((state) => state.printer);
   const [step, setStep] = useState(1);
   const {
     move,
@@ -33,13 +30,18 @@ export default function PrintHeadController() {
 
   const loading = isMoving || isHoming || isSettingLight;
 
-  if (statusMap.local.value === printType) {
-    return null;
-  }
-
   return (
-    <Box sx={{ width: 220, mx: 'auto', textAlign: 'center' }}>
-
+    <Box
+      sx={{
+        maxWidth: 420,
+        width: '100%',
+        color: 'white',
+        m: 'auto',
+        mt: 2,
+        borderRadius: 2,
+      }}
+    >
+      {/* Axis Selection */}
       <ToggleButtonGroup
         value={axisMode}
         exclusive
@@ -53,6 +55,7 @@ export default function PrintHeadController() {
         <ToggleButton value="z">Z</ToggleButton>
       </ToggleButtonGroup>
 
+      {/* Step size */}
       <FormControl size="small">
         <Select
           labelId="step-label"
