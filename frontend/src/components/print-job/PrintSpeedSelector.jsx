@@ -13,14 +13,14 @@ export const PrintSpeedSelector = ({show = true}) => {
   };
 
   if(!show){
-    return null;
+    //return null;
   }
 
   return (
     <Box
       sx={{
         maxWidth: 390,
-        width: '100%',
+        width: '90%',
         color: 'white',
         m: 'auto',
         mt: 3,
