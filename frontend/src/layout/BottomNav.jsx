@@ -1,11 +1,10 @@
 // src/components/BottomNav.jsx
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Paper, BottomNavigation, BottomNavigationAction } from '@mui/material';
+import { Paper, BottomNavigation, BottomNavigationAction, SvgIcon } from '@mui/material';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
-import PrintIcon from '@mui/icons-material/Print';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
-// import BookIcon from '@mui/icons-material/Book';
+import PrinterIcon from '../assets/printer-icon.svg?react';
 
 export default function BottomNav() {
   const navigate = useNavigate();
@@ -26,7 +25,10 @@ export default function BottomNav() {
         <BottomNavigationAction
           label="Drucker"
           value="/printer"
-          icon={<PrintIcon />}
+          icon={
+            <SvgIcon component={PrinterIcon} inheritViewBox sx={{ width: 24, height: 24, color: 'currentColor' }} />
+          }
+
         />
         <BottomNavigationAction
           label="AMS"

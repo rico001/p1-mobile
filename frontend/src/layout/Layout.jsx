@@ -9,7 +9,7 @@ import Header from './Header';
 export default function Layout() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh'}}>
-      <Header title="Bambu Mobile" />
+      <Header title="P1S Mobile" />
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
         <Outlet />
       </Box>
