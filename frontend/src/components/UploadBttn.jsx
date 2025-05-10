@@ -1,4 +1,3 @@
-// src/components/UploadFabDialog.jsx
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -7,40 +6,57 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   CircularProgress,
+  Button,
   Typography,
-  Alert
+  Alert,
+  TextField
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 export default function UploadFabDialog({ uploadUrl, onUploaded }) {
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState(null);
+  const [newFileName, setNewFileName] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [existsError, setExistsError] = useState(false);
 
   const handleOpen = () => {
     setOpen(true);
-    setMessage('');
+    resetState();
   };
 
   const handleClose = () => {
     if (!loading) {
+      resetState();
       setOpen(false);
-      setFile(null);
     }
   };
 
+  const resetState = () => {
+    setFile(null);
+    setNewFileName('');
+    setMessage('');
+    setExistsError(false);
+    setLoading(false);
+  };
+
   const handleFileChange = (e) => {
-    setFile(e.target.files[0] || null);
+    const selected = e.target.files[0] || null;
+    setFile(selected);
+    setNewFileName(selected ? selected.name : '');
+    setMessage('');
+    setExistsError(false);
   };
 
   const handleUpload = async () => {
     if (!file) return;
     setLoading(true);
+    setMessage('');
+
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', file, newFileName || file.name);
 
     try {
       const res = await fetch(uploadUrl, {
@@ -48,24 +64,38 @@ export default function UploadFabDialog({ uploadUrl, onUploaded }) {
         body: formData
       });
       const json = await res.json();
+
+      if (!res.ok) {
+        // If server indicates file exists, allow rename
+        if (res.status === 409 || json.code === 'fileExists') {
+          setExistsError(true);
+          setMessage('Eine Datei mit diesem Namen existiert bereits. Bitte umbenennen.');
+        } else {
+          setExistsError(false);
+          throw new Error(json.message || 'Fehler beim Upload');
+        }
+        setLoading(false);
+        return;
+      }
+
+      // Clear any previous error state before showing success
+      setExistsError(false);
       setMessage(json.message || 'Upload erfolgreich');
       onUploaded?.();
-      // Automatisch Dialog nach kurzer Zeit schließen
+      // Dialog schließen nach kurzer Zeit
       setTimeout(() => {
+        resetState();
         setOpen(false);
-        setFile(null);
-        setMessage('');
-      }, 1500);
+      }, 2000);
     } catch (err) {
+      setExistsError(false);
       setMessage('Fehler: ' + err.message);
-    } finally {
       setLoading(false);
     }
   };
 
   return (
     <>
-      {/* Floating Action Button zum Öffnen des Dialogs */}
       <Fab
         color="primary"
         aria-label="Datei hochladen"
@@ -75,8 +105,7 @@ export default function UploadFabDialog({ uploadUrl, onUploaded }) {
         <CloudUploadIcon />
       </Fab>
 
-      {/* Dialog für Datei-Auswahl und Upload */}
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
         <DialogTitle>Datei hochladen</DialogTitle>
         <DialogContent dividers>
           <Button variant="contained" component="label">
@@ -87,11 +116,28 @@ export default function UploadFabDialog({ uploadUrl, onUploaded }) {
               onChange={handleFileChange}
             />
           </Button>
+
           {file && (
-            <Typography variant="body2" sx={{ mt: 1 }}>
-              {file.name}
-            </Typography>
+            <>
+              <Typography sx={{ mt: 2 }}>
+                <strong>ausgewählte Datei:</strong>
+              </Typography>
+              <Typography>
+                {file.name}
+              </Typography>
+            </>
           )}
+
+          {existsError && (
+            <TextField
+              fullWidth
+              label="Neuer Dateiname"
+              value={newFileName}
+              onChange={(e) => setNewFileName(e.target.value)}
+              sx={{ mt: 2 }}
+            />
+          )}
+
           {message && (
             <Alert
               severity={message.startsWith('Fehler') ? 'error' : 'success'}
@@ -109,9 +155,9 @@ export default function UploadFabDialog({ uploadUrl, onUploaded }) {
             onClick={handleUpload}
             disabled={!file || loading}
             variant="contained"
-            startIcon={loading ? <CircularProgress size={16} /> : null}
+            startIcon={<CircularProgress size={20} sx={{ display: loading ? 'block' : 'none' }} />}
           >
-            OK
+            {loading ? 'Bitte Warten...' : 'Hochladen'}
           </Button>
         </DialogActions>
       </Dialog>

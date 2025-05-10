@@ -2,7 +2,10 @@
 import ftp from 'basic-ftp'
 import { config } from '../config/index.js';
 
+const rootPath = '/'
+
 class FTPService {
+
     constructor(ftpConfig = config.ftp) {
         this.config = ftpConfig
         this.client = new ftp.Client()
@@ -31,13 +34,37 @@ class FTPService {
         console.log('[FTP] ❌ Verbindung geschlossen')
     }
 
-    async listFiles(remoteDir = "/") {
+    async listFiles(remoteDir = rootPath) {
         try {
             await this.connect()
             return await this.client.list(remoteDir)
         } catch (error) {
             await this.close()
             throw new Error("Fehler beim Listen der Dateien: " + error.message)
+        }
+    }
+
+    async fileExists(remotePath) {
+        await this.connect()
+        const files = await this.client.list(rootPath)
+        const file = files.find(file => file.name === remotePath)
+        if (file) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    async renameFile(oldPath, newPath) {
+        try {
+            
+            await this.connect()
+            console.log(`Datei umbenannt: ${oldPath} -> ${rootPath + newPath}`)
+            await this.client.rename(rootPath + oldPath, rootPath + newPath)
+        }
+        catch (error) {
+            await this.close()
+            throw new Error("Fehler beim Umbenennen der Datei: " + error.message)
         }
     }
 

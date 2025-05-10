@@ -1,24 +1,39 @@
 // src/App.jsx
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { Provider } from 'react-redux';
+import React, { useEffect } from 'react';
+import { Provider, useDispatch } from 'react-redux';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import store from './store';
 import Models from './pages/Models';
 import Printer from './pages/Printer';
-import Layout from './Layout';
+import AMS from './pages/AMS';
+import Layout from './layout/Layout';
+import { PAGES, setPage } from './store/uiSlice';
+
+// Wrapper, der auf Location-Änderungen reagiert
+function RouteChangeHandler() {
+  const location = useLocation();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setPage(location.pathname.replace(/^\//, '')));
+  }, [location.pathname, dispatch]);
+
+  return null;
+}
 
 export default function App() {
   return (
     <Provider store={store}>
-      <Routes>
-        {/* Layout-Route: alles unter "/" verwendet das Layout */}
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Navigate to="/models" replace />} />
-          <Route path="models" element={<Models />} />
-          <Route path="printer" element={<Printer />} />
-          {/*<Route path="logbuch" element={<Logbuch />} />*/}
-        </Route>
-      </Routes>
+        <RouteChangeHandler />
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Navigate to={`/${PAGES.PRINTER}`} />} />
+            <Route path={PAGES.MODELS} element={<Models />} />
+            <Route path={PAGES.PRINTER} element={<Printer />} />
+            <Route path={PAGES.AMS} element={<AMS />} />
+            {/* <Route path="logbuch" element={<Logbuch />} /> */}
+          </Route>
+        </Routes>
     </Provider>
   );
 }

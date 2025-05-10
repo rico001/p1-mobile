@@ -23,6 +23,11 @@ class ThumbnailService {
     if (!fs.existsSync(thumbnailDir)) {
       fs.mkdirSync(thumbnailDir, { recursive: true });
     }
+    //erstelle files Ordner, falls er nicht existiert
+    const filesDir = path.resolve(process.cwd(), 'files');
+    if (!fs.existsSync(filesDir)) {
+      fs.mkdirSync(filesDir, { recursive: true });
+    }
   }
 
   /**
@@ -128,6 +133,16 @@ class ThumbnailService {
     }
   }
 
+  async renameThumbnail(oldPath, newPath) {
+    try {
+      await fs.promises.rename(oldPath, newPath);
+      console.log(`Thumbnail ${oldPath} umbenannt in ${newPath}`);
+    }
+    catch (error) {
+      console.error(`Fehler beim Umbenennen des Thumbnails ${oldPath}:`, error);
+    }
+  }
+
   async __extractThumbnailFrom3mf(filePath) {
     const zip = new AdmZip(filePath);
     const zipEntries = zip.getEntries();
@@ -151,21 +166,29 @@ class ThumbnailService {
     let buffer;
     try {
       buffer = await this.__extractThumbnailFrom3mf(filelocalPath);
-      if (!buffer) {
-        buffer = await this.__extractThumbnailWithImage2Stl(filelocalPath);
-      }
-
       if (buffer) {
         await fs.promises.writeFile(thumbnailPath, buffer);
+      }
+      if (!buffer) {
+        this.__extractThumbnailWithImage2Stl(filelocalPath).then((buffer) => {
+          if (buffer) {
+            console.log("Thumbnail von imagetostl.com erstellt");
+            fs.promises.writeFile(thumbnailPath, buffer).then(() => {
+              console.log("Thumbnail gespeichert");
+            }).catch((error) => {
+              console.error("Fehler beim Speichern des Thumbnails:", error);
+            });
+          } else {
+            console.log("Thumbnail konnte nicht erstellt werden");
+          }
+        }
+        ).catch((error) => {
+          console.error("Fehler beim Erstellen des Thumbnails:", error);
+        });
       }
     } catch (error) {
       console.error(`Fehler beim Generieren des Thumbnails für ${filelocalPath}`, error);
     }
-
-    fs.unlink(filelocalPath, err => {
-      if (err) console.warn('Löschen der lokalen Datei fehlgeschlagen:', err);
-    });
-
   }
 
   async deleteThumbnail(thumbnailPath) {

@@ -5,8 +5,8 @@ import { useModels } from '../hooks/useModels';
 import UploadButton from '../components/UploadBttn';
 
 // Grid-Konfiguration
-const MIN_CARD_WIDTH = 150;  // minimale Karten-Breite
-const MAX_CARD_WIDTH = 200;  // maximale Karten-Breite
+const MIN_CARD_WIDTH = 220;  // minimale Karten-Breite
+const MAX_CARD_WIDTH = 230;  // maximale Karten-Breite
 const GRID_GAP = 40;   // Abstand zwischen Karten
 
 export default function Models() {
@@ -50,11 +50,9 @@ export default function Models() {
                 uploadUrl="/api/ftp/upload-file"
                 onUploaded={refetch}
             />
-            
             {models.map(m => (
                 <ModelCard key={m.name} model={m} onAction={performAction} />
             ))}
-
             {isActionLoading && (
                 <Box sx={{ position: 'fixed', bottom: 16, right: 16 }}>
                     <CircularProgress size={24} />

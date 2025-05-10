@@ -17,17 +17,22 @@ export default function LightToggle() {
     setLight(next);
   };
 
-  if (isSettingLight) {
-    return <CircularProgress size={24} />;
-  }
-
   return (
     <IconButton
-      color={isOn ? 'warning' : 'primary'}
+      size="small"
       onClick={handleToggle}
       disabled={isSettingLight}
+      sx={{
+        position: 'absolute',
+        top: 6,
+        left: 6,
+        zIndex: 2,
+        bgcolor: 'rgba(0,0,0,0.5)',
+        color: '#fff',
+        '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' }
+      }}
     >
-      {isOn ? <LightbulbIcon /> : <LightbulbOutlineIcon />}
+      {isOn ? <LightbulbIcon sx={{ color: '#fffbe3' }}  fontSize="small" /> : <LightbulbOutlineIcon fontSize="small" />}
     </IconButton>
   );
 }
