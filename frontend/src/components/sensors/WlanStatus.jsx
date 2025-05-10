@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import WifiIcon from '@mui/icons-material/Wifi';
 import CloseIcon from '@mui/icons-material/Close';
+import WifiOffIcon from '@mui/icons-material/WifiOff';
 import { useSelector } from 'react-redux';
 import {
   Box,
@@ -42,7 +43,7 @@ export default function WlanStatus() {
 
       <Box display="flex" alignItems="center" bgcolor={'background.paper'} borderRadius={100}>
         <IconButton onClick={handleOpen} size="small">
-          <WifiIcon sx={{ color, height: "20px", width: "auto" }} />
+          {wifiSignal === 'offline' ? <WifiOffIcon sx={{ color, height: "20px", width: "auto" }} /> : <WifiIcon sx={{ color, height: "20px", width: "auto" }} />}
         </IconButton>
       </Box>
 

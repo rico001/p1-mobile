@@ -56,8 +56,8 @@ export default function PrinterStream(props) {
           onClick={reloadStream}
           sx={{
             position: 'absolute',
-            top: 4,
-            right: 4,
+            top: 6,
+            right: 6,
             zIndex: 2,
             bgcolor: 'rgba(0,0,0,0.5)',
             color: '#fff',
