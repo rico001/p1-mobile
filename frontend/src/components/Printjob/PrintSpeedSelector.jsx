@@ -1,9 +1,10 @@
 import React from 'react';
 import { ButtonGroup, Button, CircularProgress, Box } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { usePrintHead } from '../hooks/usePrintHead';
+import { usePrintHead } from '../../hooks/usePrintHead';
 
-export default function SpeedSelector() {
+export const PrintSpeedSelector = ({show = true}) => {
+
   const { spdLvl } = useSelector((state) => state.printer);
   const { setSpeed, isSettingSpeed } = usePrintHead();
 
@@ -11,8 +12,8 @@ export default function SpeedSelector() {
     setSpeed(newSpeed);
   };
 
-  if (isSettingSpeed) {
-    return <CircularProgress size={24} />;
+  if(!show){
+    return null;
   }
 
   return (
