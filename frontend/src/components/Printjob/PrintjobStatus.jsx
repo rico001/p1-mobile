@@ -1,7 +1,46 @@
 import React from 'react';
-import { Box, Typography, LinearProgress, Button } from '@mui/material';
+import { Box, Typography, LinearProgress, Button, IconButton } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { transparentPng } from '../../utils/functions';
+import { usePrintHead } from '../../hooks/usePrintHead';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
+import StopIcon from '@mui/icons-material/Stop';
 
-export const PrinterStatus = () => {
+const converRemainingTime = (remainingTime) => {
+  if (remainingTime === undefined || remainingTime === null) {
+    return '-';
+  }
+  if (remainingTime > 60) {
+    const hours = Math.floor(remainingTime / 60);
+    const minutes = remainingTime % 60;
+    return `${hours} h ${minutes} m`;
+  } else {
+    return `${remainingTime} m`;
+  }
+}
+
+export const PrintJobStatus = () => {
+
+  const {
+    stopPrint,
+    isStopping,
+    pausePrint,
+    isPausing,
+    resumePrint,
+    isResuming
+  } = usePrintHead();
+
+  const { layerNum, totalLayerNum, mcPercent, printType, mcRemainingTime, gcodeFile } = useSelector(
+    (state) => state.printer
+  );
+
+  const actionLoading = isStopping || isPausing || isResuming;
+  let isPrinting = printType === 'local';
+
+  //for testing purposes
+  isPrinting = true
+
   return (
     <Box
       sx={{
@@ -9,64 +48,80 @@ export const PrinterStatus = () => {
         width: '100%',
         color: 'white',
         m: 'auto',
+        mt: 2,
         borderRadius: 2,
       }}
     >
-      {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, justifyContent: 'space-between' }}>
-        {/* Platzhalter für das Thumbnail */}
         <Box
           sx={{
             width: { xs: 90, sm: 110 },
             height: { xs: 90, sm: 110 },
             m: 1,
-            
+
             bgcolor: 'grey.300',
             borderRadius: 1,
           }}
-          //as img
+
           component="img"
-          src="/thumbnails/v4_PLA_1h29m.3mf.png"
+          src={gcodeFile ? `/thumbnails/${gcodeFile}.png` : transparentPng()}
           alt="Thumbnail"
         />
         <Box sx={{ flexGrow: 1, ml: 1, mr: 2 }}>
-      
-            <Typography variant="subtitle1" fontWeight={600} textAlign={'left'} mb={1}>
-              Sculpture
-            </Typography>
+
+          <Typography variant="subtitle1" fontWeight={600} textAlign={'left'} mb={1}>
+            {gcodeFile || 'k.A.'}
+          </Typography>
 
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between' }}>
               <Typography variant="body2">
-                
+
               </Typography>
               <Typography variant="body2">
-                77  /  164
+                {`${layerNum || 0} / ${totalLayerNum || '-'}`}
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between' }}>
+
               <Typography variant="body2">
-                30%
+                {`${mcPercent || '-'} %`}
               </Typography>
               <Typography variant="body2">
-                3h 4m
+                {converRemainingTime(mcRemainingTime)}
               </Typography>
             </Box>
-            <LinearProgress variant="determinate" value={30} sx={{ height: 8, borderRadius: 1, mt: 1, bgcolor: 'grey.200' }}/>
+            <LinearProgress variant="determinate" value={mcPercent || 0} sx={{ height: 8, borderRadius: 1, mt: 1, bgcolor: 'grey.200' }} />
           </Box>
         </Box>
       </Box>
 
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-        <Button size="small" sx={{ textTransform: 'none', color: 'grey.700' }}>
-          Skip
-        </Button>
-        <Button size="small" variant="text" color="success" sx={{ textTransform: 'none' }}>
-          Pause
-        </Button>
-        <Button size="small" variant="text" color="error" sx={{ textTransform: 'none' }}>
-          Stop
-        </Button>
+      <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 2 }}>
+        <IconButton
+          color="primary"
+          onClick={(e) => confirm('Aktuellen Druckvorgang wirklich abbrechen?') && stopPrint()}
+          disabled={isStopping || !isPrinting}
+          sx={{ p: 0 }}
+        >
+          <StopIcon sx={{ p: 0.5, backgroundColor: '#4040404a', borderRadius: '100%' }}/>
+        </IconButton>
+        <IconButton
+          color="primary"
+          backgroundColor="red"
+          onClick={(e) => confirm('Aktuellen Druckvorgang wirklich pausieren?') && pausePrint()}
+          disabled={isPausing || !isPrinting}
+          sx={{ p: 0 }}
+        >
+          <PauseIcon sx={{ p: 0.5, backgroundColor: '#4040404a', borderRadius: '100%' }}/>
+        </IconButton>
+        <IconButton
+          color="primary"
+          onClick={(e) => confirm('Aktuellen Druckvorgang wirklich fortsetzen?') && resumePrint()}
+          disabled={isResuming || !isPrinting}
+          sx={{ p: 0 }}
+        >
+          <PlayArrowIcon sx={{ p: 0.5, backgroundColor: '#4040404a', borderRadius: '100%' }}/>
+        </IconButton>
       </Box>
     </Box>
   );

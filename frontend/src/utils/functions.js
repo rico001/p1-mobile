@@ -34,3 +34,7 @@ export function objectToQueryString(obj, prefix = '&') {
         })
         .join('');
 }
+
+export function transparentPng(){
+    return 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAgKAAAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==';
+}
