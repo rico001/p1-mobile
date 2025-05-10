@@ -23,8 +23,8 @@ export default function TasmotaSwitch() {
       return { color: 'default', title: 'Gerät ist nicht erreichbar', disabled: true, label: 'Offline' };
     }
     return isOn
-      ? { color: 'success', title: 'Gerät ist eingeschaltet', disabled: false, label: 'Eingeschaltet' }
-      : { color: 'error', title: 'Gerät ist ausgeschaltet', disabled: false, label: 'Ausgeschaltet' };
+      ? { color: 'success', title: 'Gerät ist eingeschaltet', disabled: false, label: 'Eingeschaltet', colorSwitch: 'error' }
+      : { color: 'error', title: 'Gerät ist ausgeschaltet', disabled: false, label: 'Ausgeschaltet', colorSwitch: 'success' };
   }, [isOn]);
 
   const handleOpen = () => setOpen(true);
@@ -74,7 +74,7 @@ export default function TasmotaSwitch() {
             onClick={() => { handleToggle(); handleClose(); }}
             disabled={isToggling || status.disabled}
             variant="contained"
-            color={status.color}
+            color={status.colorSwitch}
           >
             {isOn ? 'Ausschalten' : 'Einschalten'}
           </Button>

@@ -24,8 +24,8 @@ export default function LightToggle() {
       disabled={isSettingLight}
       sx={{
         position: 'absolute',
-        top: 4,
-        left: 4,
+        top: 6,
+        left: 6,
         zIndex: 2,
         bgcolor: 'rgba(0,0,0,0.5)',
         color: '#fff',
