@@ -1,17 +1,15 @@
 import React from 'react';
-import PrintHeadController from '../components/PrintHeadController';
-import PrinterStream from '../components/PrinterStream';
-import { Box } from '@mui/material';
-import SpeedSelector from '../components/SpeedSelector';
-import { PrintJobStatus } from '../components/Printjob/PrintjobStatus';
 import { useSelector } from 'react-redux';
-import PrinterStatus from '../components/PrinterStatus';
+import PrinterStream from '../components/Stream/PrinterStream';
+import { CurrenPrintjob } from '../components/Printjob/CurrenPrintjob';
+import { PrintHeadController } from '../components/PrintHeadController';
+import PrinterStatus from '../components/Sensors/PrinterStatus';
+import { PrintSpeedSelector } from '../components/Printjob/PrintSpeedSelector';
 
 
 function Printer() {
 
   const { printType } = useSelector(state => state.printer); //local or idle
-  const _printType = "local"
 
   return (
     <div
@@ -22,9 +20,9 @@ function Printer() {
     >
       <PrinterStream />
       <PrinterStatus />
-      <PrintJobStatus />
-      <SpeedSelector />
-      <PrintHeadController />
+      <CurrenPrintjob show={printType === 'local'} />
+      <PrintSpeedSelector show={printType === 'local'} />
+      <PrintHeadController show={printType === 'idle'} />
     </div>
   );
 }
