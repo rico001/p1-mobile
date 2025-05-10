@@ -19,7 +19,7 @@ export const PrintSpeedSelector = ({show = true}) => {
   return (
     <Box
       sx={{
-        maxWidth: 420,
+        maxWidth: 390,
         width: '100%',
         color: 'white',
         m: 'auto',
