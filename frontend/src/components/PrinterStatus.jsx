@@ -28,12 +28,23 @@ export default function PrinterStatus() {
   };
 
   return (
-    <Tooltip title={tooltip} arrow>
-      <Box style={{ position: 'relative', width: '100%', width: 'fit-content', margin: 'auto' }}>
-        <Typography>
-          {text}
-        </Typography>
-      </Box>
-    </Tooltip>
+    <Box
+      sx={{
+        maxWidth: 420,
+        width: '100%',
+        color: 'white',
+        m: 'auto',
+        mt: 1,
+        borderRadius: 2,
+      }}
+    >
+      <Tooltip title={tooltip} arrow>
+        <Box style={{ position: 'relative', width: '100%', width: 'fit-content', margin: 'auto' }}>
+          <Typography>
+            {text}
+          </Typography>
+        </Box>
+      </Tooltip>
+    </Box>
   );
 }
