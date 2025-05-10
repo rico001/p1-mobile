@@ -27,8 +27,8 @@ class MqttService extends EventEmitter {
       username: this.config.username,
       password: this.config.password,
       clean: true,
-      reconnectPeriod: 1000,
-      keepalive: 20,
+      reconnectPeriod: 1000,  
+      keepalive: 15,
       rejectUnauthorized: false,
       ca
     };
@@ -51,6 +51,10 @@ class MqttService extends EventEmitter {
       this.client.subscribe(this.config.topics.report, err => {
         if (err) console.error('[MQTT] ❌ Subscribe-Fehler:', err);
         else console.log(`[MQTT] 📡 Subscribed to '${this.config.topics.report}'`);
+      });
+      websocketService.broadcast({
+        type: 'wifi_signal_update',
+        payload: 'online'
       });
     });
     this.client.on('message', this._onMessage.bind(this));
