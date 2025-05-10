@@ -68,7 +68,11 @@ export default function WlanStatus() {
         </DialogTitle>
         <DialogContent dividers sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <Box display="flex" alignItems="center" p={1}>
-            <WifiIcon sx={{ color, mr: 1 }} />
+            {wifiSignal === 'offline' ? (
+              <WifiOffIcon sx={{ color, width: "auto", mr: 1 }} />
+            ) : (
+              <WifiIcon sx={{ color, width: "auto", mr: 1 }} />
+            )}
             <Typography variant="body1" sx={{ color, fontWeight: 500, textAlign: 'center' }}>
               {wifiSignal}
             </Typography>

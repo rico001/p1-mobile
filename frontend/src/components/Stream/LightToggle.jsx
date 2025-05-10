@@ -4,7 +4,7 @@ import { IconButton, CircularProgress } from '@mui/material';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import LightbulbOutlineIcon from '@mui/icons-material/LightbulbOutline';
 import { useSelector } from 'react-redux';
-import { usePrintHead } from '../hooks/usePrintHead';
+import { usePrintHead } from '../../hooks/usePrintHead';
 
 export default function LightToggle() {
   const { chamberLightMode } = useSelector(state => state.printer);
@@ -23,10 +23,6 @@ export default function LightToggle() {
       onClick={handleToggle}
       disabled={isSettingLight}
       sx={{
-        position: 'absolute',
-        top: 6,
-        left: 6,
-        zIndex: 2,
         bgcolor: 'rgba(0,0,0,0.5)',
         color: '#fff',
         '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' }
