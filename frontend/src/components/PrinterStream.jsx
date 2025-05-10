@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Box, CircularProgress, Dialog, DialogContent, IconButton } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import LightToggle from './LightToggle';
@@ -8,8 +8,16 @@ export default function PrinterStream(props) {
   const baseSrc = "/api/video/video-stream";
   const [reloadKey, setReloadKey] = useState(Date.now());
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [src, setSrc] = useState(transparentImg);
   const [loading, setLoading] = useState(false);
   const fullscreenRef = useRef(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      reloadStream();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleOpen = () => setPreviewOpen(true);
   const handleClose = () => setPreviewOpen(false);
@@ -19,15 +27,14 @@ export default function PrinterStream(props) {
     e.currentTarget.src = transparentImg;
   };
 
-  const src = loading
-  ? transparentImg
-  : `${baseSrc}?reload=${reloadKey}`;
-
   const reloadStream = () => {
     if (loading) return;
     setLoading(true);
+    setSrc(transparentImg);
+
     setTimeout(() => {
       setReloadKey(Date.now());
+      setSrc(`${baseSrc}?${reloadKey}`);
     }, 1500);
     setTimeout(() => {
       setLoading(false);
