@@ -5,11 +5,11 @@ export const PrinterStatus = () => {
   return (
     <Box
       sx={{
-        width: 420,
+        maxWidth: 420,
+        width: '100%',
         color: 'white',
         m: 'auto',
         borderRadius: 2,
-        p: 2
       }}
     >
       {/* Header */}
@@ -19,12 +19,13 @@ export const PrinterStatus = () => {
           sx={{
             width: { xs: 70, sm: 100 },
             height: { xs: 70, sm: 100 },
-            p: 1,
+            m: 1,
+            
             bgcolor: 'grey.300',
             borderRadius: 1,
           }}
         />
-        <Box sx={{ flexGrow: 1, ml: 2 }}>
+        <Box sx={{ flexGrow: 1, ml: 1, mr: 2 }}>
       
             <Typography variant="subtitle1" fontWeight={600} textAlign={'left'} mb={1}>
               Sculpture
@@ -36,7 +37,7 @@ export const PrinterStatus = () => {
                 Layers
               </Typography>
               <Typography variant="body2">
-                0  /  164
+                77  /  164
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between' }}>
@@ -47,7 +48,7 @@ export const PrinterStatus = () => {
                 3h 4m
               </Typography>
             </Box>
-            <LinearProgress variant="determinate" value={0} sx={{ height: 8, borderRadius: 1, mt: 1, bgcolor: 'grey.200' }} />
+            <LinearProgress variant="determinate" value={30} sx={{ height: 8, borderRadius: 1, mt: 1, bgcolor: 'grey.200' }}/>
           </Box>
         </Box>
       </Box>
