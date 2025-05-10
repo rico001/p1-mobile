@@ -9,7 +9,8 @@ import CurrentJob from '../components/CurrentJob';
 import { PrintProgressState } from '../components/sensors/PrintProgressState';
 import { LayerState } from '../components/sensors/LayerState';
 import SpeedSelector from '../components/SpeedSelector';
-import LightToggle from '../components/LightToggle';
+import { PrinterStatus } from '../components/Printjob/PrintjobStatus';
+
 
 function Printer() {
   return (
@@ -20,7 +21,8 @@ function Printer() {
       }}
     >
       <PrinterStream />
-      <Box display="flex" alignItems="center" gap={2} width={'230px'} justifyContent="center" sx={{ margin: 'auto' }}>
+      <PrinterStatus />
+      <Box display="flex" alignItems="center" gap={2} justifyContent="center">
         <CurrentJob />
       </Box>
       <Box
