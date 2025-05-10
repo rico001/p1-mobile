@@ -21,7 +21,7 @@ export const OfflineState = () => {
                 Überprüfen Sie die Verbindung oder schalten Sie den Drucker ein.
             </Typography>
             <Typography variant="body2" color="white" mt={2} maxWidth={400}>
-                Es kann nach dem Einschalten des Druckers einige Sekunden dauern, bis die Verbindung wiederhergestellt ist.
+                Es kann nach dem Einschalten des Druckers einige Sekunden dauern, bis die Verbindung vollständig wiederhergestellt ist.
             </Typography>
             <Box mt={2} display="flex" justifyContent="center" alignItems="center">
                 <TasmotaSwitch />
