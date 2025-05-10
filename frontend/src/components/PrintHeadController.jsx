@@ -16,7 +16,8 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { usePrintHead } from '../hooks/usePrintHead';
 
-export default function PrintHeadController() {
+export const PrintHeadController = ({show = true}) => {
+
   const [axisMode, setAxisMode] = useState('xy');
   const [step, setStep] = useState(1);
   const {
@@ -27,6 +28,10 @@ export default function PrintHeadController() {
     setLight,
     isSettingLight
   } = usePrintHead();
+
+  if(!show){
+    return null;
+  }
 
   const loading = isMoving || isHoming || isSettingLight;
 

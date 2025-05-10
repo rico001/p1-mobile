@@ -20,7 +20,7 @@ const converRemainingTime = (remainingTime) => {
   }
 }
 
-export const PrintJobStatus = () => {
+export const CurrenPrintjob = ({show = true}) => {
 
   const {
     stopPrint,
@@ -35,11 +35,11 @@ export const PrintJobStatus = () => {
     (state) => state.printer
   );
 
-  const actionLoading = isStopping || isPausing || isResuming;
-  let isPrinting = printType === 'local';
+  if(!show){
+    return null;
+  }
 
-  //for testing purposes
-  isPrinting = true
+  let isPrinting = printType === 'local';
 
   return (
     <Box
@@ -52,6 +52,7 @@ export const PrintJobStatus = () => {
         borderRadius: 2,
       }}
     >
+      { /* current printjob with thumbnail */}
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, justifyContent: 'space-between' }}>
         <Box
           sx={{
@@ -67,6 +68,7 @@ export const PrintJobStatus = () => {
           src={gcodeFile ? `/thumbnails/${gcodeFile}.png` : transparentPng()}
           alt="Thumbnail"
         />
+        { /* Printing progress and status */}
         <Box sx={{ flexGrow: 1, ml: 1, mr: 2 }}>
 
           <Typography variant="subtitle1" fontWeight={600} textAlign={'left'} mb={1}>
@@ -96,23 +98,23 @@ export const PrintJobStatus = () => {
         </Box>
       </Box>
 
-      <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 2 }}>
+      { /* Printing actions */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 3 }}>
         <IconButton
           color="primary"
           onClick={(e) => confirm('Aktuellen Druckvorgang wirklich abbrechen?') && stopPrint()}
           disabled={isStopping || !isPrinting}
           sx={{ p: 0 }}
         >
-          <StopIcon sx={{ p: 0.5, backgroundColor: '#4040404a', borderRadius: '100%' }}/>
+          <StopIcon sx={{ p: 0.5, backgroundColor: '#4040404a', borderRadius: '100%' }} />
         </IconButton>
         <IconButton
           color="primary"
-          backgroundColor="red"
           onClick={(e) => confirm('Aktuellen Druckvorgang wirklich pausieren?') && pausePrint()}
           disabled={isPausing || !isPrinting}
           sx={{ p: 0 }}
         >
-          <PauseIcon sx={{ p: 0.5, backgroundColor: '#4040404a', borderRadius: '100%' }}/>
+          <PauseIcon sx={{ p: 0.5, backgroundColor: '#4040404a', borderRadius: '100%' }} />
         </IconButton>
         <IconButton
           color="primary"
@@ -120,7 +122,7 @@ export const PrintJobStatus = () => {
           disabled={isResuming || !isPrinting}
           sx={{ p: 0 }}
         >
-          <PlayArrowIcon sx={{ p: 0.5, backgroundColor: '#4040404a', borderRadius: '100%' }}/>
+          <PlayArrowIcon sx={{ p: 0.5, backgroundColor: '#4040404a', borderRadius: '100%' }} />
         </IconButton>
       </Box>
     </Box>
