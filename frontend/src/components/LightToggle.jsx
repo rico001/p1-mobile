@@ -23,10 +23,6 @@ export default function LightToggle() {
       onClick={handleToggle}
       disabled={isSettingLight}
       sx={{
-        position: 'absolute',
-        top: 6,
-        left: 6,
-        zIndex: 2,
         bgcolor: 'rgba(0,0,0,0.5)',
         color: '#fff',
         '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' }
