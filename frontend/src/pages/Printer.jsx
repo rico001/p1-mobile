@@ -3,8 +3,8 @@ import { useSelector } from 'react-redux';
 import PrinterStream from '../components/Stream/PrinterStream';
 import { CurrenPrintjob } from '../components/Printjob/CurrenPrintjob';
 import { PrintHeadController } from '../components/PrintHeadController';
-import PrinterStatus from '../components/Sensors/PrinterStatus';
 import { PrintSpeedSelector } from '../components/Printjob/PrintSpeedSelector';
+import PrinterStatus from '../components/PrinterStatus';
 
 
 function Printer() {
