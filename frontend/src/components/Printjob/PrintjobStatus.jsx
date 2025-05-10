@@ -17,13 +17,17 @@ export const PrinterStatus = () => {
         {/* Platzhalter für das Thumbnail */}
         <Box
           sx={{
-            width: { xs: 70, sm: 100 },
-            height: { xs: 70, sm: 100 },
+            width: { xs: 90, sm: 110 },
+            height: { xs: 90, sm: 110 },
             m: 1,
             
             bgcolor: 'grey.300',
             borderRadius: 1,
           }}
+          //as img
+          component="img"
+          src="/thumbnails/v4_PLA_1h29m.3mf.png"
+          alt="Thumbnail"
         />
         <Box sx={{ flexGrow: 1, ml: 1, mr: 2 }}>
       
@@ -34,7 +38,7 @@ export const PrinterStatus = () => {
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between' }}>
               <Typography variant="body2">
-                Layers
+                
               </Typography>
               <Typography variant="body2">
                 77  /  164
