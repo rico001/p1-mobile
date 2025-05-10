@@ -1,26 +1,15 @@
 name: Build & Push App Image
+
 on:
   push:
     branches:
       - main
       - develop
     paths:
-      - 'frontend/src/**'
-      - 'src/**'
+      - 'Dockerfile'
+      - 'package.json'
+      - '.github/workflows/build-app-image.yml'
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'App-Version (wenn leer, aus package.json)'
-        required: false
-        default: ''
-      push:
-        description: 'Image wirklich pushen? (true/false)'
-        required: true
-        default: 'true'
-      branch:
-        description: 'Branch, der ausgecheckt wird'
-        required: false
-        default: 'main'
 
 permissions:
   contents: read
@@ -32,23 +21,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.inputs.branch }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      - name: Bestimme App-Version-Tag
-        id: set_tag
+      - name: Read app version
+        id: get_app_version
         run: |
-          if [ "${{ github.event.inputs.version }}" != "" ]; then
-            TAG=${{ github.event.inputs.version }}
-          else
-            TAG=$(node -p "require('./package.json').version")
-          fi
-          echo "TAG=$TAG" >> $GITHUB_ENV
+          APP_VERSION=$(node -p "require('./package.json').version")
+          echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
@@ -68,7 +51,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: ${{ github.event.inputs.push == 'true' }}
+          push: true
           tags: |
-            ghcr.io/${{ github.actor }}/bambu-p1s-mobile:${{ env.TAG }}
             ghcr.io/${{ github.actor }}/bambu-p1s-mobile:latest
+            ghcr.io/${{ github.actor }}/bambu-p1s-mobile:${{ env.APP_VERSION }}
