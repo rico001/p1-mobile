@@ -45,6 +45,10 @@ export const listFiles = async (req, res) => {
                 print: {
                     method: "GET",
                     path: path.posix.join('/api/mqtt/print-file?fileName=' + file.name)
+                },
+                rename: {
+                    method: "GET",
+                    path: path.posix.join('/api/ftp/rename-file?oldFileName=' + file.name)
                 }
             }
         }))
@@ -62,20 +66,54 @@ export const uploadFile = async (req, res) => {
             return res.status(400).json({ message: "Keine Datei im Feld 'file' gefunden." });
         }
 
+        //check if file is 3mf
+        if (!req.file.originalname.toLowerCase().endsWith(".3mf")) {
+            return res.status(400).json({ message: "Nur 3mf-Dateien sind erlaubt." });
+        }
+
+        if (await ftpService.fileExists(req.file.originalname)) {
+            return res.status(409).json({ message: "Dateinname bereits vergeben.", type: "fileExists" });
+        }
         // 3. Pfade setzen
         const filelocalPath = path.resolve(process.cwd(), "files", req.file.originalname); // z. B. '/tmp/meinedatei.txt'
         const remotePath = path.posix.join("/", req.file.originalname); // z. B. '/meinedatei.txt'
         await ftpService.uploadFile(filelocalPath, remotePath);
 
         const thumbnailPath = path.resolve(process.cwd(), "thumbnails", req.file.originalname + ".png");
-        await ThumbnailService.extractThumbnail(filelocalPath, thumbnailPath);
-
+        try {
+            await ThumbnailService.extractThumbnail(filelocalPath, thumbnailPath);
+        } catch (error) {
+            console.error(`Fehler beim Generieren des Thumbnails für ${filelocalPath}`, error);
+        }
         res.json({ message: "Datei erfolgreich hochgeladen." });
     } catch (error) {
         console.error('Upload-Fehler:', error);
         res.status(500).json({ message: error.message });
+    } finally {
+        // 4. Lokale Datei löschen
+        const filelocalPath = path.resolve(process.cwd(), "files", req.file.originalname);
+        fs.unlink(filelocalPath, (err) => {
+            if (err) {
+                console.error("Fehler beim Löschen der Datei:", err);
+            }
+        });
     }
 };
+
+export const renameFile = async (req, res) => {
+    try {
+        const { oldFileName, newFileName } = req.query;
+        //check 3mf
+        console.log("renameFile", oldFileName + "->" +  newFileName)
+        await ftpService.renameFile(oldFileName, newFileName + ".3mf")
+        const oldThumbnailPath = path.resolve(process.cwd(), "thumbnails", oldFileName + ".png");
+        const newThumbnailPath = path.resolve(process.cwd(), "thumbnails", newFileName + ".3mf.png");
+        ThumbnailService.renameThumbnail(oldThumbnailPath, newThumbnailPath)
+        res.json({ message: "success", command: "renameFile", fileName: newFileName })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+}
 
 
 export const downloadFile = async (req, res) => {

@@ -36,6 +36,7 @@ export async function printFile3mf(req, res, next) {
     const bed_levelling = req.query.bed_levelling;
     const flow_cali = req.query.flow_cali;
     const vibration_cali = req.query.vibration_cali;
+    console.log('printFile3mf, query:', req.query);
 
     if (!fileName) {
       return res.status(400).json({ message: 'fileName is required' });
@@ -220,6 +221,81 @@ export const setLight = async (req, res, next) => {
       report
     });
 
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function stopPrint(req, res, next) {
+  try {
+    const sequence_id = `print-stop__${Date.now()}`;
+    const payload = {
+      print: { 
+        sequence_id, 
+        command: 'stop', 
+        param: '' 
+      }
+    };
+    const report = await mqttService.request(payload, sequence_id);
+    res.json({ report });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function pausePrint(req, res, next) {
+  try {
+    const sequence_id = `print-pause__${Date.now()}`;
+    const payload = {
+      print: { 
+        sequence_id, 
+        command: 'pause', 
+        param: '' 
+      }
+    };
+    const report = await mqttService.request(payload, sequence_id);
+    res.json({ report });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function resumePrint(req, res, next) {
+  try {
+    const sequence_id = `print-resume__${Date.now()}`;
+    const payload = {
+      print: { 
+        sequence_id, 
+        command: 'resume', 
+        param: '' 
+      }
+    };
+    const report = await mqttService.request(payload, sequence_id);
+    res.json({ report });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function setPrintSpeed(req, res, next) {
+  try {
+    //speed-modes: 1 = silent, 2 = standard, 3 = sport, 4 = ludicrous
+    const speed = req.query.value || 2;
+    const sequence_id = `print-speed__${Date.now()}`;
+    const payload = {
+      print: { 
+        sequence_id, 
+        command: 'print_speed', 
+        param: speed
+      }
+    };
+    console.log('setPrintSpeed', payload);
+    const report = await mqttService.request(payload, sequence_id);
+    websocketService.broadcast({
+      type: `spd_lvl_update`,
+      payload: parseInt(speed)
+    });
+    res.json({ report });
   } catch (err) {
     next(err);
   }

@@ -54,6 +54,16 @@ class MqttService extends EventEmitter {
       });
     });
     this.client.on('message', this._onMessage.bind(this));
+    this.client.on('error', this._onError.bind(this));
+  }
+
+  //on connection lost
+  _onError(err) {
+    console.error('[MQTT] ❌ Verbindungsfehler:', err);
+    websocketService.broadcast({
+      type: 'wifi_signal_update',
+      payload: 'offline'
+    });
   }
 
   // Hilfsfunktion: sucht rekursiv nach sequence_id
@@ -97,6 +107,7 @@ class MqttService extends EventEmitter {
 
       const prevState = { ...(this.state || {}) };
       this.state = { ...prevState, ...updatedFields };
+      //console.log('new state', this.state);
 
       this._broadcastUpdatedFields(updatedFields, prevState);
     }
@@ -112,7 +123,18 @@ class MqttService extends EventEmitter {
           type: `${firstLight.node}_mode_update`,
           payload: firstLight.mode
         });
-        console.log(`new ${firstLight.node}.mode`, firstLight.mode);
+      }
+    },
+    ams: ({ newVal, oldVal }) => {
+      //compare with striffiy JSON
+      const newValStr = JSON.stringify(newVal?.ams);
+      const oldValStr = JSON.stringify(oldVal?.ams || {});
+      if (newValStr !== oldValStr) {
+        //log the difference
+        websocketService.broadcast({
+          type: `ams_update`,
+          payload: newVal
+        });
       }
     }
   };
@@ -123,7 +145,7 @@ class MqttService extends EventEmitter {
     'bed_temper','bed_target_temper',
     'mc_percent','mc_remaining_time',
     'layer_num','total_layer_num',
-    'gcode_file'
+    'gcode_file','spd_lvl'
   ];
   _broadcastUpdatedFields(updatedFields, prevState) {
     Object.entries(updatedFields).forEach(([key, newVal]) => {
@@ -132,6 +154,7 @@ class MqttService extends EventEmitter {
       // 1) Gibt es einen Custom-Broadcaster?
       if (this.deepObjectKeys[key]) {
         this.deepObjectKeys[key]({ newVal, oldVal });
+        //console.log(`new ${key}`, newVal);
         return;
       }
 
@@ -143,7 +166,7 @@ class MqttService extends EventEmitter {
             type: `${key}_update`,
             payload: newVal
           });
-          console.log(`new ${key}`, newVal);
+          //console.log(`new ${key}`, newVal);
         }
       }
       // 3) Sonstige Keys werden ignoriert
@@ -152,7 +175,6 @@ class MqttService extends EventEmitter {
 
 
   publish(topic, payload) {
-    console.log("publish", topic, payload);
     this.client.publish(topic, JSON.stringify(payload))
   }
 

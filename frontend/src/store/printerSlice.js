@@ -1,20 +1,27 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  printType: null,
-  wifiSignal: null,
-  chamberLightMode: null,
+  printType: 'idle',
+  wifiSignal: 'k.A.',
+  chamberLightMode: 'off',
 
-  nozzleTemper: null,
-  nozzleTargetTemper: null,
+  nozzleTemper: '-',
+  nozzleTargetTemper: '-',
   
-  bedTemper: null,
-  bedTargetTemper: null,
-  mcPercent: null,
-  mcRemainingTime: null,
-  layerNum: null,
-  totalLayerNum: null,
-  gcodeFile: null,
+  bedTemper: '-',
+  bedTargetTemper: '-',
+
+  mcPercent: '-',
+  mcRemainingTime: '-',
+
+  layerNum: '-',
+  totalLayerNum: '-',
+
+  gcodeFile: 'k.A.',
+  spdLvl: 2,
+
+  //deep objects
+  ams: null,
 };
 
 const printerSlice = createSlice({
@@ -57,6 +64,12 @@ const printerSlice = createSlice({
     setGcodeFile(state, action) {
       state.gcodeFile = action.payload;
     },
+    setAMS(state, action) {
+      state.ams = action.payload;
+    },
+    setSpdLvl(state, action) {
+      state.spdLvl = action.payload;
+    }
   },
 });
 
@@ -73,6 +86,8 @@ export const {
   setLayerNum,
   setTotalLayerNum,
   setGcodeFile,
+  setAMS,
+  setSpdLvl
 } = printerSlice.actions;
 
 export default printerSlice.reducer;

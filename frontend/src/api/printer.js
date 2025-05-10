@@ -25,6 +25,15 @@ export async function setLight(value) {
     return res.json();
 }
 
+export async function setPrintSpeed(value) {
+    //speed-modes: 1 = silent, 2 = standard, 3 = sport, 4 = ludicrous
+    const res = await fetch(`/api/mqtt/print/set-speed?value=${value}`, { method: 'GET' });
+    if (!res.ok) {
+        throw new Error(`Set print speed failed: ${res.statusText}`);
+    }
+    return res.json();
+}
+
 export async function getAmsState(value) {
     const res = await fetch('/api/mqtt/state', {
         method: 'GET',
@@ -45,16 +54,6 @@ export async function getAmsState(value) {
     return trays
 }
 
-/*
-{
-  "report": {
-    "lights_report": [
-      {
-        "node": "chamber_light",
-        "mode": "off"
-      }
-    ],
-*/
 export async function getLightState() {
     const res = await fetch('/api/mqtt/state', {
         method: 'GET',
@@ -70,5 +69,30 @@ export async function getLightState() {
     const lightState = data.report.lights_report[0].mode;
 
     return lightState;
+}
+
+export async function stopPrint() {
+    console.log('Stopping print...');
+    const res = await fetch('/api/mqtt/print/stop', { method: 'GET' });
+    if (!res.ok) {
+        throw new Error(`Stop print failed: ${res.statusText}`);
+    }
+    return res.json();
+}
+
+export async function pausePrint() {
+    const res = await fetch('/api/mqtt/print/pause', { method: 'GET' });
+    if (!res.ok) {
+        throw new Error(`Pause print failed: ${res.statusText}`);
+    }
+    return res.json();
+}
+
+export async function resumePrint() {
+    const res = await fetch('/api/mqtt/print/resume', { method: 'GET' });
+    if (!res.ok) {
+        throw new Error(`Resume print failed: ${res.statusText}`);
+    }
+    return res.json();
 }
   

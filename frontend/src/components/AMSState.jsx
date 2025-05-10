@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import { usePrintHead } from "../hooks/usePrintHead";
+import { useSelector } from "react-redux";
 
 const getTextColorForBackground = (hexColor) => {
   const r = parseInt(hexColor.slice(0, 2), 16);
@@ -10,21 +11,27 @@ const getTextColorForBackground = (hexColor) => {
   return luminance > 186 ? '#000' : '#fff';
 };
 
-const AutomaticMaterialSystemState = () => {
-  const { amsState, isAmsStateLoading } = usePrintHead();
+const AMSState = () => {
+  const { ams } = useSelector((state) => state.printer);
 
-  if (isAmsStateLoading) {
+  let amsStates = ams?.ams?.map(ams => ams.tray.map(tray => ({
+    tray_type: tray.tray_type,
+    tray_color: tray.tray_color,
+  })));
+
+  console.log("amsStates", amsStates);
+  if (!amsStates) {
     return (
       <Box sx={{ width: 220, mx: 'auto', textAlign: 'center', pt: 2 }}>
-        <CircularProgress size={20} />
+        <CircularProgress size={24} />
       </Box>
     );
   }
 
-  const validGroups = Array.isArray(amsState)
-    ? amsState.map(group =>
-        (Array.isArray(group) ? group : []).filter(tray => tray?.tray_type && tray?.tray_color)
-      ).filter(group => group.length > 0)
+  const validGroups = Array.isArray(amsStates)
+    ? amsStates.map(group =>
+      (Array.isArray(group) ? group : []).filter(tray => tray?.tray_type && tray?.tray_color)
+    ).filter(group => group.length > 0)
     : [];
 
   if (validGroups.length === 0) {
@@ -80,4 +87,4 @@ const AutomaticMaterialSystemState = () => {
   );
 };
 
-export default AutomaticMaterialSystemState;
+export default AMSState;

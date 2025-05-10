@@ -1,92 +1,138 @@
-import React, { useState } from 'react';
-import { Box, Dialog, DialogContent } from '@mui/material';
+import React, { useState, useRef } from 'react';
+import { Box, CircularProgress, Dialog, DialogContent, IconButton } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import LightToggle from './LightToggle';
 
-export default function PrinterStream() {
+export default function PrinterStream(props) {
+  const baseSrc = "/api/video/video-stream";
+  const [reloadKey, setReloadKey] = useState(Date.now());
   const [previewOpen, setPreviewOpen] = useState(false);
-  const src = "/api/video/video-stream";
+  const fullscreenRef = useRef(null);
+  const [reloading, setReloading] = useState(true);
 
   const handleOpen = () => setPreviewOpen(true);
   const handleClose = () => setPreviewOpen(false);
 
+  const handleError = (e) => {
+    e.currentTarget.onerror = null;
+  };
+
+  const src = `${baseSrc}?reload=${reloadKey}`;
+
+  const reloadStream = () => {
+    if (reloading) return;
+    setReloading(true);
+    setTimeout(() => {
+      setReloadKey(Date.now());
+    }, 1500);
+    setTimeout(() => {
+      setReloading(false);
+    }, 6000);
+  };
+
   return (
-    <>
-      {/* Stream als klickbares Vorschaubild */}
-      <div style={{ position: 'relative', width: '100%', width: 'fit-content', margin: 'auto', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
       <Box
-          component="img"
-          src={"/public/axis-overlay-xy.svg"}
-          alt="Printer Stream"
-          onClick={handleOpen}
-          sx={{
-            display: 'block',
-            width: '-webkit-fill-available',
-            height: '130px',
-            position: 'absolute',
-            margin: 'auto',
-            borderRadius: '10px',
-            cursor: 'pointer',
-            top: '37px',
-            left: '30px',
-          }}
-        />
+        sx={{
+          display: 'block',
+          marginTop: { xs: '0', md: 3 },
+          cursor: 'pointer',
+          maxHeight: '250px',
+          width: '100%',
+          maxWidth: '420px',
+          aspectRatio: '16/9',
+          margin: 'auto',
+          position: 'relative',
+        }}>
         <Box
           component="img"
           src={src}
-          alt="Printer Stream"
+          alt="Printer Stream Preview"
+          onError={handleError}
           onClick={handleOpen}
+          onLoad={() => {
+            setReloading(false);
+          }}
+          onLoadStart={() => {
+            setReloading(true);
+          }
+          }
           sx={{
-            display: 'block',
-            width: 'auto',
-            minWidth: '200px',
-            height: '130px',
-            borderRadius: '10px',
-            cursor: 'pointer',
-            backgroundColor: '#4c4c4c6b',
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            background: '#4040404a',
           }}
         />
-      </div>
+        {reloading && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <CircularProgress size={50} />
+          </Box>
+        )}
 
-      {/* Vollbild-Dialog */}
+        <IconButton
+          size="small"
+          onClick={reloadStream}
+          sx={{
+            position: 'absolute',
+            top: 6,
+            right: 6,
+            zIndex: 2,
+            bgcolor: 'rgba(0,0,0,0.5)',
+            color: '#fff',
+            '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' }
+          }}
+        >
+          <RefreshIcon fontSize="small" />
+        </IconButton>
+        <LightToggle />
+      </Box>
+
       <Dialog
         open={previewOpen}
         onClick={handleClose}
-        maxWidth={false}
-        PaperProps={{
-          sx: {
-            backgroundColor: 'transparent',
-            boxShadow: 'none',
-            m: 0,
-            position: 'relative'
-          }
-        }}
-        BackdropProps={{
-          sx: { backgroundColor: 'rgba(0, 0, 0, 0.6)' }
-        }}
+        backgroundColor="transparent"
+        PaperComponent={({ children }) => (
+          <Box
+            sx={{
+              backgroundColor: 'transparent',
+              boxShadow: 0,
+              borderRadius: 0,
+              width: '70%',
+              maxWidth: '800px',
+              height: 'auto',
+              overflow: 'hidden'
+            }}
+          >
+            {children}
+          </Box>
+        )}
       >
-        {/* Dialog-Inhalt: Stream fast fullscreen */}
         <DialogContent
-          sx={{
-            p: 0,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100vh'
-          }}
+          sx={{ p: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
         >
           <Box
             component="img"
             src={src}
             alt="Printer Stream Fullscreen"
-            sx={{
-              width: '90%',
-              objectFit: 'contain',
-              boxShadow: 4,
-              borderRadius: 1,
-              backgroundColor: '#fff',
-            }}
+            ref={fullscreenRef}
+            sx={{ width: '100%', objectFit: 'contain', boxShadow: 4, borderRadius: 1, backgroundColor: '#fff', maxWidth: '100%' }}
           />
         </DialogContent>
       </Dialog>
-    </>
+
+      {props.children}
+    </div>
   );
 }
