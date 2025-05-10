@@ -5,6 +5,7 @@ import { Box } from '@mui/material';
 import SpeedSelector from '../components/SpeedSelector';
 import { PrintJobStatus } from '../components/Printjob/PrintjobStatus';
 import { useSelector } from 'react-redux';
+import PrinterStatus from '../components/PrinterStatus';
 
 
 function Printer() {
@@ -20,6 +21,7 @@ function Printer() {
       }}
     >
       <PrinterStream />
+      <PrinterStatus />
       <PrintJobStatus />
       <SpeedSelector />
       <PrintHeadController />
