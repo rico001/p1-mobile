@@ -2,13 +2,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Box, CircularProgress, Dialog, DialogContent, IconButton } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import LightToggle from './LightToggle';
-const transparentImg = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAgKAAAAACH5BAUAAAAALAAAAAABAAEAAAICRAEAOw==';
+import { transparentPng } from '../../utils/functions';
+import BedTempState from '../Sensors/BedTempState';
+import NozzleTempState from '../Sensors/NozzleTempState';
 
 export default function PrinterStream(props) {
   const baseSrc = "/api/video/video-stream";
   const [reloadKey, setReloadKey] = useState(Date.now());
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [src, setSrc] = useState(transparentImg);
+  const [src, setSrc] = useState(transparentPng());
   const [loading, setLoading] = useState(false);
   const fullscreenRef = useRef(null);
 
@@ -24,13 +26,13 @@ export default function PrinterStream(props) {
 
   const handleError = (e) => {
     e.currentTarget.onerror = null;
-    e.currentTarget.src = transparentImg;
+    e.currentTarget.src = transparentPng();
   };
 
   const reloadStream = () => {
     if (loading) return;
     setLoading(true);
-    setSrc(transparentImg);
+    setSrc(transparentPng());
 
     setTimeout(() => {
       setReloadKey(Date.now());
@@ -100,7 +102,20 @@ export default function PrinterStream(props) {
         >
           <RefreshIcon fontSize="small" />
         </IconButton>
-        <LightToggle />
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 6,
+            left: 6,
+            zIndex: 2,
+          }}
+        >
+          <LightToggle />
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, padding: 0.5 }}>
+        <BedTempState />
+        <NozzleTempState />
+      </Box>
       </Box>
 
       <Dialog
