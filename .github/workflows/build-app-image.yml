@@ -1,5 +1,4 @@
 name: Build & Push App Image
-
 on:
   push:
     branches:
