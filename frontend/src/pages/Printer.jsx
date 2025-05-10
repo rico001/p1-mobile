@@ -21,10 +21,10 @@ function Printer() {
       }}
     >
       <PrinterStream />
-      <PrinterStatus />
       <Box display="flex" alignItems="center" gap={2} justifyContent="center">
         <CurrentJob />
       </Box>
+      <PrinterStatus />
       <Box
         display="flex"
         justifyContent="center"
