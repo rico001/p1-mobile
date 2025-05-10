@@ -1,10 +1,9 @@
-// src/components/PrinterStatus.jsx
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography, Tooltip } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
-export const statusMap = {
+const statusMap = {
   local: {
     value: 'local',
     text: '',
@@ -17,7 +16,7 @@ export const statusMap = {
   },
 };
 
-export default function PrinterStatus() {
+const PrinterStatus = () => {
   const { printType } = useSelector((state) => state.printer);
 
   // Fallback für unbekannte Stati
@@ -48,3 +47,5 @@ export default function PrinterStatus() {
     </Box>
   );
 }
+
+export default PrinterStatus;
