@@ -8,15 +8,15 @@ import PauseIcon from '@mui/icons-material/Pause';
 import StopIcon from '@mui/icons-material/Stop';
 
 const converRemainingTime = (remainingTime) => {
-  if (remainingTime === undefined || remainingTime === null) {
-    return '-';
+  if (remainingTime === undefined || remainingTime === null || remainingTime === 0) {
+    return null;
   }
   if (remainingTime > 60) {
     const hours = Math.floor(remainingTime / 60);
     const minutes = remainingTime % 60;
-    return `${hours} h ${minutes} m`;
+    return `${hours}h ${minutes}m`;
   } else {
-    return `${remainingTime} m`;
+    return `${remainingTime}m`;
   }
 }
 
@@ -87,10 +87,10 @@ export const CurrenPrintjob = ({show = true}) => {
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between' }}>
 
               <Typography variant="body2" fontSize={20} fontWeight={600}>
-                {mcPercent ? mcPercent + ' %' : '-'}
+                {mcPercent ? mcPercent + ' %' : ''}
               </Typography>
               <Typography variant="body2">
-                {converRemainingTime(mcRemainingTime)}
+                {mcRemainingTime ? 'noch ' + converRemainingTime(mcRemainingTime) : ''}
               </Typography>
             </Box>
             <LinearProgress variant="determinate" value={mcPercent || 0} sx={{ height: 8, borderRadius: 1, mt: 1, bgcolor: 'grey.200' }} />
