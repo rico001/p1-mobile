@@ -39,7 +39,7 @@ export const PrintHeadController = ({show = true}) => {
     <Box
       sx={{
         maxWidth: 390,
-        width: '100%',
+        width: '90%',
         color: 'white',
         m: 'auto',
         mt: 2,
