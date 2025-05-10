@@ -56,8 +56,8 @@ export const CurrenPrintjob = ({show = true}) => {
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, justifyContent: 'space-between' }}>
         <Box
           sx={{
-            width: { xs: 90, sm: 110 },
-            height: { xs: 90, sm: 110 },
+            width: 105,
+            height: 105,
             m: 1,
 
             bgcolor: 'grey.300',
@@ -86,8 +86,8 @@ export const CurrenPrintjob = ({show = true}) => {
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between' }}>
 
-              <Typography variant="body2">
-                {`${mcPercent || '-'} %`}
+              <Typography variant="body2" fontSize={20} fontWeight={600}>
+                {mcPercent ? mcPercent + ' %' : '-'}
               </Typography>
               <Typography variant="body2">
                 {converRemainingTime(mcRemainingTime)}

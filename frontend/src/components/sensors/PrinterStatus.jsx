@@ -7,7 +7,7 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 export const statusMap = {
   local: {
     value: 'local',
-    text: 'Druckvorgang läuft',
+    text: '',
     tooltip: 'Der 3D-Drucker arbeitet gerade an einem Job.',
   },
   idle: {
