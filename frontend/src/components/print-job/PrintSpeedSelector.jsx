@@ -13,7 +13,7 @@ export const PrintSpeedSelector = ({show = true}) => {
   };
 
   if(!show){
-    //return null;
+    return null;
   }
 
   return (
