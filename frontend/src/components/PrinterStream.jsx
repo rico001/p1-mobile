@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Box, Dialog, DialogContent, IconButton } from '@mui/material';
+import { Box, CircularProgress, Dialog, DialogContent, IconButton } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import LightToggle from './LightToggle';
 
@@ -8,6 +8,7 @@ export default function PrinterStream(props) {
   const [reloadKey, setReloadKey] = useState(Date.now());
   const [previewOpen, setPreviewOpen] = useState(false);
   const fullscreenRef = useRef(null);
+  const [reloading, setReloading] = useState(true);
 
   const handleOpen = () => setPreviewOpen(true);
   const handleClose = () => setPreviewOpen(false);
@@ -19,9 +20,14 @@ export default function PrinterStream(props) {
   const src = `${baseSrc}?reload=${reloadKey}`;
 
   const reloadStream = () => {
+    if (reloading) return;
+    setReloading(true);
     setTimeout(() => {
       setReloadKey(Date.now());
     }, 1500);
+    setTimeout(() => {
+      setReloading(false);
+    }, 6000);
   };
 
   return (
@@ -44,6 +50,13 @@ export default function PrinterStream(props) {
           alt="Printer Stream Preview"
           onError={handleError}
           onClick={handleOpen}
+          onLoad={() => {
+            setReloading(false);
+          }}
+          onLoadStart={() => {
+            setReloading(true);
+          }
+          }
           sx={{
             width: '100%',
             height: '100%',
@@ -51,6 +64,23 @@ export default function PrinterStream(props) {
             background: '#4040404a',
           }}
         />
+        {reloading && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <CircularProgress size={50} />
+          </Box>
+        )}
+
         <IconButton
           size="small"
           onClick={reloadStream}
