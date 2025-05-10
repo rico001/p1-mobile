@@ -3,8 +3,8 @@ import { Box, CircularProgress, Dialog, DialogContent, IconButton } from '@mui/m
 import RefreshIcon from '@mui/icons-material/Refresh';
 import LightToggle from './LightToggle';
 import { transparentPng } from '../../utils/functions';
-import BedTempState from '../Sensors/BedTempState';
-import NozzleTempState from '../Sensors/NozzleTempState';
+import BedTempState from '../sensors/BedTempState';
+import NozzleTempState from '../sensors/NozzleTempState';
 
 export default function PrinterStream(props) {
   const baseSrc = "/api/video/video-stream";
