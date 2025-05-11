@@ -15,7 +15,8 @@ import {
   setTotalLayerNum,
   setGcodeFile,
   setAMS,
-  setSpdLvl
+  setSpdLvl,
+  setLog,
 } from '../store/printerSlice';
 import useWebSocket from '../hooks/useWebsocket';
 
@@ -103,6 +104,10 @@ export default function PrinterWebSocket() {
       case 'spd_lvl_update':
         console.log('spd_lvl_update', payload);
         dispatch(setSpdLvl(payload));
+        break;
+      case 'log_update':
+        console.log('log_update', payload);
+        dispatch(setLog(payload));
         break;
       default:
         break;

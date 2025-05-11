@@ -2,8 +2,9 @@ import fs from 'fs';
 import mqtt from 'mqtt';
 import EventEmitter from 'events';
 import { config } from '../config/index.js';
-import { delay, generateClientId } from '../utils/functions.js';
+import { generateClientId } from '../utils/functions.js';
 import websocketService from './websocketService.js';
+import { randomUUID } from 'crypto';
 
 class MqttService extends EventEmitter {
   constructor(mqttConfig = config.mqtt) {
@@ -85,6 +86,17 @@ class MqttService extends EventEmitter {
   }
 
   _onMessage(topic, message) {
+
+    websocketService.broadcast({
+      type: `log_update`,
+      payload: {
+        id: randomUUID(),
+        timeStamp: new Date().toISOString(),
+        message: message.toString(),
+        type: 'mqtt'
+      }
+    });
+
     let json = JSON.parse(message.toString());
     const seqId = this.findSequenceId(json);
 

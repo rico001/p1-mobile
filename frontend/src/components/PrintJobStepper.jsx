@@ -18,6 +18,7 @@ const steps = [
 ];
 
 export default function PrintJobStepper({ onClose, onConfirm }) {
+  console.log('rendering PrintJobStepper');
   const [activeStep, setActiveStep] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
 
