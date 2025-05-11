@@ -11,13 +11,51 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useSelector } from 'react-redux';
 
-const Logs = () => {
+// Rekursiver JSON-Renderer: Keys werden fett (bold) formatiert
+const renderJson = (data) => {
+  if (data === null || typeof data !== 'object') {
+    // Primitive Werte
+    return <Typography component="span">{String(data)}</Typography>;
+  }
+  if (Array.isArray(data)) {
+    // Array
+    return (
+      <Box component="span">
+        {'['}
+        {data.map((item, i) => (
+          <React.Fragment key={i}>
+            {renderJson(item)}
+            {i < data.length - 1 ? ', ' : ''}
+          </React.Fragment>
+        ))}
+        {']'}
+      </Box>
+    );
+  }
+  // Objekt
+  return (
+    <Box component="span">
+      {'{'}
+      {Object.entries(data).map(([key, value], i, arr) => (
+        <Box key={key} component="div" sx={{ pl: 2 }}>
+          <Typography component="span" fontWeight="bold">
+            "{key}"
+          </Typography>
+          {': '}
+          {renderJson(value)}
+          {i < arr.length - 1 ? ',' : ''}
+        </Box>
+      ))}
+      {'}'}
+    </Box>
+  );
+};
 
+const Logs = () => {
   const logs = useSelector((state) => state.printer.logs);
   const [autoUpdate, setAutoUpdate] = useState(true);
   const [displayedLogs, setDisplayedLogs] = useState(logs);
   const [expandedId, setExpandedId] = useState(null);
-
 
   useEffect(() => {
     if (autoUpdate) {
@@ -37,7 +75,7 @@ const Logs = () => {
 
   return (
     <Box>
-      {/* Umschalter ganz oben */}
+      {/* Umschalter für Auto-Update */}
       <FormControlLabel
         control={
           <Switch
@@ -46,7 +84,7 @@ const Logs = () => {
           />
         }
         label={autoUpdate ? 'Auto-Update an' : 'Auto-Update aus'}
-        sx={{ m: 'auto', m: 1, display: 'flex', justifyContent: 'center' }}
+        sx={{ m: 1, display: 'flex', justifyContent: 'center' }}
       />
 
       {/* Log-Liste */}
@@ -65,19 +103,24 @@ const Logs = () => {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography component="pre">
+            <Box
+              component="pre"
+              sx={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}
+            >
               {(() => {
                 try {
-                  return JSON.stringify(
-                    JSON.parse(log.message),
-                    null,
-                    2
-                  );
+                  const obj = JSON.parse(log.message);
+                  return renderJson(obj);
                 } catch {
-                  return log.message;
+                  // Falls Nachricht kein JSON ist
+                  return (
+                    <Typography component="span">
+                      {log.message}
+                    </Typography>
+                  );
                 }
               })()}
-            </Typography>
+            </Box>
           </AccordionDetails>
         </Accordion>
       ))}
