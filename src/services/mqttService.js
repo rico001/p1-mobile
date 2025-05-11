@@ -87,13 +87,13 @@ class MqttService extends EventEmitter {
 
   _onMessage(topic, message) {
 
-    websocketService.broadcast({
+    websocketService.broadcastLog({
       type: `log_update`,
       payload: {
         id: randomUUID(),
         timeStamp: new Date().toISOString(),
         message: message.toString(),
-        type: 'mqtt'
+        type: 'mqtt message'
       }
     });
 
