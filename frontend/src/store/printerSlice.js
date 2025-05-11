@@ -22,6 +22,11 @@ const initialState = {
 
   //deep objects
   ams: null,
+  printError : {
+    error_code: null,
+    error_code_hex: null,
+    error_message: null,
+  },
   logs: [],
 };
 
@@ -85,6 +90,9 @@ const printerSlice = createSlice({
       // 3. Neuen Log anhängen
       state.logs.push(newLog);
     },
+    setPrintError(state, action) {
+      state.printError = action.payload;
+    },
   },
 });
 
@@ -104,7 +112,7 @@ export const {
   setAMS,
   setSpdLvl,
   setLog,
-
+  setPrintError,
 } = printerSlice.actions;
 
 export default printerSlice.reducer;

@@ -17,6 +17,7 @@ import {
   setAMS,
   setSpdLvl,
   setLog,
+  setPrintError
 } from '../store/printerSlice';
 import useWebSocket from '../hooks/useWebsocket';
 
@@ -116,6 +117,9 @@ export default function PrinterWebSocket() {
         //console.log('log_update message from', payload.type)
         dispatch(setLog(payload));       
         break;
+      case 'print_error_update':
+        console.log('print_error_update', payload);
+        dispatch(setPrintError(payload));
       default:
         break;
     }
