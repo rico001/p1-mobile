@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography, LinearProgress, Button, IconButton } from '@mui/material';
-import { useSelector } from 'react-redux';
+import { shallowEqual, useSelector } from 'react-redux';
 import { transparentPng } from '../../utils/functions';
 import { usePrintHead } from '../../hooks/usePrintHead';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -21,7 +21,7 @@ const converRemainingTime = (remainingTime) => {
 }
 
 export const CurrenPrintjob = ({show = true}) => {
-
+  console.log('rendering CurrentPrintjob');
   const {
     stopPrint,
     isStopping,
@@ -31,8 +31,23 @@ export const CurrenPrintjob = ({show = true}) => {
     isResuming
   } = usePrintHead();
 
-  const { layerNum, totalLayerNum, mcPercent, printType, mcRemainingTime, gcodeFile } = useSelector(
-    (state) => state.printer
+  const {
+    layerNum,
+    totalLayerNum,
+    mcPercent,
+    printType,
+    mcRemainingTime,
+    gcodeFile
+  } = useSelector(
+    state => ({
+      layerNum:        state.printer.layerNum,
+      totalLayerNum:   state.printer.totalLayerNum,
+      mcPercent:       state.printer.mcPercent,
+      printType:       state.printer.printType,
+      mcRemainingTime: state.printer.mcRemainingTime,
+      gcodeFile:       state.printer.gcodeFile
+    }),
+    shallowEqual
   );
 
   if(!show){

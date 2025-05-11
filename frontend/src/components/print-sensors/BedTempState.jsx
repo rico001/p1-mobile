@@ -1,5 +1,5 @@
 import { Box, Tooltip, Typography } from "@mui/material";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import BorderAllIcon from '@mui/icons-material/BorderAll';
 import { roundToOneDecimal } from "../../utils/functions";
 
@@ -22,9 +22,15 @@ const isAtTarget = (current, target) => {
 
 
 export default function BedTempState() {
-    const { bedTemper, bedTargetTemper } = useSelector(
-      (state) => state.printer
-    );
+
+  console.log('rendering BedTempState');
+  const { bedTemper, bedTargetTemper } = useSelector(
+    state => ({
+      bedTemper:       state.printer.bedTemper,
+      bedTargetTemper: state.printer.bedTargetTemper
+    }),
+    shallowEqual
+  );
   
     const current = roundToOneDecimal(bedTemper);
     const target = roundToOneDecimal(bedTargetTemper);
