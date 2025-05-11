@@ -1,5 +1,5 @@
 //https://wiki.bambulab.com/en/hms/error-code
-const code2desc = {
+const code2descMap = {
   "Error": "Error Description",
   "0300-800A": "A Filament pile-up was detected by the AI Print Monitoring. Please clean the filament from the waste chute.",
   "0300-8003": "Spaghetti defects were detected by the AI Print Monitoring. Please check the quality of the printed model before continuing your print.",
@@ -263,4 +263,13 @@ const code2desc = {
   "0500-4007": "Print jobs are not allowed to be sent while force updating or when repair updating is required.",
 };
 
-module.exports = code2desc;
+export default function code2desc(code) {
+  if(!code) {
+    return "";
+  }
+  if (code in code2descMap) {
+    return code2descMap[code];
+  } else {
+    return "Unknown error";
+  }
+}

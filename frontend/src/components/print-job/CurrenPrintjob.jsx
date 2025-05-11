@@ -20,7 +20,7 @@ const converRemainingTime = (remainingTime) => {
   }
 }
 
-export const CurrenPrintjob = ({show = true}) => {
+export const CurrenPrintjob = ({ show = true }) => {
   console.log('rendering CurrentPrintjob');
   const {
     stopPrint,
@@ -37,15 +37,17 @@ export const CurrenPrintjob = ({show = true}) => {
     mcPercent,
     printType,
     mcRemainingTime,
-    gcodeFile
+    gcodeFile,
+    printError
   } = useSelector(
     state => ({
-      layerNum:        state.printer.layerNum,
-      totalLayerNum:   state.printer.totalLayerNum,
-      mcPercent:       state.printer.mcPercent,
-      printType:       state.printer.printType,
+      layerNum: state.printer.layerNum,
+      totalLayerNum: state.printer.totalLayerNum,
+      mcPercent: state.printer.mcPercent,
+      printType: state.printer.printType,
       mcRemainingTime: state.printer.mcRemainingTime,
-      gcodeFile:       state.printer.gcodeFile
+      gcodeFile: state.printer.gcodeFile,
+      printError: state.printer.printError,
     }),
     shallowEqual
   );
@@ -112,6 +114,28 @@ export const CurrenPrintjob = ({show = true}) => {
           </Box>
         </Box>
       </Box>
+
+      {printError?.error_code_hex && (
+        <>
+          <Typography variant="body2" fontSize={12} fontWeight={600} color="error">
+            {printError.error_code_hex}
+          </Typography>
+          <Typography variant="body2" fontSize={12} fontWeight={600} color="error">
+            {printError.error_message}
+          </Typography>
+          <Button
+            variant="text"
+            size="small"
+            color="error"
+            onClick={() => {
+              window.open('https://wiki.bambulab.com/en/hms/error-code', '_blank');
+            }}
+            sx={{ textTransform: 'none', fontSize: 12, mt: 1 }}
+          >
+            Mehr Infos
+          </Button>
+        </>
+      )}
 
       { /* Printing actions */}
       <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 3 }}>
