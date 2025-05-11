@@ -86,6 +86,10 @@ const Logs = () => {
         label={autoUpdate ? 'Auto-Update an' : 'Auto-Update aus'}
         sx={{ m: 1, display: 'flex', justifyContent: 'center' }}
       />
+      {/* Überschrift */}
+      <Typography variant="h4" align="center" sx={{ mb: 2 }}>
+        Logs ({sortedLogs.length})
+      </Typography>
 
       {/* Log-Liste */}
       {sortedLogs.map((log) => (
