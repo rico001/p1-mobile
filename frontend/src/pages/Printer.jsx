@@ -8,8 +8,8 @@ import PrinterStatus from '../components/PrinterStatus';
 
 
 function Printer() {
-
-  const { printType } = useSelector(state => state.printer); //local or idle
+  console.log('rendering Printer');
+  const printType = useSelector(state => state.printer.printType); //local or idle
 
   return (
     <div

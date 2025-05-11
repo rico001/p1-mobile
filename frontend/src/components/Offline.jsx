@@ -2,6 +2,7 @@ import { Box, Typography } from "@mui/material";
 import TasmotaSwitch from "./TasmotaSwitch";
 
 export const OfflineState = () => {
+    console.log('rendering OfflineState');
     return (
         <div
             style={{

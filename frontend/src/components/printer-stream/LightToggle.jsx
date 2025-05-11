@@ -7,7 +7,9 @@ import { useSelector } from 'react-redux';
 import { usePrintHead } from '../../hooks/usePrintHead';
 
 export default function LightToggle() {
-  const { chamberLightMode } = useSelector(state => state.printer);
+  console.log('rendering LightToggle');
+  
+  const chamberLightMode = useSelector(state => state.printer.chamberLightMode)
   const { setLight, isSettingLight } = usePrintHead();
 
   const isOn = chamberLightMode === 'on';
