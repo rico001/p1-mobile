@@ -8,7 +8,7 @@ import Printer from './pages/Printer';
 import AMS from './pages/AMS';
 import Layout from './layout/Layout';
 import { PAGES, setPage } from './store/uiSlice';
-import Log from './pages/Log';
+import Logs from './pages/Logs';
 
 // Wrapper, der auf Location-Änderungen reagiert
 function RouteChangeHandler() {
@@ -32,7 +32,7 @@ export default function App() {
           <Route path={PAGES.MODELS} element={<Models />} />
           <Route path={PAGES.PRINTER} element={<Printer />} />
           <Route path={PAGES.AMS} element={<AMS />} />
-          <Route path={PAGES.LOG} element={<Log />} />
+          <Route path={PAGES.LOG} element={<Logs />} />
         </Route>
       </Routes>
     </Provider>

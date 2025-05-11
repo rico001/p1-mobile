@@ -1,22 +1,55 @@
-import React, { useState, useMemo } from 'react';
-import { Typography, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import React, { useState, useMemo, useEffect } from 'react';
+import {
+  Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Switch,
+  FormControlLabel,
+  Box,
+} from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useSelector } from 'react-redux';
 
-const Log = () => {
+const Logs = () => {
+
   const logs = useSelector((state) => state.printer.logs);
+  const [autoUpdate, setAutoUpdate] = useState(true);
+  const [displayedLogs, setDisplayedLogs] = useState(logs);
   const [expandedId, setExpandedId] = useState(null);
 
+
+  useEffect(() => {
+    if (autoUpdate) {
+      setDisplayedLogs(logs);
+    }
+  }, [logs, autoUpdate]);
+
   const sortedLogs = useMemo(() => {
-    return [...logs].sort((a, b) => b.timeStamp.localeCompare(a.timeStamp));
-  }, [logs]);
+    return [...displayedLogs].sort((a, b) =>
+      b.timeStamp.localeCompare(a.timeStamp)
+    );
+  }, [displayedLogs]);
 
   const handleChange = (id) => (event, isExpanded) => {
     setExpandedId(isExpanded ? id : null);
   };
 
   return (
-    <>
+    <Box>
+      {/* Umschalter ganz oben */}
+      <FormControlLabel
+        control={
+          <Switch
+            checked={autoUpdate}
+            onChange={(e) => setAutoUpdate(e.target.checked)}
+          />
+        }
+        label={autoUpdate ? 'Auto-Update an' : 'Auto-Update aus'}
+        sx={{ m: 'auto', m: 1, display: 'flex', justifyContent: 'center' }}
+      />
+
+      {/* Log-Liste */}
       {sortedLogs.map((log) => (
         <Accordion
           key={log.id}
@@ -35,7 +68,11 @@ const Log = () => {
             <Typography component="pre">
               {(() => {
                 try {
-                  return JSON.stringify(JSON.parse(log.message), null, 2);
+                  return JSON.stringify(
+                    JSON.parse(log.message),
+                    null,
+                    2
+                  );
                 } catch {
                   return log.message;
                 }
@@ -44,8 +81,8 @@ const Log = () => {
           </AccordionDetails>
         </Accordion>
       ))}
-    </>
+    </Box>
   );
 };
 
-export default Log;
+export default Logs;
