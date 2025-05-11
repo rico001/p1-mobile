@@ -7,6 +7,8 @@ import BedTempState from '../print-sensors/BedTempState';
 import NozzleTempState from '../print-sensors/NozzleTempState';
 
 export default function PrinterStream(props) {
+  console.log('rendering PrinterStream');
+  
   const baseSrc = "/api/video/video-stream";
   const [reloadKey, setReloadKey] = useState(Date.now());
   const [previewOpen, setPreviewOpen] = useState(false);

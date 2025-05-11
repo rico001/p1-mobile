@@ -22,6 +22,7 @@ const initialState = {
 
   //deep objects
   ams: null,
+  logs: [],
 };
 
 const printerSlice = createSlice({
@@ -69,7 +70,21 @@ const printerSlice = createSlice({
     },
     setSpdLvl(state, action) {
       state.spdLvl = action.payload;
-    }
+    },
+    setLog(state, action) {
+      const newLog = action.payload;
+    
+      // 1. Entferne alten Eintrag mit gleicher ID (falls vorhanden)
+      state.logs = state.logs.filter(l => l.id !== newLog.id);
+    
+      // 2. Wenn mehr als 100 Einträge, ältesten rauswerfen
+      if (state.logs.length >= 100) {
+        state.logs.shift();
+      }
+    
+      // 3. Neuen Log anhängen
+      state.logs.push(newLog);
+    },
   },
 });
 
@@ -87,7 +102,9 @@ export const {
   setTotalLayerNum,
   setGcodeFile,
   setAMS,
-  setSpdLvl
+  setSpdLvl,
+  setLog,
+
 } = printerSlice.actions;
 
 export default printerSlice.reducer;

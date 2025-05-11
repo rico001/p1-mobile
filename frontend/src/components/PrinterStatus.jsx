@@ -17,7 +17,8 @@ const statusMap = {
 };
 
 const PrinterStatus = () => {
-  const { printType } = useSelector((state) => state.printer);
+  console.log('rendering PrinterStatus')
+  const printType = useSelector((state) => state.printer.printType)
 
   // Fallback für unbekannte Stati
   const { text, tooltip } = statusMap[printType] || {
