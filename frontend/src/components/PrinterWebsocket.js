@@ -106,7 +106,7 @@ export default function PrinterWebSocket() {
         dispatch(setSpdLvl(payload));
         break;
       case 'log_update':
-        console.log('log_update', payload);
+        //console.log('log_update message from', payload.type)
         dispatch(setLog(payload));
         break;
       default:
