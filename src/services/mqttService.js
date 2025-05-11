@@ -2,9 +2,10 @@ import fs from 'fs';
 import mqtt from 'mqtt';
 import EventEmitter from 'events';
 import { config } from '../config/index.js';
-import { generateClientId } from '../utils/functions.js';
+import { formatBambuErrorCode, generateClientId } from '../utils/functions.js';
 import websocketService from './websocketService.js';
 import { randomUUID } from 'crypto';
+import code2desc from '../utils/code2desc.js';
 
 class MqttService extends EventEmitter {
   constructor(mqttConfig = config.mqtt) {
@@ -28,7 +29,7 @@ class MqttService extends EventEmitter {
       username: this.config.username,
       password: this.config.password,
       clean: true,
-      reconnectPeriod: 1000,  
+      reconnectPeriod: 1000,
       keepalive: 15,
       rejectUnauthorized: false,
       ca
@@ -157,11 +158,11 @@ class MqttService extends EventEmitter {
 
   flatKeys = [
     'print_type', 'wifi_signal',
-    'nozzle_temper','nozzle_target_temper',
-    'bed_temper','bed_target_temper',
-    'mc_percent','mc_remaining_time',
-    'layer_num','total_layer_num',
-    'gcode_file','spd_lvl'
+    'nozzle_temper', 'nozzle_target_temper',
+    'bed_temper', 'bed_target_temper',
+    'mc_percent', 'mc_remaining_time',
+    'layer_num', 'total_layer_num',
+    'gcode_file', 'spd_lvl', 'print_error'
   ];
   _broadcastUpdatedFields(updatedFields, prevState) {
     Object.entries(updatedFields).forEach(([key, newVal]) => {
@@ -178,11 +179,27 @@ class MqttService extends EventEmitter {
       if (this.flatKeys.includes(key)) {
         const changed = newVal !== oldVal;
         if (changed) {
-          websocketService.broadcast({
-            type: `${key}_update`,
-            payload: newVal
-          });
-          //console.log(`new ${key}`, newVal);
+          if (key === 'print_error') {
+            //test
+            //newVal = 0
+            const hexError = formatBambuErrorCode(newVal);
+            const errorMessage = code2desc(hexError);
+            const printError = {
+              error_code: newVal,
+              error_code_hex: hexError,
+              error_message: errorMessage
+            }
+            websocketService.broadcast({
+              type: `${key}_update`, // print_error_update
+              payload: printError
+            });
+          } else {
+            websocketService.broadcast({
+              type: `${key}_update`,
+              payload: newVal
+            });
+          }
+          console.log(`new ${key}`, newVal);
         }
       }
       // 3) Sonstige Keys werden ignoriert
