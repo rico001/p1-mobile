@@ -12,7 +12,9 @@ const getTextColorForBackground = (hexColor) => {
 };
 
 const AMSState = () => {
-  const { ams } = useSelector((state) => state.printer);
+  console.log('rendering AMSState');
+
+  const ams = useSelector((state) => state.printer.ams)
 
   let amsStates = ams?.ams?.map(ams => ams.tray.map(tray => ({
     tray_type: tray.tray_type,
