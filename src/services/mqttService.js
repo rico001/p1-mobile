@@ -181,6 +181,7 @@ class MqttService extends EventEmitter {
         if (changed) {
           if (key === 'print_error') {
             //test
+            //newVal = 83902467
             //newVal = 0
             const hexError = formatBambuErrorCode(newVal);
             const errorMessage = code2desc(hexError);
