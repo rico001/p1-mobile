@@ -45,12 +45,19 @@ export default function PrinterWebSocket() {
 
       const { type, payload } = msg;
 
-      if (type === 'several' && Array.isArray(payload)) {
+      //several_logs or several messages
+      if (type === 'several_logs' && Array.isArray(payload)) {
         payload.forEach((entry) => {
-          const { type: entryType, payload: entryPayload } = entry;
-          handleMessage(entryType, entryPayload);
+          const { type, payload } = entry;
+          handleMessage(type, payload);
+        });
+      } else if (type === 'several' && Array.isArray(payload)) {
+        payload.forEach((entry) => {
+          const { type, payload } = entry;
+          handleMessage(type, payload);
         });
       } else {
+        ///simple single message
         handleMessage(type, payload);
       }
     },
@@ -107,7 +114,7 @@ export default function PrinterWebSocket() {
         break;
       case 'log_update':
         //console.log('log_update message from', payload.type)
-        dispatch(setLog(payload));
+        dispatch(setLog(payload));       
         break;
       default:
         break;
