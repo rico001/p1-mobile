@@ -5,7 +5,7 @@ import PrinterWebSocket from '../components/PrinterWebsocket';
 import BottomNav from './BottomNav';
 import Header from './Header';
 import { OfflineCheck } from '../components/OfflineCheck';
-import { PrintErrorCheck } from '../components/PrintErrorCheck';
+//import { PrintErrorCheck } from '../components/PrintErrorCheck';
 
 
 export default function Layout() {

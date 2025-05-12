@@ -6,6 +6,7 @@ import { usePrintHead } from '../../hooks/usePrintHead';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import StopIcon from '@mui/icons-material/Stop';
+import { PrintError } from '../PrintError';
 
 const converRemainingTime = (remainingTime) => {
   if (remainingTime === undefined || remainingTime === null || remainingTime === 0) {
@@ -53,7 +54,7 @@ export const CurrenPrintjob = ({ show = true }) => {
   );
 
   if(!show){
-    return null;
+    //return null;
   }
 
   let isPrinting = printType === 'local';
@@ -116,25 +117,11 @@ export const CurrenPrintjob = ({ show = true }) => {
       </Box>
 
       {printError?.error_code_hex && (
-        <>
-          <Typography variant="body2" fontSize={12} fontWeight={600} color="error">
-            {printError.error_code_hex}
-          </Typography>
-          <Typography variant="body2" fontSize={12} fontWeight={600} color="error">
-            {printError.error_message}
-          </Typography>
-          <Button
-            variant="text"
-            size="small"
-            color="error"
-            onClick={() => {
-              window.open('https://wiki.bambulab.com/en/hms/error-code', '_blank');
-            }}
-            sx={{ textTransform: 'none', fontSize: 12, mt: 1 }}
-          >
-            Mehr Infos
-          </Button>
-        </>
+        <PrintError
+          code={printError.error_code_hex}
+          message={printError.error_message}
+          infoLink="https://wiki.bambulab.com/en/hms/error-code"
+        />
       )}
 
       { /* Printing actions */}

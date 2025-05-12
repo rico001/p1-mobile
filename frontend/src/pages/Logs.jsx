@@ -75,59 +75,62 @@ const Logs = () => {
 
   return (
     <Box>
-      {/* Umschalter für Auto-Update */}
-      <FormControlLabel
-        control={
-          <Switch
-            checked={autoUpdate}
-            onChange={(e) => setAutoUpdate(e.target.checked)}
-          />
-        }
-        label={autoUpdate ? 'Auto-Update an' : 'Auto-Update aus'}
-        sx={{ m: 1, display: 'flex', justifyContent: 'center' }}
-      />
-      {/* Überschrift */}
-      <Typography variant="h4" align="center" sx={{ mb: 2 }}>
-        Logs ({sortedLogs.length})
-      </Typography>
+
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Typography variant="h6" align="center" sx={{ mr: 2 }}>
+          Logs
+        </Typography>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={autoUpdate}
+              onChange={(e) => setAutoUpdate(e.target.checked)}
+            />
+          }
+          label={autoUpdate ? 'Auto-Update an' : 'Auto-Update aus'}
+          sx={{ m: 1, display: 'flex', justifyContent: 'center' }}
+        />
+      </Box>
 
       {/* Log-Liste */}
-      {sortedLogs.map((log) => (
-        <Accordion
-          key={log.id}
-          expanded={expandedId === log.id}
-          onChange={handleChange(log.id)}
-        >
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography sx={{ flexBasis: '33.33%', flexShrink: 0 }}>
-              {new Date(log.timeStamp).toLocaleString()}
-            </Typography>
-            <Typography sx={{ color: 'text.secondary' }}>
-              {log.type} | {log.id}
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Box
-              component="pre"
-              sx={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}
-            >
-              {(() => {
-                try {
-                  const obj = JSON.parse(log.message);
-                  return renderJson(obj);
-                } catch {
-                  // Falls Nachricht kein JSON ist
-                  return (
-                    <Typography component="span">
-                      {log.message}
-                    </Typography>
-                  );
-                }
-              })()}
-            </Box>
-          </AccordionDetails>
-        </Accordion>
-      ))}
+      <Box sx={{ maxHeight: '75vh', overflowY: 'auto', m: 2 }}>
+        {sortedLogs.map((log) => (
+          <Accordion
+            key={log.id}
+            expanded={expandedId === log.id}
+            onChange={handleChange(log.id)}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography sx={{ flexBasis: '33.33%', flexShrink: 0 }}>
+                {new Date(log.timeStamp).toLocaleString()}
+              </Typography>
+              <Typography sx={{ color: 'text.secondary' }}>
+                {log.type} | {log.id}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Box
+                component="pre"
+                sx={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}
+              >
+                {(() => {
+                  try {
+                    const obj = JSON.parse(log.message);
+                    return renderJson(obj);
+                  } catch {
+                    // Falls Nachricht kein JSON ist
+                    return (
+                      <Typography component="span">
+                        {log.message}
+                      </Typography>
+                    );
+                  }
+                })()}
+              </Box>
+            </AccordionDetails>
+          </Accordion>
+        ))}
+      </Box>
     </Box>
   );
 };
