@@ -54,10 +54,6 @@ class MqttService extends EventEmitter {
         if (err) console.error('[MQTT] ❌ Subscribe-Fehler:', err);
         else console.log(`[MQTT] 📡 Subscribed to '${this.config.topics.report}'`);
       });
-      websocketService.broadcast({
-        type: 'wifi_signal_update',
-        payload: 'online'
-      });
     });
     this.client.on('message', this._onMessage.bind(this));
     this.client.on('error', this._onError.bind(this));
@@ -66,10 +62,6 @@ class MqttService extends EventEmitter {
   //on connection lost
   _onError(err) {
     console.error('[MQTT] ❌ Verbindungsfehler:', err);
-    websocketService.broadcast({
-      type: 'wifi_signal_update',
-      payload: 'offline'
-    });
   }
 
   // Hilfsfunktion: sucht rekursiv nach sequence_id
