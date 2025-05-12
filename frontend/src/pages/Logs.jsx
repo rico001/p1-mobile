@@ -93,12 +93,35 @@ const Logs = () => {
       </Box>
 
       {/* Log-Liste */}
-      <Box sx={{ maxHeight: '75vh', overflowY: 'auto', m: 2 }}>
+      <Box sx={{ maxHeight: '65vh', overflowY: 'auto', m: 2 }}>
         {sortedLogs.map((log) => (
           <Accordion
             key={log.id}
             expanded={expandedId === log.id}
             onChange={handleChange(log.id)}
+            sx={{
+              bgcolor: (() => {
+                try {
+                  const msgObj = JSON.parse(log.message);
+                  console.log('log', msgObj);
+                  if (msgObj.print) {
+                    return msgObj?.print?.print_error === 0 || msgObj.print.print_error === undefined
+                      ? 'rgb(229, 229, 229)'
+                      : 'rgb(214, 15, 15)';
+                  }
+                  if (msgObj.report) {
+                    return msgObj?.report?.print_error === 0 || msgObj.report.print_error === undefined
+                      ? 'rgb(15, 124, 214)'
+                      : 'rgb(214, 15, 15)';
+                  }
+                  if (msgObj?.info) {
+                    return 'rgb(145, 145, 57)';
+                  }
+                } catch {
+                  return '';
+                }
+              })(),
+            }}
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography sx={{ flexBasis: '33.33%', flexShrink: 0 }}>
