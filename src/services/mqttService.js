@@ -80,17 +80,24 @@ class MqttService extends EventEmitter {
 
   _onMessage(topic, message) {
 
+    let json = JSON.parse(message.toString());
+
+    //test
+    //if(json?.print){
+    //  json.print.print_error = 120
+    //}
+
+    console.log(`[MQTT] 📥 ${topic}:`, json);
     websocketService.broadcastLog({
       type: `log_update`,
       payload: {
         id: randomUUID(),
         timeStamp: new Date().toISOString(),
-        message: message.toString(),
+        message: json,
         type: 'mqtt message'
       }
     });
 
-    let json = JSON.parse(message.toString());
     const seqId = this.findSequenceId(json);
 
     // 1) normale Antwort-Callbacks
