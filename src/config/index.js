@@ -35,6 +35,11 @@ const config = {
       '--disable-setuid-sandbox'
     ]
   },
+  offlineDetection: {
+    timeout: process.env.OFFLINE_DETECTION_TIMEOUT_MS || 5000,
+    interval: process.env.OFFLINE_DETECTION_INTERVAL_MS || 2000,
+    ip: process.env.PRINTER_IP,
+  },
   tasmota: {
     ip: process.env.TASMOTA_SWITCH_IP,
   },
