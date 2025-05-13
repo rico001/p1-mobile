@@ -14,6 +14,8 @@ services:
       - PRINTER_USER=bblp
       - PRINTER_ACCESS_CODE=88223979 #change to your printer access code
       - PRINTER_CA_CERT_PATH=cert/blcert.pem
+      - OFFLINE_DETECTION_TIMEOUT_MS=10000
+      - OFFLINE_DETECTION_INTERVAL_MS=5000
       - PUPPETEER_HEADLESS=true
       - SERVER_PORT=3000 #change to your desired port
     restart: unless-stopped
