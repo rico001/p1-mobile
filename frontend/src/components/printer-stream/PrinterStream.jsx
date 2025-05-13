@@ -53,6 +53,7 @@ export default function PrinterStream(props) {
           marginTop: { xs: '0', md: 3 },
           cursor: 'pointer',
           maxHeight: '250px',
+          height: 'fill-available',
           width: '100%',
           maxWidth: '420px',
           aspectRatio: '16/9',
@@ -94,8 +95,8 @@ export default function PrinterStream(props) {
           onClick={reloadStream}
           sx={{
             position: 'absolute',
-            top: 6,
-            right: 6,
+            bottom: 10,
+            right: 10,
             zIndex: 2,
             bgcolor: 'rgba(0,0,0,0.5)',
             color: '#fff',
@@ -107,8 +108,8 @@ export default function PrinterStream(props) {
         <Box
           sx={{
             position: 'absolute',
-            top: 6,
-            left: 6,
+            bottom: 10,
+            left: 10,
             zIndex: 2,
           }}
         >

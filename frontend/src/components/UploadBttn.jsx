@@ -12,7 +12,7 @@ import {
   Alert,
   TextField
 } from '@mui/material';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 
 export default function UploadFabDialog({ uploadUrl, onUploaded }) {
   const [open, setOpen] = useState(false);
@@ -102,7 +102,7 @@ export default function UploadFabDialog({ uploadUrl, onUploaded }) {
         onClick={handleOpen}
         sx={{ position: 'fixed', bottom: 80, right: 40 }}
       >
-        <CloudUploadIcon />
+        <FileUploadIcon />
       </Fab>
 
       <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
