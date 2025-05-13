@@ -37,7 +37,7 @@ export default function BottomNav() {
           icon={<AccountTreeIcon />}
         />
         <BottomNavigationAction 
-          label="Logbuch" 
+          label="Logs" 
           value="/log" 
           icon={<BookIcon />} 
         />
