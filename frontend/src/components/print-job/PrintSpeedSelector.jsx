@@ -4,8 +4,8 @@ import { useSelector } from 'react-redux';
 import { usePrintHead } from '../../hooks/usePrintHead';
 
 export const PrintSpeedSelector = ({show = true}) => {
-
-  const { spdLvl } = useSelector((state) => state.printer);
+  console.log('rendering PrintSpeedSelector');
+  const spdLvl = useSelector((state) => state.printer.spdLvl)
   const { setSpeed, isSettingSpeed } = usePrintHead();
 
   const handleClick = (newSpeed) => {
@@ -19,8 +19,8 @@ export const PrintSpeedSelector = ({show = true}) => {
   return (
     <Box
       sx={{
-        maxWidth: 420,
-        width: '100%',
+        maxWidth: 390,
+        width: '90%',
         color: 'white',
         m: 'auto',
         mt: 3,

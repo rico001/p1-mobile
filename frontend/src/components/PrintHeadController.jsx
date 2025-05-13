@@ -17,7 +17,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { usePrintHead } from '../hooks/usePrintHead';
 
 export const PrintHeadController = ({show = true}) => {
-
+  console.log('rendering PrintHeadController');
   const [axisMode, setAxisMode] = useState('xy');
   const [step, setStep] = useState(1);
   const {
@@ -25,7 +25,6 @@ export const PrintHeadController = ({show = true}) => {
     isMoving,
     home,
     isHoming,
-    setLight,
     isSettingLight
   } = usePrintHead();
 
@@ -38,8 +37,8 @@ export const PrintHeadController = ({show = true}) => {
   return (
     <Box
       sx={{
-        maxWidth: 420,
-        width: '100%',
+        maxWidth: 390,
+        width: '90%',
         color: 'white',
         m: 'auto',
         mt: 2,

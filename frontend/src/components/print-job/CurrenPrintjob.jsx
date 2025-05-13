@@ -1,27 +1,28 @@
 import React from 'react';
 import { Box, Typography, LinearProgress, Button, IconButton } from '@mui/material';
-import { useSelector } from 'react-redux';
+import { shallowEqual, useSelector } from 'react-redux';
 import { transparentPng } from '../../utils/functions';
 import { usePrintHead } from '../../hooks/usePrintHead';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import StopIcon from '@mui/icons-material/Stop';
+import { PrintError } from '../PrintError';
 
 const converRemainingTime = (remainingTime) => {
-  if (remainingTime === undefined || remainingTime === null) {
-    return '-';
+  if (remainingTime === undefined || remainingTime === null || remainingTime === 0) {
+    return null;
   }
   if (remainingTime > 60) {
     const hours = Math.floor(remainingTime / 60);
     const minutes = remainingTime % 60;
-    return `${hours} h ${minutes} m`;
+    return `${hours}h ${minutes}m`;
   } else {
-    return `${remainingTime} m`;
+    return `${remainingTime}m`;
   }
 }
 
-export const CurrenPrintjob = ({show = true}) => {
-
+export const CurrenPrintjob = ({ show = true }) => {
+  console.log('rendering CurrentPrintjob');
   const {
     stopPrint,
     isStopping,
@@ -31,8 +32,25 @@ export const CurrenPrintjob = ({show = true}) => {
     isResuming
   } = usePrintHead();
 
-  const { layerNum, totalLayerNum, mcPercent, printType, mcRemainingTime, gcodeFile } = useSelector(
-    (state) => state.printer
+  const {
+    layerNum,
+    totalLayerNum,
+    mcPercent,
+    printType,
+    mcRemainingTime,
+    gcodeFile,
+    printError
+  } = useSelector(
+    state => ({
+      layerNum: state.printer.layerNum,
+      totalLayerNum: state.printer.totalLayerNum,
+      mcPercent: state.printer.mcPercent,
+      printType: state.printer.printType,
+      mcRemainingTime: state.printer.mcRemainingTime,
+      gcodeFile: state.printer.gcodeFile,
+      printError: state.printer.printError,
+    }),
+    shallowEqual
   );
 
   if(!show){
@@ -87,16 +105,24 @@ export const CurrenPrintjob = ({show = true}) => {
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between' }}>
 
               <Typography variant="body2" fontSize={20} fontWeight={600}>
-                {mcPercent ? mcPercent + ' %' : '-'}
+                {mcPercent ? mcPercent + ' %' : ''}
               </Typography>
               <Typography variant="body2">
-                {converRemainingTime(mcRemainingTime)}
+                {mcRemainingTime ? 'noch ' + converRemainingTime(mcRemainingTime) : ''}
               </Typography>
             </Box>
             <LinearProgress variant="determinate" value={mcPercent || 0} sx={{ height: 8, borderRadius: 1, mt: 1, bgcolor: 'grey.200' }} />
           </Box>
         </Box>
       </Box>
+
+      {printError?.error_code_hex && (
+        <PrintError
+          code={printError.error_code_hex}
+          message={printError.error_message}
+          infoLink="https://wiki.bambulab.com/en/hms/error-code"
+        />
+      )}
 
       { /* Printing actions */}
       <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 3 }}>
