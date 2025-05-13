@@ -6,6 +6,7 @@ import { usePrintHead } from '../../hooks/usePrintHead';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import StopIcon from '@mui/icons-material/Stop';
+import { PrintError } from '../PrintError';
 
 const converRemainingTime = (remainingTime) => {
   if (remainingTime === undefined || remainingTime === null || remainingTime === 0) {
@@ -20,7 +21,7 @@ const converRemainingTime = (remainingTime) => {
   }
 }
 
-export const CurrenPrintjob = ({show = true}) => {
+export const CurrenPrintjob = ({ show = true }) => {
   console.log('rendering CurrentPrintjob');
   const {
     stopPrint,
@@ -37,15 +38,17 @@ export const CurrenPrintjob = ({show = true}) => {
     mcPercent,
     printType,
     mcRemainingTime,
-    gcodeFile
+    gcodeFile,
+    printError
   } = useSelector(
     state => ({
-      layerNum:        state.printer.layerNum,
-      totalLayerNum:   state.printer.totalLayerNum,
-      mcPercent:       state.printer.mcPercent,
-      printType:       state.printer.printType,
+      layerNum: state.printer.layerNum,
+      totalLayerNum: state.printer.totalLayerNum,
+      mcPercent: state.printer.mcPercent,
+      printType: state.printer.printType,
       mcRemainingTime: state.printer.mcRemainingTime,
-      gcodeFile:       state.printer.gcodeFile
+      gcodeFile: state.printer.gcodeFile,
+      printError: state.printer.printError,
     }),
     shallowEqual
   );
@@ -112,6 +115,14 @@ export const CurrenPrintjob = ({show = true}) => {
           </Box>
         </Box>
       </Box>
+
+      {printError?.error_code_hex && (
+        <PrintError
+          code={printError.error_code_hex}
+          message={printError.error_message}
+          infoLink="https://wiki.bambulab.com/en/hms/error-code"
+        />
+      )}
 
       { /* Printing actions */}
       <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 3 }}>
