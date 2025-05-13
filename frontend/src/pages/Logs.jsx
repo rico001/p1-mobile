@@ -7,6 +7,7 @@ import {
   Switch,
   FormControlLabel,
   Box,
+  Grid,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useSelector } from 'react-redux';
@@ -59,6 +60,9 @@ const Logs = () => {
 
   // Auto-Update effect
   useEffect(() => {
+    if (displayedLogs.length === 0) {
+      setDisplayedLogs([...logs]);
+    }
     if (autoUpdate) {
       setDisplayedLogs([...logs]);
     }
@@ -68,7 +72,6 @@ const Logs = () => {
 
   const preparedLogs = useMemo(() => {
     return [...displayedLogs].sort((a, b) => {
-      console.log('sort a', a);
       return b.timeStamp.localeCompare(a.timeStamp)
     }
     ).filter((log) => {
@@ -112,11 +115,11 @@ const Logs = () => {
     }).length
   }, [displayedLogs]);
 
-  const totalReportLogsLength = useMemo(() => { 
+  const totalReportLogsLength = useMemo(() => {
     return displayedLogs.filter((log) => {
       const msg = log.message;
       if (
-        filterReportMessages(msg)     
+        filterReportMessages(msg)
       ) {
         return true
       }
@@ -124,7 +127,7 @@ const Logs = () => {
     }).length
   }, [displayedLogs]);
 
-  const totalPrintLogsLength = useMemo(() => {  
+  const totalPrintLogsLength = useMemo(() => {
     return displayedLogs.filter((log) => {
       const msg = log.message;
       if (
@@ -137,7 +140,7 @@ const Logs = () => {
   }, [displayedLogs]);
 
   const totalSystemLogsLength = useMemo(() => {
-    return displayedLogs.filter((log) => { 
+    return displayedLogs.filter((log) => {
       const msg = log.message;
       if (
         filterSystemMessages(msg)
@@ -156,10 +159,7 @@ const Logs = () => {
   return (
     <Box>
       {/* Header & Auto-Update */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Typography variant="h6" sx={{ mr: 2 }}>
-          Logs ({preparedLogs.length} / {logs.length})
-        </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 2 }}>
         <FormControlLabel
           control={
             <Switch
@@ -167,69 +167,52 @@ const Logs = () => {
               onChange={(e) => setAutoUpdate(e.target.checked)}
             />
           }
-          label={autoUpdate ? 'Auto-Update an' : 'Auto-Update aus'}
+          label={`Logs aktualiseren (${preparedLogs.length} / ${displayedLogs.length})`}
           sx={{ m: 1 }}
         />
       </Box>
 
       {/* Filter-Switches */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2 }}>
-        <FormControlLabel
-          sx={{ color: messageTypeColors.error }}
-          control={
-            <Switch
-              checked={showError}
-              onChange={(e) => setShowError(e.target.checked)}
+      <Grid
+        container
+        spacing={2}
+        mb={2}
+        justifyContent="center"
+        alignItems="center"
+      >
+        {[
+          { state: showError, setter: setShowError, color: messageTypeColors.error, label: `Error (${totalErrorLogsLength || 0})` },
+          { state: showInfo, setter: setShowInfo, color: messageTypeColors.info, label: `Info (${totalInfoLogsLength || 0})` },
+          { state: showReport, setter: setShowReport, color: messageTypeColors.report, label: `Report (${totalReportLogsLength || 0})` },
+          { state: showPrint, setter: setShowPrint, color: messageTypeColors.print, label: `Print (${totalPrintLogsLength || 0})` },
+          { state: showSystem, setter: setShowSystem, color: messageTypeColors.system, label: `System (${totalSystemLogsLength || 0})` }
+        ].map(({ state, setter, color, label }) => (
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            md={4}
+            lg={2}
+            key={label}
+            sx={{ display: 'flex', justifyContent: 'center' }}
+          >
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={state}
+                  onChange={(e) => setter(e.target.checked)}
+                />
+              }
+              label={label}
+              sx={{ color }}
             />
-          }
-          label={`Error (${totalErrorLogsLength || 0})`}
-        />
-        <FormControlLabel
-          sx={{ color: messageTypeColors.info }}
-          control={
-            <Switch
-              checked={showInfo}
-              onChange={(e) => setShowInfo(e.target.checked)}
-            />
-          }
-          label={`Info (${totalInfoLogsLength || 0})`}
-        />
-        <FormControlLabel
-          sx={{ color: messageTypeColors.report }}
-          control={
-            <Switch
-              checked={showReport}
-              onChange={(e) => setShowReport(e.target.checked)}
-            />
-          }
-          label={`Report (${totalReportLogsLength || 0})`}
-        />
-        <FormControlLabel
-          sx={{ color: messageTypeColors.print }}
-          control={
-            <Switch
-              checked={showPrint}
-              onChange={(e) => setShowPrint(e.target.checked)}
-            />
-          }
-          label={`Print (${totalPrintLogsLength || 0})`}
-        />
-        <FormControlLabel
-          sx={{ color: messageTypeColors.system }}
-          control={
-            <Switch
-              checked={showSystem}
-              onChange={(e) => setShowSystem(e.target.checked)}
-            />
-          }
-          label={`System (${totalSystemLogsLength || 0})`}
-        />
-      </Box>
-      
+          </Grid>
+        ))}
+      </Grid>
 
       {/* Log-Liste */}
-      <Box sx={{ maxHeight: '65vh', overflowY: 'auto', m: 2 }}>
-        {preparedLogs.map((log) => (
+      <Box sx={{ maxHeight: '55vh', overflowY: 'auto', m: 2 }}>
+        {preparedLogs.map((log, index) => (
           <Accordion
             key={log.id}
             expanded={expandedId === log.id}
@@ -290,7 +273,11 @@ const Logs = () => {
               >
                 {(() => {
                   try {
-                    return JSON.stringify(log.message, null, 2);
+
+                    return JSON.stringify(log.message, null, 2)
+                      .replace(/"([^"]+)"(?=\s*:)/g, '$1')
+                      .replace(/:\s*"([^"]*)"/g, ': $1');
+
                   } catch {
                     // Falls Nachricht kein JSON ist
                     return (
