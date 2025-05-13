@@ -15,7 +15,9 @@ import {
   setTotalLayerNum,
   setGcodeFile,
   setAMS,
-  setSpdLvl
+  setSpdLvl,
+  setLog,
+  setPrintError
 } from '../store/printerSlice';
 import useWebSocket from '../hooks/useWebsocket';
 
@@ -44,12 +46,19 @@ export default function PrinterWebSocket() {
 
       const { type, payload } = msg;
 
-      if (type === 'several' && Array.isArray(payload)) {
+      //several_logs or several messages
+      if (type === 'several_logs' && Array.isArray(payload)) {
         payload.forEach((entry) => {
-          const { type: entryType, payload: entryPayload } = entry;
-          handleMessage(entryType, entryPayload);
+          const { type, payload } = entry;
+          handleMessage(type, payload);
+        });
+      } else if (type === 'several' && Array.isArray(payload)) {
+        payload.forEach((entry) => {
+          const { type, payload } = entry;
+          handleMessage(type, payload);
         });
       } else {
+        ///simple single message
         handleMessage(type, payload);
       }
     },
@@ -104,6 +113,13 @@ export default function PrinterWebSocket() {
         console.log('spd_lvl_update', payload);
         dispatch(setSpdLvl(payload));
         break;
+      case 'log_update':
+        console.log('-----> log_update')
+        dispatch(setLog(payload));       
+        break;
+      case 'print_error_update':
+        console.log('print_error_update', payload);
+        dispatch(setPrintError(payload));
       default:
         break;
     }

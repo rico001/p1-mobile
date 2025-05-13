@@ -21,7 +21,8 @@ const getSignalStrengthNumber = (signal) => {
 };
 
 export default function WlanStatus() {
-  const { wifiSignal } = useSelector((state) => state.printer);
+  console.log('rendering WlanStatus');
+  const wifiSignal = useSelector((state) => state.printer.wifiSignal)
   const signalValue = getSignalStrengthNumber(wifiSignal);
   const [open, setOpen] = useState(false);
 

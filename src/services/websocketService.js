@@ -6,6 +6,7 @@ class WebSocketService {
   constructor() {
     this.clients = new Map();
     this.lastMessages = new Map(); 
+    this.logs = [];
   }
 
   init(server) {
@@ -22,6 +23,8 @@ class WebSocketService {
       // Sende alle zuletzt gespeicherten Nachrichten in einer Nachricht vom Typ 'several', payload ist ein Array mit {type:..., payload: ...}
       const payload = [...this.lastMessages.entries()].map(([type, payload]) => ({ type, payload }));
       ws.send(JSON.stringify({ type:'several', payload }));
+      // Sende alle Logs
+      ws.send(JSON.stringify({ type: 'several_logs', payload: this.logs }));
       
 
       ws.on('message', (message) => {
@@ -54,6 +57,20 @@ class WebSocketService {
       this.lastMessages.set(message.type, message.payload);
     }
     const data = JSON.stringify(message);
+    for (const ws of this.clients.values()) {
+      if (ws.readyState === ws.OPEN) {
+        ws.send(data);
+      }
+    }
+  }
+
+  broadcastLog(message) {
+    const data = JSON.stringify(message);
+    if (this.logs.length >= 100) {
+      this.logs.shift();
+    }
+    this.logs.push(message);
+
     for (const ws of this.clients.values()) {
       if (ws.readyState === ws.OPEN) {
         ws.send(data);

@@ -14,6 +14,7 @@ import {
 import { useTasmota } from '../hooks/useTasmota';
 
 export default function TasmotaSwitch() {
+  console.log('rendering TasmotaSwitch');
   const { isOn, isLoading, error, toggle, isToggling } = useTasmota();
   const [open, setOpen] = useState(false);
 

@@ -4,6 +4,7 @@ export const PAGES = {
     MODELS: 'models',
     PRINTER: 'printer',
     AMS: 'ams',
+    LOG: 'log',
 }
 
 const initialState = {

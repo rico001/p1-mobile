@@ -1,6 +1,9 @@
 #docker build -t bambu-http-proxy:latest .
 #FROM ghcr.io/puppeteer/puppeteer:latest
 FROM node:20.9.0
+# ✅ PING installieren (für ICMP im OfflineDetectionService)
+RUN apt-get update && apt-get install -y iputils-ping
+# App-Setup
 WORKDIR /app
 COPY package*.json ./
 RUN echo "Current working directory: $(pwd)" && ls -la
