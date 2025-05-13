@@ -54,7 +54,7 @@ export const CurrenPrintjob = ({ show = true }) => {
   );
 
   if(!show){
-    //return null;
+    return null;
   }
 
   let isPrinting = printType === 'local';
