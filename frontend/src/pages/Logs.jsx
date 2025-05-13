@@ -40,6 +40,20 @@ const filterErrorMessages = (msg) => {
   }
   return false
 }
+//no type is matched
+const filterOtherMessages = (msg) => {
+  if (
+    !filterErrorMessages(msg) &&
+    !filterInfoMessages(msg) &&
+    !filterReportMessages(msg) &&
+    !filterPrintMessages(msg) &&
+    !filterSystemMessages(msg)
+  ) {
+    return true
+  }
+  return false
+}
+
 
 const Logs = () => {
   const logs = useSelector((state) => state.printer.logs);
@@ -54,6 +68,7 @@ const Logs = () => {
   const [showReport, setShowReport] = useLocalStorage('logs-filter-showReport', true);
   const [showPrint, setShowPrint] = useLocalStorage('logs-filter-showPrint', true);
   const [showSystem, setShowSystem] = useLocalStorage('logs-filter-showSystem', true);
+  const [showOther, setShowOther] = useLocalStorage('logs-filter-showOther', true);
 
   // Accordion expanded
   const [expandedId, setExpandedId] = useState(null);
@@ -81,13 +96,14 @@ const Logs = () => {
         showInfo && filterInfoMessages(msg) ||
         showReport && filterReportMessages(msg) ||
         showPrint && filterPrintMessages(msg) ||
-        showSystem && filterSystemMessages(msg)
+        showSystem && filterSystemMessages(msg) ||
+        showOther && filterOtherMessages(msg)
       ) {
         return true
       }
       return false;
     })
-  }, [displayedLogs, showError, showInfo, showReport, showPrint]);
+  }, [displayedLogs, showError, showInfo, showReport, showPrint, showSystem, showOther]);
 
   // calculate total logs length for each type
 
@@ -151,6 +167,18 @@ const Logs = () => {
     }).length
   }, [displayedLogs]);
 
+  const totalOtherLogsLength = useMemo(() => {
+    return displayedLogs.filter((log) => {
+      const msg = log.message;
+      if (
+        filterOtherMessages(msg)
+      ) {
+        return true
+      }
+      return false;
+    }).length
+  }, [displayedLogs]);
+
 
   const handleChange = (id) => (event, isExpanded) => {
     setExpandedId(isExpanded ? id : null);
@@ -167,7 +195,7 @@ const Logs = () => {
               onChange={(e) => setAutoUpdate(e.target.checked)}
             />
           }
-          label={`Logs aktualiseren (${preparedLogs.length} / ${displayedLogs.length})`}
+          label={`Logs aktualiseren (${displayedLogs.length})`}
           sx={{ m: 1 }}
         />
       </Box>
@@ -185,7 +213,8 @@ const Logs = () => {
           { state: showInfo, setter: setShowInfo, color: messageTypeColors.info, label: `Info (${totalInfoLogsLength || 0})` },
           { state: showReport, setter: setShowReport, color: messageTypeColors.report, label: `Report (${totalReportLogsLength || 0})` },
           { state: showPrint, setter: setShowPrint, color: messageTypeColors.print, label: `Print (${totalPrintLogsLength || 0})` },
-          { state: showSystem, setter: setShowSystem, color: messageTypeColors.system, label: `System (${totalSystemLogsLength || 0})` }
+          { state: showSystem, setter: setShowSystem, color: messageTypeColors.system, label: `System (${totalSystemLogsLength || 0})` },
+          { state: showOther, setter: setShowOther, color: messageTypeColors.other, label: `Other (${totalOtherLogsLength || 0})` },
         ].map(({ state, setter, color, label }) => (
           <Grid
             item

@@ -82,10 +82,19 @@ class MqttService extends EventEmitter {
 
     let json = JSON.parse(message.toString());
 
-    //test
+    //some test
     //if(json?.print){
     //  json.print.print_error = 120
     //}
+    /*
+    json = {
+      "camera": {
+        "sequence_id": "0",
+        "command": "ipcam_timelapse",
+        "control": "enable" // "enable" or "disable"
+      }
+    }
+    */
 
     console.log(`[MQTT] 📥 ${topic}:`, json);
     websocketService.broadcastLog({
