@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   Typography,
   Accordion,
@@ -12,6 +12,7 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useSelector } from 'react-redux';
 import { useLocalStorage } from '../hooks/userLocalStorage';
+import AppLoader from '../components/AppLoader';
 
 const messageTypeColors = {
   print: 'rgb(105, 188, 194)',
@@ -23,217 +24,113 @@ const messageTypeColors = {
 };
 
 //filter functions
-const filterPrintMessages = (msg) => msg?.print
-const filterReportMessages = (msg) => msg?.report
-const filterInfoMessages = (msg) => msg?.info
-const filterSystemMessages = (msg) => msg?.system
-const filterErrorMessages = (msg) => {
-  if (msg.print) {
-    return msg?.print?.print_error === 0 || msg.print.print_error === undefined
-      ? false
-      : true
-  }
-  if (msg.report) {
-    return msg?.report?.print_error === 0 || msg.report.print_error === undefined
-      ? false
-      : true
-  }
-  return false
-}
-//no type is matched
-const filterOtherMessages = (msg) => {
-  if (
-    !filterErrorMessages(msg) &&
-    !filterInfoMessages(msg) &&
-    !filterReportMessages(msg) &&
-    !filterPrintMessages(msg) &&
-    !filterSystemMessages(msg)
-  ) {
-    return true
-  }
-  return false
-}
+const filters = {
+  error: msg => {
+    if (msg.print) return msg.print.print_error > 0;
+    if (msg.report) return msg.report.print_error > 0;
+    return false;
+  },
+  info: msg => !!msg.info,
+  report: msg => !!msg.report,
+  print: msg => !!msg.print,
+  system: msg => !!msg.system,
+  other: msg => !Object.keys(filters)
+    .filter(key => key !== 'other')
+    .some(key => filters[key](msg)),
+};
 
+const messageTypes = Object.keys(filters);
 
 const Logs = () => {
-  const logs = useSelector((state) => state.printer.logs);
-
-  // Auto-Update
+  const logs = useSelector(state => state.printer.logs);
   const [autoUpdate, setAutoUpdate] = useLocalStorage('logs-autoUpdate', true);
-  const [displayedLogs, setDisplayedLogs] = useState([...logs] || []);
+  const [displayedLogs, setDisplayedLogs] = useState([]);
 
   // Filter-Zustände
-  const [showError, setShowError] = useLocalStorage('logs-filter-showError', true);
-  const [showInfo, setShowInfo] = useLocalStorage('logs-filter-showInfo', true);
-  const [showReport, setShowReport] = useLocalStorage('logs-filter-showReport', true);
-  const [showPrint, setShowPrint] = useLocalStorage('logs-filter-showPrint', true);
-  const [showSystem, setShowSystem] = useLocalStorage('logs-filter-showSystem', true);
-  const [showOther, setShowOther] = useLocalStorage('logs-filter-showOther', true);
+  const [show, setShow] = useLocalStorage('logs-show', {
+    error: true,
+    info: true,
+    report: true,
+    print: true,
+    system: true,
+    other: true,
+  });
 
-  // Accordion expanded
-  const [expandedId, setExpandedId] = useState(null);
+  const toggleShow = useCallback(type => {
+    setShow(prev => ({ ...prev, [type]: !prev[type] }));
+  }, [setShow]);
 
-  // Auto-Update effect
+  // Auto-Update-Effekt
   useEffect(() => {
-    if (displayedLogs.length === 0) {
-      setDisplayedLogs([...logs]);
-    }
-    if (autoUpdate) {
-      setDisplayedLogs([...logs]);
-    }
+    setDisplayedLogs(prev => (
+      prev.length === 0 || autoUpdate
+        ? [...logs]
+        : prev
+    ));
   }, [logs, autoUpdate]);
 
-  // Sort and filter logs
+  // Sortieren & Filtern
+  const preparedLogs = useMemo(() => (
+    [...displayedLogs]
+      .sort((a, b) => b.timeStamp.localeCompare(a.timeStamp))
+      .filter(({ message }) =>
+        messageTypes.some(type => show[type] && filters[type](message))
+      )
+  ), [displayedLogs, show]);
 
-  const preparedLogs = useMemo(() => {
-    return [...displayedLogs].sort((a, b) => {
-      return b.timeStamp.localeCompare(a.timeStamp)
-    }
-    ).filter((log) => {
-      const msg = log.message;
-      if (
-        showError && filterErrorMessages(msg) ||
-        showInfo && filterInfoMessages(msg) ||
-        showReport && filterReportMessages(msg) ||
-        showPrint && filterPrintMessages(msg) ||
-        showSystem && filterSystemMessages(msg) ||
-        showOther && filterOtherMessages(msg)
-      ) {
-        return true
-      }
-      return false;
-    })
-  }, [displayedLogs, showError, showInfo, showReport, showPrint, showSystem, showOther]);
+  // Zähle Einträge pro Typ
+  const counts = useMemo(() => (
+    messageTypes.reduce((acc, type) => ({
+      ...acc,
+      [type]: displayedLogs.filter(({ message }) => filters[type](message)).length,
+    }), {})
+  ), [displayedLogs]);
 
-  // calculate total logs length for each type
+  const getBorder = message => (
+    filters.error(message)
+      ? `20px solid ${messageTypeColors.error}`
+      : '20px solid transparent'
+  );
 
-  const totalErrorLogsLength = useMemo(() => {
-    return displayedLogs.filter((log) => {
-      const msg = log.message;
-      if (
-        filterErrorMessages(msg)
-      ) {
-        return true
-      }
-      return false;
-    }).length
-  }, [displayedLogs]);
-
-  const totalInfoLogsLength = useMemo(() => {
-    return displayedLogs.filter((log) => {
-      const msg = log.message;
-      if (
-        filterInfoMessages(msg)
-      ) {
-        return true
-      }
-      return false;
-    }).length
-  }, [displayedLogs]);
-
-  const totalReportLogsLength = useMemo(() => {
-    return displayedLogs.filter((log) => {
-      const msg = log.message;
-      if (
-        filterReportMessages(msg)
-      ) {
-        return true
-      }
-      return false;
-    }).length
-  }, [displayedLogs]);
-
-  const totalPrintLogsLength = useMemo(() => {
-    return displayedLogs.filter((log) => {
-      const msg = log.message;
-      if (
-        filterPrintMessages(msg)
-      ) {
-        return true
-      }
-      return false;
-    }).length
-  }, [displayedLogs]);
-
-  const totalSystemLogsLength = useMemo(() => {
-    return displayedLogs.filter((log) => {
-      const msg = log.message;
-      if (
-        filterSystemMessages(msg)
-      ) {
-        return true
-      }
-      return false;
-    }).length
-  }, [displayedLogs]);
-
-  const totalOtherLogsLength = useMemo(() => {
-    return displayedLogs.filter((log) => {
-      const msg = log.message;
-      if (
-        filterOtherMessages(msg)
-      ) {
-        return true
-      }
-      return false;
-    }).length
-  }, [displayedLogs]);
-
-
-  const handleChange = (id) => (event, isExpanded) => {
-    setExpandedId(isExpanded ? id : null);
+  const getBackground = message => {
+    const type = messageTypes.find(type => filters[type](message));
+    return messageTypeColors[type] || '';
   };
+
+  const [expandedId, setExpandedId] = useState(null);
+  const handleChange = useCallback(
+    id => (_, expanded) => setExpandedId(expanded ? id : null),
+    []
+  );
 
   return (
     <Box>
-      {/* Header & Auto-Update */}
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 2 }}>
+      {/* Auto-Update Switch */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
         <FormControlLabel
           control={
             <Switch
               checked={autoUpdate}
-              onChange={(e) => setAutoUpdate(e.target.checked)}
+              onChange={e => setAutoUpdate(e.target.checked)}
             />
           }
-          label={`Logs aktualiseren (${displayedLogs.length})`}
-          sx={{ m: 1 }}
+          label={`Logs aktualisieren (${displayedLogs.length})`}
         />
       </Box>
 
       {/* Filter-Switches */}
-      <Grid
-        container
-        spacing={2}
-        mb={2}
-        justifyContent="center"
-        alignItems="center"
-      >
-        {[
-          { state: showError, setter: setShowError, color: messageTypeColors.error, label: `Error (${totalErrorLogsLength || 0})` },
-          { state: showInfo, setter: setShowInfo, color: messageTypeColors.info, label: `Info (${totalInfoLogsLength || 0})` },
-          { state: showReport, setter: setShowReport, color: messageTypeColors.report, label: `Report (${totalReportLogsLength || 0})` },
-          { state: showPrint, setter: setShowPrint, color: messageTypeColors.print, label: `Print (${totalPrintLogsLength || 0})` },
-          { state: showSystem, setter: setShowSystem, color: messageTypeColors.system, label: `System (${totalSystemLogsLength || 0})` },
-          { state: showOther, setter: setShowOther, color: messageTypeColors.other, label: `Other (${totalOtherLogsLength || 0})` },
-        ].map(({ state, setter, color, label }) => (
-          <Grid
-            item
-            xs={12}
-            sm={6}
-            md={4}
-            lg={2}
-            key={label}
-            sx={{ display: 'flex', justifyContent: 'center' }}
-          >
+      <Grid container spacing={2} justifyContent="center" mb={2}>
+        {messageTypes.map(type => (
+          <Grid item xs={12} sm={6} md={4} lg={2} key={type} sx={{ display: 'flex', justifyContent: 'center' }}>
             <FormControlLabel
               control={
                 <Switch
-                  checked={state}
-                  onChange={(e) => setter(e.target.checked)}
+                  checked={show[type]}
+                  onChange={() => toggleShow(type)}
                 />
               }
-              label={label}
-              sx={{ color }}
+              label={`${type.charAt(0).toUpperCase() + type.slice(1)} (${counts[type] || 0})`}
+              sx={{ color: messageTypeColors[type] }}
             />
           </Grid>
         ))}
@@ -241,51 +138,12 @@ const Logs = () => {
 
       {/* Log-Liste */}
       <Box sx={{ maxHeight: '55vh', overflowY: 'auto', m: 2 }}>
-        {preparedLogs.map((log, index) => (
+        {preparedLogs.map(log => (
           <Accordion
             key={log.id}
             expanded={expandedId === log.id}
             onChange={handleChange(log.id)}
-            sx={{
-              borderLeft: (() => {
-                try {
-                  const msgObj = log.message;
-                  if (msgObj.print) {
-                    return msgObj?.print?.print_error === 0 || msgObj.print.print_error === undefined
-                      ? `20px solid transparent`
-                      : `20px solid ${messageTypeColors.error}`;
-                  }
-                  if (msgObj.report) {
-                    return msgObj?.report?.print_error === 0 || msgObj.report.print_error === undefined
-                      ? `20px solid transparent`
-                      : `20px solid ${messageTypeColors.error}`;
-                  }
-                } catch {
-                  return `20px solid transparent`;
-                }
-                return `20px solid transparent`;
-              })(),
-              background: (() => {
-                try {
-                  const msgObj = log.message;
-                  if (msgObj.print) {
-                    return messageTypeColors.print;
-                  }
-                  if (msgObj.report) {
-                    return messageTypeColors.report;
-                  }
-                  if (msgObj?.info) {
-                    return messageTypeColors.info;
-                  }
-                  if (msgObj?.system) {
-                    return messageTypeColors.system;
-                  }
-                  return messageTypeColors.other;
-                } catch {
-                  return '';
-                }
-              })(),
-            }}
+            sx={{ borderLeft: getBorder(log.message), background: getBackground(log.message) }}
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography sx={{ flexBasis: '33.33%', flexShrink: 0 }}>
@@ -296,24 +154,14 @@ const Logs = () => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Box
-                component="pre"
-                sx={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}
-              >
+              <Box component="pre" sx={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
                 {(() => {
                   try {
-
                     return JSON.stringify(log.message, null, 2)
-                      .replace(/"([^"]+)"(?=\s*:)/g, '$1')
-                      .replace(/:\s*"([^"]*)"/g, ': $1');
-
+                      .replace(/"([^\"]+)"(?=\s*:)/g, '$1')
+                      .replace(/:\s*"([^\"]*)"/g, ': $1');
                   } catch {
-                    // Falls Nachricht kein JSON ist
-                    return (
-                      <Typography component="span">
-                        {log.message}
-                      </Typography>
-                    );
+                    return log.message;
                   }
                 })()}
               </Box>
@@ -321,6 +169,8 @@ const Logs = () => {
           </Accordion>
         ))}
       </Box>
+
+      <AppLoader open={logs.length === 0} texts={["Lade Logs…"]} displayTime={3000} />
     </Box>
   );
 };

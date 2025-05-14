@@ -79,25 +79,25 @@ export function usePrintHead() {
     return {
         // Move control
         move: moveMutation.mutate,
-        isMoving: moveMutation.isLoading,
+        isMoving: moveMutation.isPending,
         home: homeMutation.mutate,
-        isHoming: homeMutation.isLoading,
+        isHoming: homeMutation.isPending,
 
         // Light control
         setLight: lightMutation.mutate,
-        isSettingLight: lightMutation.isLoading,
+        isSettingLight: lightMutation.isPending,
 
         // Speed control
         setSpeed: speedMutation.mutate,
-        isSettingSpeed: speedMutation.isLoading,
+        isSettingSpeed: speedMutation.isPending,
 
         // Print control
         stopPrint: stopMutation.mutate,
-        isStopping: stopMutation.isLoading,
+        isStopping: stopMutation.isPending,
         pausePrint: pauseMutation.mutate,
-        isPausing: pauseMutation.isLoading,
+        isPausing: pauseMutation.isPending,
         resumePrint: resumeMutation.mutate,
-        isResuming: resumeMutation.isLoading,
+        isResuming: resumeMutation.isPending,
 
         // several queries for state
         amsState: stateQuery.data,
