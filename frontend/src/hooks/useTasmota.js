@@ -40,8 +40,8 @@ export function useTasmota() {
     turnOn: onMutation.mutate,
     turnOff: offMutation.mutate,
     // Loading-Flags
-    isToggling: toggleMutation.isLoading,
-    isTurningOn: onMutation.isLoading,
-    isTurningOff: offMutation.isLoading,
+    isToggling: toggleMutation.isPending,
+    isTurningOn: onMutation.isPending,
+    isTurningOff: offMutation.isPending,
   };
 }

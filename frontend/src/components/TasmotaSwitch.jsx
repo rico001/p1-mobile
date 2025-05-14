@@ -72,6 +72,7 @@ export default function TasmotaSwitch() {
         </DialogTitle>
         <DialogContent dividers sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <Button
+            loading={isLoading}
             onClick={() => { handleToggle(); handleClose(); }}
             disabled={isToggling || status.disabled}
             variant="contained"

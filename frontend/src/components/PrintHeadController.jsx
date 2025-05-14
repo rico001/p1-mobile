@@ -16,7 +16,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { usePrintHead } from '../hooks/usePrintHead';
 
-export const PrintHeadController = ({show = true}) => {
+export const PrintHeadController = ({ show = true }) => {
   console.log('rendering PrintHeadController');
   const [axisMode, setAxisMode] = useState('xy');
   const [step, setStep] = useState(1);
@@ -90,7 +90,7 @@ export const PrintHeadController = ({show = true}) => {
         <Box />
         <IconButton
           color="primary"
-          disabled={loading}
+          sx={{ pointerEvents: loading ? 'none' : 'auto' }}
           onClick={() =>
             move({
               axis: axisMode === 'z' ? 'z' : 'y',
@@ -105,29 +105,27 @@ export const PrintHeadController = ({show = true}) => {
         {/* Left */}
         <IconButton
           color="primary"
-          disabled={axisMode === 'z' || loading}
+          sx={{ pointerEvents: loading ? 'none' : 'auto' }}
+          disabled={axisMode === 'z'}
           onClick={() => move({ axis: 'x', value: -step })}
         >
           <ArrowBackIosNewIcon />
         </IconButton>
 
         {/* Home */}
-        {isHoming
-          ? <CircularProgress size={24} />
-          : <IconButton
-            color="primary"
-            disabled={loading}
-            sx={{ backgroundColor: '#4040404a', p: 2 }}
-            onClick={() => home()}
-          >
-            <HomeIcon />
-          </IconButton>
-        }
+        <IconButton
+          color="primary"
+          sx={{ backgroundColor: '#4040404a', p: 2, pointerEvents: loading ? 'none' : 'auto'  }}
+          onClick={() => home()}
+        >
+          <HomeIcon />
+        </IconButton>
 
         {/* Right */}
         <IconButton
           color="primary"
-          disabled={axisMode === 'z' || loading}
+          sx={{ pointerEvents: loading ? 'none' : 'auto' }}
+          disabled={axisMode === 'z'}
           onClick={() => move({ axis: 'x', value: step })}
         >
           <ArrowForwardIosIcon />
@@ -137,7 +135,7 @@ export const PrintHeadController = ({show = true}) => {
         <Box />
         <IconButton
           color="primary"
-          disabled={loading}
+          sx={{ pointerEvents: loading ? 'none' : 'auto' }}
           onClick={() =>
             move({
               axis: axisMode === 'z' ? 'z' : 'y',
