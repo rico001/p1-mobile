@@ -19,6 +19,9 @@ import {
   setLog,
   setPrintError
 } from '../store/printerSlice';
+import { 
+  setEnv 
+} from '../store/uiSlice';
 import useWebSocket from '../hooks/useWebsocket';
 
 const getWebSocketUrl = () => {
@@ -115,11 +118,16 @@ export default function PrinterWebSocket() {
         break;
       case 'log_update':
         console.log('-----> log_update')
-        dispatch(setLog(payload));       
+        dispatch(setLog(payload));
         break;
       case 'print_error_update':
         console.log('print_error_update', payload);
         dispatch(setPrintError(payload));
+        break;
+      case 'env':
+        console.log('env', payload);
+        dispatch(setEnv(payload));
+        break;
       default:
         break;
     }

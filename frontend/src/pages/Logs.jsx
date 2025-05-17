@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useSelector } from 'react-redux';
-import { useLocalStorage } from '../hooks/userLocalStorage';
+import useLocalStorage from '../hooks/useLocalStorage';
 import AppLoader from '../components/AppLoader';
 
 const messageTypeColors = {

@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Box, CircularProgress, Dialog, DialogContent, IconButton } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import LightToggle from './LightToggle';
+import ChamberLightToggle from './ChamberLightToggle';
 import { transparentPng } from '../../utils/functions';
 import BedTempState from '../print-sensors/BedTempState';
 import NozzleTempState from '../print-sensors/NozzleTempState';
+import ThirdPartyIframeToggle from './ThirdPartyIframeToggle';
 
 export default function PrinterStream(props) {
   console.log('rendering PrinterStream');
@@ -113,7 +114,17 @@ export default function PrinterStream(props) {
             zIndex: 2,
           }}
         >
-          <LightToggle />
+          <ChamberLightToggle />
+        </Box>
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 10,
+            left: 50,
+            zIndex: 2,
+          }}
+        >
+          <ThirdPartyIframeToggle />
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, padding: 0.5 }}>
         <BedTempState />

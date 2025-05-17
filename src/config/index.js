@@ -43,6 +43,9 @@ const config = {
   tasmota: {
     ip: process.env.TASMOTA_SWITCH_IP,
   },
+  webSocket: {
+    thirdPartyIframeToggleSrc: process.env.THIRD_PARTY_IFRAME_TOGGLE_SRC || '',
+  }
 
 };
 console.log('[Config] Konfiguration geladen:', config);
