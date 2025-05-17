@@ -53,7 +53,7 @@ export const CurrenPrintjob = ({ show = true }) => {
     shallowEqual
   );
 
-  if(!show){
+  if (!show) {
     return null;
   }
 
@@ -89,7 +89,15 @@ export const CurrenPrintjob = ({ show = true }) => {
         { /* Printing progress and status */}
         <Box sx={{ flexGrow: 1, ml: 1, mr: 2 }}>
 
-          <Typography variant="subtitle1" fontWeight={600} textAlign={'left'} mb={1}>
+          <Typography
+            variant="subtitle1"
+            fontWeight={600}
+            textAlign={'left'}
+            mb={1}
+            sx={{
+              wordBreak: 'break-all'
+            }}
+          >
             {gcodeFile || 'k.A.'}
           </Typography>
 
