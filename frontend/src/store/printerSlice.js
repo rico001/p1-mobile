@@ -27,7 +27,7 @@ const initialState = {
     error_code_hex: null,
     error_message: null,
   },
-  logs: [],
+  logs: []
 };
 
 const printerSlice = createSlice({
@@ -112,7 +112,7 @@ export const {
   setAMS,
   setSpdLvl,
   setLog,
-  setPrintError,
+  setPrintError
 } = printerSlice.actions;
 
 export default printerSlice.reducer;
