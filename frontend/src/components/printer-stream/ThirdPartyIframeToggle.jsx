@@ -46,6 +46,8 @@ export default function ThirdPartyIframeToggle() {
               width: '100%',
               height: '100%',
               border: 'none',
+              backgroundColor: 'transparent',
+              background: 'transparent',
             }}
             title="Third Party Iframe"
           />
