@@ -1,29 +1,31 @@
+// src/components/TraySettingsDialog.js
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  Box,
-  Grid
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  Button, TextField, Box, Grid
 } from '@mui/material';
+import RgbPicker from './RgbPicker';
 
 const TraySettingsDialog = ({ open, onClose, tray, onSave }) => {
-
   const [type, setType] = useState('');
-  const [color, setColor] = useState('');
+  const [colorRgb, setColorRgb] = useState({ r: 22, g: 22, b: 22 });
   const [tempMax, setTempMax] = useState('');
   const [tempMin, setTempMin] = useState('');
   const [trayInfoIdx, setTrayInfoIdx] = useState('');
 
-
   useEffect(() => {
     if (tray) {
       setType(tray.trayType || '');
-      setColor(tray.trayColor || '');
+      // trayColor ist String "RRGGBBAA"
+      if (tray.trayColor && tray.trayColor.length >= 8) {
+        const hex = tray.trayColor.slice(0, 6);
+        setColorRgb({
+          r: parseInt(hex.slice(0, 2), 16),
+          g: parseInt(hex.slice(2, 4), 16),
+          b: parseInt(hex.slice(4, 6), 16),
+        });
+      }
       setTempMax(tray.tempMax || '');
       setTempMin(tray.tempMin || '');
       setTrayInfoIdx(tray.trayInfoIdx || '');
@@ -31,19 +33,24 @@ const TraySettingsDialog = ({ open, onClose, tray, onSave }) => {
   }, [tray]);
 
   const handleSave = () => {
+    // RGB → HEX und Alpha "FF" anhängen
+    const hex = [colorRgb.r, colorRgb.g, colorRgb.b]
+      .map(c => c.toString(16).padStart(2, '0'))
+      .join('')
+      .toUpperCase();
     onSave({
       trayType: type.trim(),
-      trayColor: color.trim(),
-      tempMax: tempMax,
-      tempMin: tempMin,
-      trayInfoIdx: trayInfoIdx
+      trayColor: `${hex}FF`,
+      tempMax,
+      tempMin,
+      trayInfoIdx,
     });
     onClose();
   };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Tray-Einstellungen (FFFFFFFF oder 161616FF)</DialogTitle>
+      <DialogTitle>Tray-Einstellungen (RGB-Picker)</DialogTitle>
       <DialogContent dividers>
         <Box component="form" noValidate autoComplete="off" sx={{ mt: 1 }}>
           <Grid container spacing={2}>
@@ -56,20 +63,16 @@ const TraySettingsDialog = ({ open, onClose, tray, onSave }) => {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                label="Farbe"
-                value={color}
-                onChange={(e) => setColor(e.target.value)}
-                fullWidth
-              />
+              {/* Unser neuer RGB-Picker */}
+              <RgbPicker color={colorRgb} onChange={setColorRgb} />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 label="max. Nozzle Temp."
                 value={tempMax}
                 onChange={(e) => setTempMax(e.target.value)}
+                type="number"
                 fullWidth
-                type="number" 
               />
             </Grid>
             <Grid item xs={12}>
@@ -77,8 +80,8 @@ const TraySettingsDialog = ({ open, onClose, tray, onSave }) => {
                 label="min. Nozzle Temp."
                 value={tempMin}
                 onChange={(e) => setTempMin(e.target.value)}
-                fullWidth
                 type="number"
+                fullWidth
               />
             </Grid>
           </Grid>
@@ -86,7 +89,9 @@ const TraySettingsDialog = ({ open, onClose, tray, onSave }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Abbrechen</Button>
-        <Button onClick={handleSave} variant="contained">Aktualisieren</Button>
+        <Button onClick={handleSave} variant="contained">
+          Aktualisieren
+        </Button>
       </DialogActions>
     </Dialog>
   );
@@ -96,12 +101,13 @@ TraySettingsDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   tray: PropTypes.shape({
-    tray_type: PropTypes.string,
-    tray_color: PropTypes.string,
-    temp_max: PropTypes.number,
-    temp_min: PropTypes.number
+    trayType: PropTypes.string,
+    trayColor: PropTypes.string,       // "RRGGBBAA"
+    tempMax: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    tempMin: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    trayInfoIdx: PropTypes.string,
   }),
-  onSave: PropTypes.func.isRequired
+  onSave: PropTypes.func.isRequired,
 };
 
 export default TraySettingsDialog;
