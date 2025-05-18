@@ -12,6 +12,7 @@ const mapAmsState = (ams) => {
       trayColor: tray.tray_color,
       tempMax: tray.nozzle_temp_max,
       tempMin: tray.nozzle_temp_min,
+      trayInfoIdx: tray.tray_info_idx,
     }))
   ) || [];
 };
@@ -84,6 +85,7 @@ const AMSState = () => {
       trayType: updatedTray.trayType,
       tempMax: updatedTray.tempMax,
       tempMin: updatedTray.tempMin,
+      trayInfoIdx: updatedTray.trayInfoIdx,
     });
 
     setDialogOpen(false);

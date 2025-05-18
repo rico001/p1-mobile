@@ -6,6 +6,7 @@ export async function setAmsTrayApi({
   trayType,
   tempMax,
   tempMin,
+  trayInfoIdx
 }) {
   console.log('setAmsTrayApi', {
     amsIndex,
@@ -14,6 +15,7 @@ export async function setAmsTrayApi({
     trayType,
     tempMax,
     tempMin,
+    trayInfoIdx
   });
 
   if (typeof amsIndex !== 'number' || typeof trayIndex !== 'number' || !trayColor || !trayType || !tempMax || !tempMin) {
@@ -27,6 +29,7 @@ export async function setAmsTrayApi({
     trayType,
     tempMax: String(tempMax),
     tempMin: String(tempMin),
+    trayInfoIdx: String(trayInfoIdx),
   }).toString();
 
   const res = await fetch(`api/mqtt/print/ams/tray/set?${query}`, {
