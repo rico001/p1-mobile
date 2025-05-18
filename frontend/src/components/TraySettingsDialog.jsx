@@ -81,6 +81,8 @@ const TraySettingsDialog = ({ open, onClose, tray, trayIndex, onSave }) => {
                   label="Material"
                   value={type}
                   onChange={e => setType(e.target.value)}
+                  // feature currently disabled
+                  disabled
                   fullWidth
                 />
               </Grid>
@@ -89,6 +91,8 @@ const TraySettingsDialog = ({ open, onClose, tray, trayIndex, onSave }) => {
                   label="Farbe (Hex)"
                   value={hexString()}
                   fullWidth
+                  // feature currently disabled
+                  disabled
                   InputProps={{
                     readOnly: true,
                     endAdornment: (
@@ -115,6 +119,8 @@ const TraySettingsDialog = ({ open, onClose, tray, trayIndex, onSave }) => {
                 <TextField
                   label="max. Nozzle Temp."
                   value={tempMax}
+                  // feature currently disabled
+                  disabled
                   onChange={e => setTempMax(e.target.value)}
                   type="number"
                   fullWidth
@@ -124,6 +130,8 @@ const TraySettingsDialog = ({ open, onClose, tray, trayIndex, onSave }) => {
                 <TextField
                   label="min. Nozzle Temp."
                   value={tempMin}
+                  // feature currently disabled
+                  disabled
                   onChange={e => setTempMin(e.target.value)}
                   type="number"
                   fullWidth
@@ -134,7 +142,12 @@ const TraySettingsDialog = ({ open, onClose, tray, trayIndex, onSave }) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={onClose}>Abbrechen</Button>
-          <Button onClick={handleSave} variant="contained">
+          <Button
+            onClick={handleSave}
+            variant="contained"
+            // feature currently disabled
+            disabled
+          >
             Aktualisieren
           </Button>
         </DialogActions>
@@ -158,6 +171,8 @@ const TraySettingsDialog = ({ open, onClose, tray, trayIndex, onSave }) => {
               setColorDialogOpen(false);
             }}
             variant="contained"
+            // feature currently disabled
+            disabled
           >
             Übernehmen
           </Button>
