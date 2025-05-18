@@ -120,6 +120,7 @@ export async function setAmsTray(req, res, next) {
     const trayType = req.query.trayType || 'PLA';
     const tempMax = req.query.tempMax || '0';
     const tempMin = req.query.tempMin || '0';
+    const trayInfoIdx = req.query.trayInfoIdx || 'GFL99';
 
     const sequence_id = `ams-set-tray__${Date.now()}`;
     /*
@@ -144,7 +145,7 @@ export async function setAmsTray(req, res, next) {
         "command": "ams_filament_setting",
         "ams_id": parseInt(amsIndex), // Index of the AMS
         "tray_id": parseInt(trayIndex), // Index of the tray
-        "tray_info_idx": "GFL99", // Probably the setting ID of the filament profile
+        "tray_info_idx": trayInfoIdx, // Probably the setting ID of the filament profile
         "tray_color": trayColor, // // Formatted as hex RRGGBBAA (alpha is always FF)
         "nozzle_temp_min": parseInt(tempMin), // Minimum nozzle temp for filament (in C)
         "nozzle_temp_max": parseInt(tempMax), // Maximum nozzle temp for filament (in C)

@@ -17,6 +17,7 @@ const TraySettingsDialog = ({ open, onClose, tray, onSave }) => {
   const [color, setColor] = useState('');
   const [tempMax, setTempMax] = useState('');
   const [tempMin, setTempMin] = useState('');
+  const [trayInfoIdx, setTrayInfoIdx] = useState('');
 
 
   useEffect(() => {
@@ -25,6 +26,7 @@ const TraySettingsDialog = ({ open, onClose, tray, onSave }) => {
       setColor(tray.trayColor || '');
       setTempMax(tray.tempMax || '');
       setTempMin(tray.tempMin || '');
+      setTrayInfoIdx(tray.trayInfoIdx || '');
     }
   }, [tray]);
 
@@ -33,7 +35,8 @@ const TraySettingsDialog = ({ open, onClose, tray, onSave }) => {
       trayType: type.trim(),
       trayColor: color.trim(),
       tempMax: tempMax,
-      tempMin: tempMin
+      tempMin: tempMin,
+      trayInfoIdx: trayInfoIdx
     });
     onClose();
   };
