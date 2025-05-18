@@ -13,6 +13,7 @@ const mapAmsState = (ams) => {
       tempMax: tray.nozzle_temp_max,
       tempMin: tray.nozzle_temp_min,
       trayInfoIdx: tray.tray_info_idx,
+      index: tray.index,
     }))
   ) || [];
 };
@@ -96,7 +97,16 @@ const AMSState = () => {
   }
 
   return (
-    <Box sx={{ width: 220, mx: "auto", pt: 1 }}>
+    <Box
+      sx={{
+        maxWidth: 420,
+        width: '100%',
+        color: 'white',
+        m: 'auto',
+        mt: 2,
+        borderRadius: 2,
+      }}
+    >
       {validGroups.map((group, gIdx) => (
         <Box key={gIdx} sx={{ mb: 2 }}>
           <Typography variant="subtitle2" sx={{ mb: 1 }}>
@@ -139,6 +149,7 @@ const AMSState = () => {
 
       {activeGroup !== null && activeTray !== null && (
         <TraySettingsDialog
+          trayIndex={activeTray + 1}
           open={dialogOpen}
           onClose={() => setDialogOpen(false)}
           tray={validGroups[activeGroup][activeTray]}
