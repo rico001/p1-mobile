@@ -109,7 +109,7 @@ const AMSState = () => {
     >
       {validGroups.map((group, gIdx) => (
         <Box key={gIdx} sx={{ mb: 2 }}>
-          <Typography variant="subtitle2" sx={{ mb: 1 }}>
+          <Typography variant="subtitle2" sx={{ mb: 1 }} textAlign={"center"}>
             AMS {validGroups.length > 1 ? gIdx + 1 : null}
           </Typography>
           <Box
