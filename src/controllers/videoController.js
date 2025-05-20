@@ -1,8 +1,13 @@
 import tls from 'tls';
+import http from 'http';
+import https from 'https';
+
 import { config } from '../config/index.js';
 
 let activeSocket;
 let activeTimer;
+
+console.log('Video-Config: ', config.video);
 
 /**
  * Baut eine TLS-Verbindung auf, liest MJPEG-Frames
@@ -101,3 +106,32 @@ export const videoStream = (req, res) => {
     }
   });
 };
+
+
+const videoStreamExtern = (req, res, streamUrl) => {
+  const isHttps = streamUrl.startsWith('https://');
+  const client = isHttps ? https : http;
+
+  const upstreamReq = client.get(streamUrl, upstreamRes => {
+    res.writeHead(upstreamRes.statusCode || 200, upstreamRes.headers);
+    upstreamRes.pipe(res);
+  });
+
+  upstreamReq.on('error', err => {
+    console.error('Stream-Proxy-Error:', err);
+    if (!res.headersSent) {
+      res.status(502).send('Bad Gateway: ' + err.message);
+    } else {
+      res.end();
+    }
+  });
+
+  req.on('close', () => upstreamReq.destroy());
+};
+
+// Deine exponierten Endpunkte
+export const videoStreamExtern1 = (req, res) =>
+  videoStreamExtern(req, res, config.video.externalStreams[0].url);
+
+export const videoStreamExtern2 = (req, res) =>
+  videoStreamExtern(req, res, config.video.externalStreams[1].url);

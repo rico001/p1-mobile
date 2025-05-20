@@ -1,20 +1,25 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Box, CircularProgress, Dialog, DialogContent, IconButton } from '@mui/material';
+import { Box, CircularProgress, Dialog, DialogContent, IconButton, FormControl, Select, MenuItem } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ChamberLightToggle from './ChamberLightToggle';
 import { transparentPng } from '../../utils/functions';
 import BedTempState from '../print-sensors/BedTempState';
 import NozzleTempState from '../print-sensors/NozzleTempState';
 import ThirdPartyIframeToggle from './ThirdPartyIframeToggle';
+import useLocalStorage from '../../hooks/useLocalStorage';
 
 export default function PrinterStream(props) {
   console.log('rendering PrinterStream');
-  
-  const baseSrc = "/api/video/video-stream";
-  const [reloadKey, setReloadKey] = useState(Date.now());
+
+  const printerSrc = "/api/video/video-stream";
+  const externSrc1 = "/api/video/video-stream-extern-1";
+  const externSrc2 = "/api/video/video-stream-extern-2";
+
   const [previewOpen, setPreviewOpen] = useState(false);
   const [src, setSrc] = useState(transparentPng());
   const [loading, setLoading] = useState(false);
+
+  const [streamSource, setStreamSource] = useLocalStorage('PrinterStream-src', printerSrc);
   const fullscreenRef = useRef(null);
 
   useEffect(() => {
@@ -22,7 +27,7 @@ export default function PrinterStream(props) {
       reloadStream();
     }, 500);
     return () => clearTimeout(timer);
-  }, []);
+  }, [streamSource]); // reload when source changes
 
   const handleOpen = () => setPreviewOpen(true);
   const handleClose = () => setPreviewOpen(false);
@@ -38,18 +43,26 @@ export default function PrinterStream(props) {
     setSrc(transparentPng());
 
     setTimeout(() => {
-      setReloadKey(Date.now());
-      setSrc(`${baseSrc}?${reloadKey}`);
+      const cacheKey = Date.now();
+      setSrc(`${streamSource}?${cacheKey}`);
     }, 1500);
+
     setTimeout(() => {
       setLoading(false);
-    }, 6000);
+    }, streamSource === printerSrc ? 6000 : 3000);
+
+  };
+
+  // Handle source change
+  const handleSourceChange = (e) => {
+    setStreamSource(e.target.value);
   };
 
   return (
     <div style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
       <Box
         sx={{
+          position: 'relative',
           display: 'block',
           marginTop: { xs: '0', md: 3 },
           cursor: 'pointer',
@@ -59,8 +72,31 @@ export default function PrinterStream(props) {
           maxWidth: '420px',
           aspectRatio: '16/9',
           margin: 'auto',
-          position: 'relative',
         }}>
+
+        <FormControl
+          variant="outlined"
+          size="small"
+          disabled={loading}
+          sx={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            zIndex: 3,
+            '& .MuiSelect-select': { color: 'rgba(255, 255, 255, 0.83)', padding: '4px 8px', border: 'none', background: 'rgba(95, 95, 95, 0.51)' },
+          }}>
+          <Select
+            value={streamSource}
+            onChange={handleSourceChange}
+            onOpen={() => {} }
+            inputProps={{ 'aria-label': 'Stream source' }}
+          >
+            <MenuItem value={printerSrc}>1</MenuItem>
+            <MenuItem value={externSrc1}>2</MenuItem>
+            <MenuItem value={externSrc2}>3</MenuItem>
+          </Select>
+        </FormControl>
+
         <Box
           component="img"
           src={src}
@@ -127,9 +163,9 @@ export default function PrinterStream(props) {
           <ThirdPartyIframeToggle />
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, padding: 0.5 }}>
-        <BedTempState />
-        <NozzleTempState />
-      </Box>
+          <BedTempState />
+          <NozzleTempState />
+        </Box>
       </Box>
 
       <Dialog
