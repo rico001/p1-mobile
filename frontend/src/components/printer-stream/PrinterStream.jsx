@@ -102,7 +102,8 @@ export default function PrinterStream(props) {
           src={src}
           alt="Printer Stream Preview"
           onError={handleError}
-          onClick={handleOpen}
+          //onClick={handleOpen}
+          onClick={e => window.confirm('Vollbild im neuen Tab öffnen?') && window.open(src)}
           sx={{
             width: '100%',
             height: '100%',
