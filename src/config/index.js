@@ -27,6 +27,15 @@ const config = {
     password: process.env.PRINTER_ACCESS_CODE,
     ip: process.env.PRINTER_IP,
     port: process.env.PRINTER_VIDEO_PORT,
+    //external video streams
+    externalStreams: [
+      {
+        url: process.env.EXTERN_VIDEO_STREAM_1,
+      },
+      {
+        url: process.env.EXTERN_VIDEO_STREAM_2,
+      }
+    ]
   },
   puppeteer: {
     headless: process.env.PUPPETEER_HEADLESS === 'true',
