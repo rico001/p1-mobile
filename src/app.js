@@ -6,11 +6,6 @@ import thumbanailRoutes from './routes/thumbnailRoutes.js';
 import tasmotaRoutes from './routes/tasmotaRoutes.js';
 import path from 'path';
 import errorHandler from './middlewares/errorHandler.js';
-import { OfflineDetectionService } from './services/offlineDetectionService.js';
-import { config } from './config/index.js';
-import websocketService from './services/websocketService.js';
-
-
 
 const app = express();
 app.use(express.json());
@@ -39,15 +34,5 @@ app.get('*', (req, res) => {
 });
 
 app.use(errorHandler);
-
-new OfflineDetectionService(
-  config.offlineDetection,
-  (isOffline) => {
-    websocketService.broadcast({
-      type: 'wifi_signal_update',
-      payload: isOffline ? 'offline' : 'online',
-    });
-  }
-).start();
 
 export default app;
