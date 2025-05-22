@@ -8,13 +8,12 @@ import { randomUUID } from 'crypto';
 import code2desc from '../utils/code2desc.js';
 
 class MqttService extends EventEmitter {
+
   constructor(mqttConfig = config.mqtt) {
     super();
     this.client = null;
     this.clientId = generateClientId();
     this.config = mqttConfig;
-
-    // Map von sequence_id → resolve-Funktion
     this._responseCallbacks = new Map();
     this.state = {}
   }
@@ -48,54 +47,39 @@ class MqttService extends EventEmitter {
   }
 
   _registerEvents() {
-    this.client.on('connect', () => {
-      console.log('[MQTT] ✅ Verbunden');
-      this.client.subscribe(this.config.topics.report, err => {
-        if (err) console.error('[MQTT] ❌ Subscribe-Fehler:', err);
-        else console.log(`[MQTT] 📡 Subscribed to '${this.config.topics.report}'`);
-      });
-    });
+    this.client.on('connect', this._onConnect.bind(this));
     this.client.on('message', this._onMessage.bind(this));
     this.client.on('error', this._onError.bind(this));
   }
 
-  //on connection lost
+  //---------binded client callbacks----------
+
+
   _onError(err) {
     console.error('[MQTT] ❌ Verbindungsfehler:', err);
+    websocketService.broadcast({
+      type: 'wifi_signal_update',
+      payload: 'offline'
+    });
   }
 
-  // Hilfsfunktion: sucht rekursiv nach sequence_id
-  findSequenceId(obj) {
-    if (!obj || typeof obj !== 'object') return undefined;
-    if ('sequence_id' in obj && typeof obj.sequence_id === 'string') {
-      return obj.sequence_id;
-    }
-    for (const key of Object.keys(obj)) {
-      const val = obj[key];
-      const seq = this.findSequenceId(val);
-      if (seq) return seq;
-    }
-    return undefined;
+  _onConnect() {
+    console.log('[MQTT] ✅ Verbunden');
+
+    websocketService.broadcast({
+      type: 'wifi_signal_update',
+      payload: 'online'
+    });
+
+    this.client.subscribe(this.config.topics.report, err => {
+      if (err) console.error('[MQTT] ❌ Subscribe-Fehler:', err);
+      else console.log(`[MQTT] 📡 Subscribed to '${this.config.topics.report}'`);
+    });
   }
 
   _onMessage(topic, message) {
 
     let json = JSON.parse(message.toString());
-
-    //some test
-    //if(json?.print){
-    //  json.print.print_error = 120
-    //}
-    /*
-    json = {
-      "camera": {
-        "sequence_id": "0",
-        "command": "ipcam_timelapse",
-        "control": "enable" // "enable" or "disable"
-      }
-    }
-    */
-
     console.log(`[MQTT] 📥 ${topic}:`, json);
     websocketService.broadcastLog({
       type: `log_update`,
@@ -107,7 +91,7 @@ class MqttService extends EventEmitter {
       }
     });
 
-    const seqId = this.findSequenceId(json);
+    const seqId = this._findSequenceId(json);
 
     // 1) normale Antwort-Callbacks
     if (
@@ -138,6 +122,31 @@ class MqttService extends EventEmitter {
     }
   }
 
+  //---------helper functions----------
+
+
+  _findSequenceId(obj) {
+    if (!obj || typeof obj !== 'object') return undefined;
+    if ('sequence_id' in obj && typeof obj.sequence_id === 'string') {
+      return obj.sequence_id;
+    }
+    for (const key of Object.keys(obj)) {
+      const val = obj[key];
+      const seq = this._findSequenceId(val);
+      if (seq) return seq;
+    }
+    return undefined;
+  }
+
+  flatKeys = [
+    'print_type', 'wifi_signal',
+    'nozzle_temper', 'nozzle_target_temper',
+    'bed_temper', 'bed_target_temper',
+    'mc_percent', 'mc_remaining_time',
+    'layer_num', 'total_layer_num',
+    'gcode_file', 'spd_lvl', 'print_error'
+  ];
+
   deepObjectKeys = {
     lights_report: ({ newVal, oldVal }) => {
       const firstLight = newVal[0];
@@ -164,14 +173,6 @@ class MqttService extends EventEmitter {
     }
   };
 
-  flatKeys = [
-    'print_type', 'wifi_signal',
-    'nozzle_temper', 'nozzle_target_temper',
-    'bed_temper', 'bed_target_temper',
-    'mc_percent', 'mc_remaining_time',
-    'layer_num', 'total_layer_num',
-    'gcode_file', 'spd_lvl', 'print_error'
-  ];
   _broadcastUpdatedFields(updatedFields, prevState) {
     Object.entries(updatedFields).forEach(([key, newVal]) => {
       const oldVal = prevState[key];
@@ -214,6 +215,9 @@ class MqttService extends EventEmitter {
       // 3) Sonstige Keys werden ignoriert
     });
   }
+
+
+  //---------public functions----------
 
 
   publish(topic, payload) {

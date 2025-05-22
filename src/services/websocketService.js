@@ -63,6 +63,7 @@ class WebSocketService {
   }
 
   broadcast(message) {
+    console.log(`[WebSocket] Broadcast-Nachricht:`, message);
     if (message.type) {
       this.lastMessages.set(message.type, message.payload);
     }
