@@ -13,7 +13,8 @@ const config = {
     topics: {
       report: `device/${process.env.PRINTER_SERIAL_NUMBER}/report`,
       request: `device/${process.env.PRINTER_SERIAL_NUMBER}/request`
-    }
+    },
+    errorWhitelist: process.env.PRINTER_ERRORS_WHITELIST
   },
   ftp: {
     host: process.env.PRINTER_IP,
