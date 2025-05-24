@@ -195,7 +195,7 @@ class MqttService extends EventEmitter {
             const hexError = formatBambuErrorCode(newVal);
             const errorMessage = code2desc(hexError);
             const errorWhitelist = this.config.errorWhitelist;
-            if (errorWhitelist && errorWhitelist.includes(hexError)) {
+            if (errorWhitelist && hexError && errorWhitelist.includes(hexError)) {
               console.log(`Ignoring error ${hexError} (${errorMessage})`);
               return;
             }
