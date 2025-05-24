@@ -16,7 +16,6 @@ services:
       - PRINTER_CA_CERT_PATH=cert/blcert.pem
       - OFFLINE_DETECTION_TIMEOUT_MS=10000
       - OFFLINE_DETECTION_INTERVAL_MS=5000
-      - PUPPETEER_HEADLESS=true
       - SERVER_PORT=3000 #change to your desired port
       - PRINTER_ERRORS_WHITELIST=0500-C011
       - THIRD_PARTY_IFRAME_TOGGLE_SRC=http://portainer-my-apps.fritz.box:5000/?deviceId=6827c4887ea5ad00133d18d6 #if set a icon in printersteam is shown for open this iframe
