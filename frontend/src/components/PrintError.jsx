@@ -16,10 +16,7 @@ export const PrintError = ({ code, message, infoLink }) => {
             }}
         >
             <Typography variant="h7" color="error" maxWidth={400} mb={2}>
-                Ein Fehler ist aufgetreten
-            </Typography>
-            <Typography variant="body2" color="error" maxWidth={400}>
-                Fehlercode: {code}
+                Fehler {code}
             </Typography>
             <Typography variant="body2" color="error" mt={2} maxWidth={400}>
                 {message}
