@@ -1,5 +1,6 @@
 #!/bin/bash
 # set crontab to run this script every 5 minutes on docker host
+# chmod +x /home/ubuntu/mjpg-docker/check-cams.sh
 # */1 * * * * /home/ubuntu/mjpg-docker/check-cams.sh
 
 # Kameraendpunkte
