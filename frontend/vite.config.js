@@ -2,6 +2,11 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr';
 
+const target_prod = "http://portainer-my-apps.fritz.box:3004"
+const target_dev = "http://localhost:3000"
+
+const target_local = target_prod
+
 export default defineConfig({
   plugins: [
     react(),
@@ -9,10 +14,10 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/api': 'http://localhost:3000',
-      '/thumbnail': 'http://localhost:3000',
-      '/files': 'http://localhost:3000',
-      '/public': 'http://localhost:3000',
+      '/api': target_local,
+      '/thumbnail': target_local,
+      '/files': target_local,
+      '/public': target_local,
     }
   }  
 })

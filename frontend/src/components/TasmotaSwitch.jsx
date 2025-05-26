@@ -77,6 +77,7 @@ export default function TasmotaSwitch() {
             disabled={isToggling || status.disabled}
             variant="contained"
             color={status.colorSwitch}
+            startIcon={<PowerSettingsNewIcon />}
           >
             {isOn ? 'Ausschalten' : 'Einschalten'}
           </Button>
