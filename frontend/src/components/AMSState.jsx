@@ -3,11 +3,13 @@ import { Box, Typography, CircularProgress, Button } from "@mui/material";
 import { shallowEqual, useSelector } from "react-redux";
 import TraySettingsDialog from "./TraySettingsDialog";
 import { useAms } from "../hooks/useAms";
+import WaterDropIcon from "@mui/icons-material/WaterDrop";
 
 const mapAmsState = (ams) => {
   if (!ams) return [];
   return ams?.ams?.map((amsItem) =>
     amsItem.tray.map((tray) => ({
+      humidity: amsItem.humidity,
       trayType: tray.tray_type,
       trayColor: tray.tray_color,
       tempMax: tray.nozzle_temp_max,
@@ -107,7 +109,7 @@ const AMSState = () => {
         borderRadius: 2,
       }}
     >
-      {validGroups.map((group, gIdx) => (
+      {validGroups.map((trays, gIdx) => (
         <Box key={gIdx} sx={{ mb: 2 }}>
           <Typography variant="subtitle2" sx={{ mb: 1 }} textAlign={"center"}>
             AMS {validGroups.length > 1 ? gIdx + 1 : null}
@@ -115,11 +117,11 @@ const AMSState = () => {
           <Box
             sx={{
               display: "grid",
-              gridTemplateColumns: `repeat(${group.length}, 1fr)`,
+              gridTemplateColumns: `repeat(${trays.length}, 1fr)`,
               gap: 1,
             }}
           >
-            {group.map((tray, tIdx) => {
+            {trays.map((tray, tIdx) => {
               const bg = tray.trayColor.slice(0, 6);
               const textColor = getTextColorForBackground(bg);
               return (
@@ -144,6 +146,15 @@ const AMSState = () => {
               );
             })}
           </Box>
+          {trays.length && trays[0].humidity && (
+            <Typography
+              variant="subtitle2"
+              textAlign="right"
+            >
+              <WaterDropIcon sx={{ mt: 0.5, color: "rgb(60 126 229)" }} />
+              {trays[0].humidity}
+            </Typography>
+          )}
         </Box>
       ))}
 
