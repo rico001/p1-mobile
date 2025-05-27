@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Paper, BottomNavigation, BottomNavigationAction, SvgIcon } from '@mui/material';
 import ViewInArIcon from '@mui/icons-material/ViewInAr';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
-import PrinterIcon from '../assets/printer-icon.svg?react';
+import PrinterIcon from '../assets/printer.svg?react';
 import BookIcon from '@mui/icons-material/Book';
 
 export default function BottomNav() {

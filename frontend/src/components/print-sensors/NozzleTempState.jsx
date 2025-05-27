@@ -1,8 +1,8 @@
 import React from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
-import { Box, Typography, Tooltip } from '@mui/material';
-import BungalowIcon from '@mui/icons-material/Bungalow';
+import { Box, Typography, Tooltip, SvgIcon } from '@mui/material';
 import { roundToOneDecimal } from '../../utils/functions';
+import NozzleIcon from '../../assets/nozzle.svg?react';
 
 export default function NozzleTempState() {
   console.log('rendering NozzleTempState');
@@ -19,12 +19,12 @@ export default function NozzleTempState() {
   const isAtTarget = current >= target;
 
   return (
-    <Tooltip
+    <Tooltip  
       title={isAtTarget ? 'Düse hat Zieltemperatur erreicht' : 'Düse heizt'}
       arrow
     >
       <Box display="flex" alignItems="center" width={'fit-content'}>
-        <BungalowIcon sx={{ mr: 1, transform: 'rotate(180deg)' }} />
+        <SvgIcon component={NozzleIcon} inheritViewBox sx={{ width: 24, height: 24, color: 'currentColor', mr: 1 }} />
         <Typography variant="body2" sx={{ fontWeight: 500 }}>
           {`${current || '-'} / ${target || '-'}°C`}
         </Typography>
