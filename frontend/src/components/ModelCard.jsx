@@ -10,7 +10,8 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  TextField
+  TextField,
+  Zoom
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -89,6 +90,7 @@ const ModelCard = ({ model, onAction }) => {
  
   return (
     <>
+            <Zoom in={true} timeout={300}>
       <Card
         sx={{
           width: '100%',
@@ -153,6 +155,7 @@ const ModelCard = ({ model, onAction }) => {
           </IconButton>
         </Box>
       </Card>
+      </Zoom>
 
       {/* Vorschau-Dialog */}
       <Dialog
