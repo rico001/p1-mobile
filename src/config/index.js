@@ -38,11 +38,6 @@ const config = {
       }
     ]
   },
-  offlineDetection: {
-    timeout: process.env.OFFLINE_DETECTION_TIMEOUT_MS || 10000,
-    interval: process.env.OFFLINE_DETECTION_INTERVAL_MS || 5000,
-    ip: process.env.PRINTER_IP,
-  },
   tasmota: {
     ip: process.env.TASMOTA_SWITCH_IP,
   },
