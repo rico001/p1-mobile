@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Box, CircularProgress, Dialog, DialogContent, IconButton, FormControl, Select, MenuItem } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, CircularProgress, IconButton, FormControl, Select, MenuItem } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ChamberLightToggle from './ChamberLightToggle';
 import { transparentPng } from '../../utils/functions';
@@ -7,6 +7,7 @@ import BedTempState from '../print-sensors/BedTempState';
 import NozzleTempState from '../print-sensors/NozzleTempState';
 import ThirdPartyIframeToggle from './ThirdPartyIframeToggle';
 import useLocalStorage from '../../hooks/useLocalStorage';
+import FullScreenButton from './FullScreenButton';
 
 export default function PrinterStream(props) {
   console.log('rendering PrinterStream');
@@ -15,22 +16,17 @@ export default function PrinterStream(props) {
   const externSrc1 = "/api/video/video-stream-extern-1";
   const externSrc2 = "/api/video/video-stream-extern-2";
 
-  const [previewOpen, setPreviewOpen] = useState(false);
   const [src, setSrc] = useState(transparentPng());
   const [loading, setLoading] = useState(false);
 
   const [streamSource, setStreamSource] = useLocalStorage('PrinterStream-src', printerSrc);
-  const fullscreenRef = useRef(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       reloadStream();
     }, 500);
     return () => clearTimeout(timer);
-  }, [streamSource]); // reload when source changes
-
-  const handleOpen = () => setPreviewOpen(true);
-  const handleClose = () => setPreviewOpen(false);
+  }, [streamSource]);
 
   const handleError = (e) => {
     e.currentTarget.onerror = null;
@@ -96,14 +92,11 @@ export default function PrinterStream(props) {
             <MenuItem value={externSrc2}>3</MenuItem>
           </Select>
         </FormControl>
-
         <Box
           component="img"
           src={src}
           alt="Printer Stream Preview"
           onError={handleError}
-          //onClick={handleOpen}
-          onClick={e => window.confirm('Vollbild im neuen Tab öffnen?') && window.open(src)}
           sx={{
             width: '100%',
             height: '100%',
@@ -111,6 +104,7 @@ export default function PrinterStream(props) {
             background: '#4040404a',
           }}
         />
+
         {loading && (
           <Box
             sx={{
@@ -131,6 +125,9 @@ export default function PrinterStream(props) {
         <IconButton
           size="small"
           onClick={reloadStream}
+          disabled={loading}
+          //transition on loading rotate 
+          
           sx={{
             position: 'absolute',
             bottom: 10,
@@ -163,45 +160,21 @@ export default function PrinterStream(props) {
         >
           <ThirdPartyIframeToggle />
         </Box>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 10,
+            left: 10,
+            zIndex: 2,
+          }}
+        >
+          <FullScreenButton disabled={loading} src={streamSource} />
+        </Box>
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, padding: 0.5 }}>
           <BedTempState />
           <NozzleTempState />
         </Box>
       </Box>
-
-      <Dialog
-        open={previewOpen}
-        onClick={handleClose}
-        backgroundColor="transparent"
-        PaperComponent={({ children }) => (
-          <Box
-            sx={{
-              backgroundColor: 'transparent',
-              boxShadow: 0,
-              borderRadius: 0,
-              width: '70%',
-              maxWidth: '800px',
-              height: 'auto',
-              overflow: 'hidden'
-            }}
-          >
-            {children}
-          </Box>
-        )}
-      >
-        <DialogContent
-          sx={{ p: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}
-        >
-          <Box
-            component="img"
-            src={src}
-            alt="Printer Stream Fullscreen"
-            ref={fullscreenRef}
-            sx={{ width: '100%', objectFit: 'contain', boxShadow: 4, borderRadius: 1, backgroundColor: '#fff', maxWidth: '100%' }}
-          />
-        </DialogContent>
-      </Dialog>
-
       {props.children}
     </div>
   );
