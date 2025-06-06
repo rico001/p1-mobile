@@ -8,6 +8,7 @@ import {
     stopPrint,
     pausePrint,
     resumePrint,
+    calibratePrinter,
     setPrintSpeed
 } from '../api/printer.js';
 
@@ -39,6 +40,13 @@ export function usePrintHead() {
         mutationFn: setPrintSpeed,
         onError: err => {
             console.error('Print-head speed error:', err);
+        }
+    });
+
+    const calibrateMutation = useMutation({
+        mutationFn: calibratePrinter,
+        onError: err => {
+            console.error('Calibrate printer error:', err);
         }
     });
 
@@ -98,6 +106,8 @@ export function usePrintHead() {
         isPausing: pauseMutation.isPending,
         resumePrint: resumeMutation.mutate,
         isResuming: resumeMutation.isPending,
+        calibratePrinter: calibrateMutation.mutate,
+        isCalibrating: calibrateMutation.isPending,
 
         // several queries for state
         amsState: stateQuery.data,

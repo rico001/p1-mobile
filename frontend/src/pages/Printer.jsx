@@ -9,7 +9,8 @@ import PrinterStatus from '../components/PrinterStatus';
 
 function Printer() {
   console.log('rendering Printer');
-  const printType = useSelector(state => state.printer.printType); //local or idle
+  const printType = useSelector(state => state.printer.printType);
+  const gcodeFile = useSelector((state) => state.printer.gcodeFile);
 
   return (
     <div
@@ -20,9 +21,9 @@ function Printer() {
     >
       <PrinterStream />
       <PrinterStatus />
-      <CurrenPrintjob show={printType === 'local'} />
-      <PrintSpeedSelector show={printType === 'local'} />
-      <PrintHeadController show={printType === 'idle'} />
+      <CurrenPrintjob show={printType === 'local' || gcodeFile.includes('auto_cali_for_user_param.gcode')} />
+      <PrintSpeedSelector show={printType === 'local' && !gcodeFile.includes('auto_cali_for_user_param.gcode')} />
+      <PrintHeadController show={printType === 'idle' && !gcodeFile.includes('auto_cali_for_user_param.gcode')} />
     </div>
   );
 }
