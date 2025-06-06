@@ -11,7 +11,8 @@ import {
     resumePrint,
     setPrintSpeed,
     unloadAms,
-    setAmsTray
+    setAmsTray,
+    calibratePrinter
 } from '../controllers/mqttController.js';
 
 const router = Router();
@@ -39,5 +40,7 @@ router.get('/print/set-speed', setPrintSpeed);
 router.get('/print/ams/unload', unloadAms);
 
 router.get('/print/ams/tray/set', setAmsTray);
+
+router.get('/printer/calibrate', calibratePrinter);
 
 export default router;

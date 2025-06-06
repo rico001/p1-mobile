@@ -7,32 +7,36 @@ import {
   MenuItem,
   FormControl,
   IconButton,
-  CircularProgress
+  Tooltip
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import { usePrintHead } from '../hooks/usePrintHead';
+import { useSelector } from 'react-redux';
 
 export const PrintHeadController = ({ show = true }) => {
   console.log('rendering PrintHeadController');
   const [axisMode, setAxisMode] = useState('xy');
   const [step, setStep] = useState(1);
+
   const {
     move,
     isMoving,
     home,
     isHoming,
-    isSettingLight
+    calibratePrinter,
+    isCalibrating,
   } = usePrintHead();
 
-  if(!show){
+  if (!show) {
     return null;
   }
 
-  const loading = isMoving || isHoming || isSettingLight;
+  const loading = isMoving || isHoming || isCalibrating;
 
   return (
     <Box
@@ -45,6 +49,22 @@ export const PrintHeadController = ({ show = true }) => {
         borderRadius: 2,
       }}
     >
+      {/* IconButton for Statt Calibration */}
+      <Tooltip
+        title="Starte Kalibrierung"
+        arrow
+        placement="top"
+      >
+      <IconButton
+        color="primary"
+        sx={{ mb: 2, backgroundColor: '#4040404a' }}
+        onClick={() => calibratePrinter()}
+        disabled={loading}
+      >
+        <SettingsSuggestIcon />
+      </IconButton>
+      </Tooltip>
+
       {/* Axis Selection */}
       <ToggleButtonGroup
         value={axisMode}
@@ -115,7 +135,7 @@ export const PrintHeadController = ({ show = true }) => {
         {/* Home */}
         <IconButton
           color="primary"
-          sx={{ backgroundColor: '#4040404a', p: 2, pointerEvents: loading ? 'none' : 'auto'  }}
+          sx={{ backgroundColor: '#4040404a', p: 2, pointerEvents: loading ? 'none' : 'auto' }}
           onClick={() => home()}
         >
           <HomeIcon />

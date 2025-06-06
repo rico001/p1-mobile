@@ -57,7 +57,7 @@ export const CurrenPrintjob = ({ show = true }) => {
     return null;
   }
 
-  let isPrinting = printType === 'local';
+  let isPrinting = printType === 'local' || gcodeFile.includes('auto_cali_for_user_param.gcode');
 
   return (
     <Box
