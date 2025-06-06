@@ -16,7 +16,6 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import { usePrintHead } from '../hooks/usePrintHead';
-import { useSelector } from 'react-redux';
 
 export const PrintHeadController = ({ show = true }) => {
   console.log('rendering PrintHeadController');
@@ -58,7 +57,7 @@ export const PrintHeadController = ({ show = true }) => {
       <IconButton
         color="primary"
         sx={{ mb: 2, backgroundColor: '#4040404a' }}
-        onClick={() => calibratePrinter()}
+        onClick={() => confirm('Möchtest du die Kalibrierung starten?') && calibratePrinter()}
         disabled={loading}
       >
         <SettingsSuggestIcon />
