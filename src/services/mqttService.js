@@ -16,9 +16,15 @@ class MqttService extends EventEmitter {
     this.config = mqttConfig;
     this._responseCallbacks = new Map();
     this.state = {}
+    this.mqttProxyService = null;
   }
 
-  init() {
+  init(mqttProxyService) {
+
+    if( mqttProxyService ) {
+      this.mqttProxyService = mqttProxyService;
+    }
+
     if (!fs.existsSync(this.config.caCertPath)) {
       throw new Error(`Zertifikat nicht gefunden: ${this.config.caCertPath}`);
     }
@@ -79,7 +85,13 @@ class MqttService extends EventEmitter {
 
   _onMessage(topic, message) {
 
+
     let json = JSON.parse(message.toString());
+
+    if(this.mqttProxyService) {
+      this.mqttProxyService.publish(topic, json);
+    }
+
     console.log(`[MQTT] 📥 ${topic}:`, json);
     websocketService.broadcastLog({
       type: `log_update`,
@@ -226,6 +238,9 @@ class MqttService extends EventEmitter {
 
 
   publish(topic, payload) {
+    if(this.mqttProxyService) {
+      this.mqttProxyService.publish(topic, payload);
+    }
     this.client.publish(topic, JSON.stringify(payload))
   }
 

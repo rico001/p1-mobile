@@ -43,8 +43,14 @@ const config = {
   },
   webSocket: {
     thirdPartyIframeToggleSrc: process.env.THIRD_PARTY_IFRAME_TOGGLE_SRC || '',
+  },
+  mqttProxy: {
+    enabled: process.env.PROXY_MQTT_BROKER_ENABLED === 'true',
+    brokerUrl: `mqtt://${process.env.PROXY_MQTT_BROKER_IP}:${process.env.PROXY_MQTT_BROKER_PORT}`,
+    username: process.env.PROXY_MQTT_BROKER_USER,
+    password: process.env.PROXY_MQTT_BROKER_PASSWORD,
+    topicPrefix: process.env.PROXY_MQTT_BROKER_TOPIC_PREFIX || 'bambu-p1s',
   }
-
 };
 console.log('[Config] Konfiguration geladen:', config);
 
