@@ -19,6 +19,7 @@ const statusMap = {
 const PrinterStatus = () => {
   console.log('rendering PrinterStatus')
   const printType = useSelector((state) => state.printer.printType)
+  const gcodeFile = useSelector((state) => state.printer.gcodeFile);
 
   // Fallback für unbekannte Stati
   const { text, tooltip } = statusMap[printType] || {
@@ -39,6 +40,16 @@ const PrinterStatus = () => {
       }}
     >
       <Tooltip title={tooltip} arrow>
+        {gcodeFile && gcodeFile.includes('auto_cali_for_user_param.gcode') && (
+          <Box>
+            <Typography variant="h6" sx={{ color: 'warning.main' }}>
+              Kalibrierung läuft
+            </Typography>
+            <Typography>
+              Bitte warten Sie, bis die Kalibrierung abgeschlossen ist. Dies kann einige Minuten dauern.
+            </Typography>
+          </Box>
+        )}
         <Box style={{ position: 'relative', width: '100%', width: 'fit-content', margin: 'auto' }}>
           <Typography>
             {text}

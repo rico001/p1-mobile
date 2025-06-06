@@ -95,4 +95,12 @@ export async function resumePrint() {
     }
     return res.json();
 }
+
+export async function calibratePrinter() {
+    const res = await fetch('/api/mqtt/printer/calibrate', { method: 'GET' });
+    if (!res.ok) {
+        throw new Error(`Calibrate printer failed: ${res.statusText}`);
+    }
+    return res.json();
+}
   

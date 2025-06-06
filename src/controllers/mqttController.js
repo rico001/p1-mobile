@@ -30,6 +30,34 @@ export async function getState(req, res, next) {
   });
 }
 
+export async function calibratePrinter(req, res, next) {
+
+  const sequence_id = `calibrate-printer__${Date.now()}`;
+  const fileName = '/usr/etc/print/auto_cali_for_user.gcode'
+  const payload = {
+    "print": {
+      "sequence_id": sequence_id,
+      "command": "gcode_file",
+      "param": 'file:///' + fileName,
+    }
+  };
+
+  console.log('calibratePrinter, query:', req.query);
+
+  try {
+    const report = await mqttService.request(
+      payload,
+      sequence_id
+    );
+    res.json({
+      report
+    });
+
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function printFile3mf(req, res, next) {
   try {
 
