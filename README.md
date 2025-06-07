@@ -26,22 +26,34 @@ The following Bambu Lab firmware versions have been verified for compatibility:
 
 ## 📷 Screenshots
 
-### 🧱 AMS Management *(Work in Progress)*
-![AMS Management](./screenshots/1.png)
+<div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: space-between;">
 
-### 🎥 Live Video Stream & Status
-![Live Stream](./screenshots/2.png)
+  <div style="text-align: center;">
+    <img src="./screenshots/1.png" alt="AMS Management" width="200"/>
+    <p>🧱 AMS Management</p>
+  </div>
 
-### 🎛️ Printer Controls & Live Data
-![Printer Controls](./screenshots/3.png)
+  <div style="text-align: center;">
+    <img src="./screenshots/2.png" alt="Live Stream" width="200"/>
+    <p>🎥 Live Video Stream</p>
+  </div>
 
-### 🚀 Start Print with Calibration Options
-![Start Printing](./screenshots/4.png)
+  <div style="text-align: center;">
+    <img src="./screenshots/3.png" alt="Printer Controls" width="200"/>
+    <p>🎛️ Printer Controls</p>
+  </div>
 
-### 📤 Upload & Manage Print Models
-![Model Upload](./screenshots/5.png)
+  <div style="text-align: center;">
+    <img src="./screenshots/4.png" alt="Start Printing" width="200"/>
+    <p>🚀 Start Print</p>
+  </div>
 
----
+  <div style="text-align: center;">
+    <img src="./screenshots/5.png" alt="Model Upload" width="200"/>
+    <p>📤 Upload & Manage Print Models</p>
+  </div>
+
+</div>
 
 ## 🐳 Docker Compose Setup
 
@@ -85,6 +97,7 @@ services:
     volumes:
       - ./thumbnails:/app/thumbnails
 
+```
 
 ## 🔒 Security Notice
 
