@@ -93,8 +93,3 @@ Instead, consider one of the following secure deployment methods:
   - **WireGuard**
   - **OpenVPN**
   - **Tailscale**
-
-- 🔐 **Reverse Proxy with HTTPS**  
-  Deploy behind a reverse proxy such as **NGINX** or **Traefik** to:
-  - Enable **SSL encryption** (e.g. via Let’s Encrypt)
-  - add **HTTP basic authentication** or token-based access
