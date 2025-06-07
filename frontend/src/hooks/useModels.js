@@ -24,7 +24,7 @@ export function useModels() {
     isError: modelsQuery.isError,
     error: modelsQuery.error,
     performAction: actionMutation.mutate,
-    isActionLoading: actionMutation.isLoading,
+    isActionPending: actionMutation.isPending,
     refetch: modelsQuery.refetch,
   };
 }

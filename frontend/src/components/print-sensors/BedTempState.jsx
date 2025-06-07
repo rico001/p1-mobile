@@ -1,7 +1,7 @@
-import { Box, Tooltip, Typography } from "@mui/material";
+import { Box, SvgIcon, Tooltip, Typography } from "@mui/material";
 import { shallowEqual, useSelector } from "react-redux";
-import BorderAllIcon from '@mui/icons-material/BorderAll';
 import { roundToOneDecimal } from "../../utils/functions";
+import BedIcon from '../../assets/bed.svg?react';
 
 const isAtTarget = (current, target) => {
   // current ist max 1 grad über target oder 1 grad drunter
@@ -41,7 +41,7 @@ export default function BedTempState() {
         arrow
       >
         <Box display="flex" alignItems="center" width={'fit-content'}>
-          <BorderAllIcon sx={{ mr: 1 }} />
+          <SvgIcon component={BedIcon} inheritViewBox sx={{ width: 24, height: 24, color: 'currentColor', mr: 1 }} />
           <Typography variant="body2" sx={{ fontWeight: 500 }}>
             {`${current || '-'} / ${target || '-'}°C`}
           </Typography>
