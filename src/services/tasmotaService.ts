@@ -1,10 +1,10 @@
 import { config, TasmotaConfig } from '../config/index';
 
 export default class TasmotaService {
-  private ip: string;
+  private ip: string | undefined;
 
   constructor(tasmotaConfig: TasmotaConfig) {
-    this.ip = tasmotaConfig.ip;
+    this.ip = tasmotaConfig.ip
   }
 
   /**

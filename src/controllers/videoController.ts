@@ -52,9 +52,9 @@ export const videoStream = (req: Request, res: Response): void => {
     },
     () => {
       const u = Buffer.alloc(32);
-      u.write(config.video.user);
+      u.write(config.video.user || '');
       const p = Buffer.alloc(32);
-      p.write(config.video.password);
+      p.write(config.video.password || '');
       const auth = Buffer.alloc(4 + 4 + 4 + 4 + 32 + 32);
       let off = 0;
       auth.writeUInt32LE(0x40, off);
@@ -145,7 +145,7 @@ const videoStreamExtern = (req: Request, res: Response, streamUrl: string): void
 };
 
 export const videoStreamExtern1 = (req: Request, res: Response): void =>
-  videoStreamExtern(req, res, config.video.externalStreams[0].url);
+  videoStreamExtern(req, res, config.video.externalStreams[0].url || '');
 
 export const videoStreamExtern2 = (req: Request, res: Response): void =>
-  videoStreamExtern(req, res, config.video.externalStreams[1].url);
+  videoStreamExtern(req, res, config.video.externalStreams[1].url || '');
