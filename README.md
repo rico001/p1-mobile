@@ -93,3 +93,11 @@ Instead, consider one of the following secure deployment methods:
   - **WireGuard**
   - **OpenVPN**
   - **Tailscale**
+
+## Planned Features
+- **AMS Management** – Manage AMS units directly from the app
+- **Localization** – Support for multiple languages
+- **User Authentication** – Add user management and authentication
+- **Multi-Printer Support** – Manage multiple printers from one interface
+- **Realtime Gcode Viewer** – View G-code files in real-time for current prints
+- **Print History** – Track and manage print history
