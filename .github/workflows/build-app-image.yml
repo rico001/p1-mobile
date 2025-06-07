@@ -53,6 +53,6 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags:
-            - ghcr.io/${{ github.actor }}/p1-mobile:${{ github.ref_name }}-latest
-            - ghcr.io/${{ github.actor }}/p1-mobile:${{ github.ref_name }}-${{ env.APP_VERSION }}
+          tags: |
+            ghcr.io/${{ github.actor }}/p1-mobile:${{ github.ref_name }}-latest
+            ghcr.io/${{ github.actor }}/p1-mobile:${{ github.ref_name }}-${{ env.APP_VERSION }}
