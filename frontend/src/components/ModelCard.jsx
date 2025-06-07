@@ -10,7 +10,8 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  TextField
+  TextField,
+  Zoom
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -86,73 +87,75 @@ const ModelCard = ({ model, onAction }) => {
       handleAction('delete');
     }
   };
- 
+
   return (
     <>
-      <Card
-        sx={{
-          width: '100%',
-          aspectRatio: '1 / 1',
-          display: 'flex',
-          flexDirection: 'column',
-          borderRadius: 2,
-          boxShadow: 3,
-          overflow: 'hidden'
-        }}
-      >
-        <Box
-          onClick={() => setPreviewOpen(true)}
+      <Zoom in={true} timeout={300}>
+        <Card
           sx={{
-            flex: 1,
-            backgroundImage: `url("${thumbnail}")`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            cursor: 'pointer'
+            width: '100%',
+            aspectRatio: '1 / 1',
+            display: 'flex',
+            flexDirection: 'column',
+            borderRadius: 2,
+            boxShadow: 3,
+            overflow: 'hidden'
           }}
-        />
+        >
+          <Box
+            onClick={() => setPreviewOpen(true)}
+            sx={{
+              flex: 1,
+              backgroundImage: `url("${thumbnail}")`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              cursor: 'pointer'
+            }}
+          />
 
-        <Box sx={{ p: 1, pt: 0, pb: 0 }}>
-          <Typography
-            variant="subtitle1"
-            noWrap
-            title={name}
-            sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-          >
-            {name}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {bytesToMB(size)} MB
-          </Typography>
-        </Box>
+          <Box sx={{ p: 1, pt: 0, pb: 0 }}>
+            <Typography
+              variant="subtitle1"
+              noWrap
+              title={name}
+              sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+            >
+              {name}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {bytesToMB(size)} MB
+            </Typography>
+          </Box>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-around', py: 1, px: 1, pb: 0 }}>
-          <IconButton
-            component="a"
-            href={operations.download.path}
-            download
-            rel="noopener noreferrer"
-            title="Download"
-          >
-            <DownloadIcon />
-          </IconButton>
+          <Box sx={{ display: 'flex', justifyContent: 'space-around', py: 1, px: 1, pb: 0 }}>
+            <IconButton
+              component="a"
+              href={operations.download.path}
+              download
+              rel="noopener noreferrer"
+              title="Download"
+            >
+              <DownloadIcon />
+            </IconButton>
 
-          <IconButton onClick={() => setModalOpen(true)} title="Drucken">
-            <PrintIcon />
-          </IconButton>
+            <IconButton onClick={() => setModalOpen(true)} title="Drucken">
+              <PrintIcon />
+            </IconButton>
 
-          <IconButton onClick={() => handleAction('refreshThumbnail')} title="Thumbnail aktualisieren">
-            <RefreshIcon />
-          </IconButton>
+            <IconButton onClick={() => handleAction('refreshThumbnail')} title="Thumbnail aktualisieren">
+              <RefreshIcon />
+            </IconButton>
 
-          <IconButton onClick={openRenameDialog} title="Umbenennen">
-            <DriveFileRenameOutlineIcon />
-          </IconButton>
+            <IconButton onClick={openRenameDialog} title="Umbenennen">
+              <DriveFileRenameOutlineIcon />
+            </IconButton>
 
-          <IconButton onClick={handleDelete} title="Löschen">
-            <DeleteIcon />
-          </IconButton>
-        </Box>
-      </Card>
+            <IconButton onClick={handleDelete} title="Löschen">
+              <DeleteIcon />
+            </IconButton>
+          </Box>
+        </Card>
+      </Zoom>
 
       {/* Vorschau-Dialog */}
       <Dialog

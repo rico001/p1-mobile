@@ -7,32 +7,35 @@ import {
   MenuItem,
   FormControl,
   IconButton,
-  CircularProgress
+  Tooltip
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import { usePrintHead } from '../hooks/usePrintHead';
 
-export const PrintHeadController = ({show = true}) => {
+export const PrintHeadController = ({ show = true }) => {
   console.log('rendering PrintHeadController');
   const [axisMode, setAxisMode] = useState('xy');
   const [step, setStep] = useState(1);
+
   const {
     move,
     isMoving,
     home,
     isHoming,
-    isSettingLight
+    calibratePrinter,
+    isCalibrating,
   } = usePrintHead();
 
-  if(!show){
+  if (!show) {
     return null;
   }
 
-  const loading = isMoving || isHoming || isSettingLight;
+  const loading = isMoving || isHoming || isCalibrating;
 
   return (
     <Box
@@ -45,6 +48,22 @@ export const PrintHeadController = ({show = true}) => {
         borderRadius: 2,
       }}
     >
+      {/* IconButton for Statt Calibration */}
+      <Tooltip
+        title="Starte Kalibrierung"
+        arrow
+        placement="top"
+      >
+      <IconButton
+        color="primary"
+        sx={{ mb: 2, backgroundColor: '#4040404a' }}
+        onClick={() => confirm('Möchtest du die Kalibrierung starten?') && calibratePrinter()}
+        disabled={loading}
+      >
+        <SettingsSuggestIcon />
+      </IconButton>
+      </Tooltip>
+
       {/* Axis Selection */}
       <ToggleButtonGroup
         value={axisMode}
@@ -90,7 +109,7 @@ export const PrintHeadController = ({show = true}) => {
         <Box />
         <IconButton
           color="primary"
-          disabled={loading}
+          sx={{ pointerEvents: loading ? 'none' : 'auto' }}
           onClick={() =>
             move({
               axis: axisMode === 'z' ? 'z' : 'y',
@@ -105,29 +124,27 @@ export const PrintHeadController = ({show = true}) => {
         {/* Left */}
         <IconButton
           color="primary"
-          disabled={axisMode === 'z' || loading}
+          sx={{ pointerEvents: loading ? 'none' : 'auto' }}
+          disabled={axisMode === 'z'}
           onClick={() => move({ axis: 'x', value: -step })}
         >
           <ArrowBackIosNewIcon />
         </IconButton>
 
         {/* Home */}
-        {isHoming
-          ? <CircularProgress size={24} />
-          : <IconButton
-            color="primary"
-            disabled={loading}
-            sx={{ backgroundColor: '#4040404a', p: 2 }}
-            onClick={() => home()}
-          >
-            <HomeIcon />
-          </IconButton>
-        }
+        <IconButton
+          color="primary"
+          sx={{ backgroundColor: '#4040404a', p: 2, pointerEvents: loading ? 'none' : 'auto' }}
+          onClick={() => home()}
+        >
+          <HomeIcon />
+        </IconButton>
 
         {/* Right */}
         <IconButton
           color="primary"
-          disabled={axisMode === 'z' || loading}
+          sx={{ pointerEvents: loading ? 'none' : 'auto' }}
+          disabled={axisMode === 'z'}
           onClick={() => move({ axis: 'x', value: step })}
         >
           <ArrowForwardIosIcon />
@@ -137,7 +154,7 @@ export const PrintHeadController = ({show = true}) => {
         <Box />
         <IconButton
           color="primary"
-          disabled={loading}
+          sx={{ pointerEvents: loading ? 'none' : 'auto' }}
           onClick={() =>
             move({
               axis: axisMode === 'z' ? 'z' : 'y',

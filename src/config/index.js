@@ -13,7 +13,8 @@ const config = {
     topics: {
       report: `device/${process.env.PRINTER_SERIAL_NUMBER}/report`,
       request: `device/${process.env.PRINTER_SERIAL_NUMBER}/request`
-    }
+    },
+    errorWhitelist: process.env.PRINTER_ERRORS_WHITELIST
   },
   ftp: {
     host: process.env.PRINTER_IP,
@@ -27,23 +28,29 @@ const config = {
     password: process.env.PRINTER_ACCESS_CODE,
     ip: process.env.PRINTER_IP,
     port: process.env.PRINTER_VIDEO_PORT,
-  },
-  puppeteer: {
-    headless: process.env.PUPPETEER_HEADLESS === 'true',
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox'
+    //external video streams
+    externalStreams: [
+      {
+        url: process.env.EXTERN_VIDEO_STREAM_1,
+      },
+      {
+        url: process.env.EXTERN_VIDEO_STREAM_2,
+      }
     ]
-  },
-  offlineDetection: {
-    timeout: process.env.OFFLINE_DETECTION_TIMEOUT_MS || 10000,
-    interval: process.env.OFFLINE_DETECTION_INTERVAL_MS || 5000,
-    ip: process.env.PRINTER_IP,
   },
   tasmota: {
     ip: process.env.TASMOTA_SWITCH_IP,
   },
-
+  webSocket: {
+    thirdPartyIframeToggleSrc: process.env.THIRD_PARTY_IFRAME_TOGGLE_SRC || '',
+  },
+  mqttProxy: {
+    enabled: process.env.PROXY_MQTT_BROKER_ENABLED === 'true',
+    brokerUrl: `mqtt://${process.env.PROXY_MQTT_BROKER_IP}:${process.env.PROXY_MQTT_BROKER_PORT}`,
+    username: process.env.PROXY_MQTT_BROKER_USER,
+    password: process.env.PROXY_MQTT_BROKER_PASSWORD,
+    topicPrefix: process.env.PROXY_MQTT_BROKER_TOPIC_PREFIX || 'bambu-p1s',
+  }
 };
 console.log('[Config] Konfiguration geladen:', config);
 

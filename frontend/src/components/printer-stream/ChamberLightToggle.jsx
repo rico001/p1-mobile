@@ -1,13 +1,13 @@
 // src/components/LightToggle.jsx
 import React from 'react';
-import { IconButton, CircularProgress } from '@mui/material';
+import { IconButton } from '@mui/material';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import LightbulbOutlineIcon from '@mui/icons-material/LightbulbOutline';
 import { useSelector } from 'react-redux';
 import { usePrintHead } from '../../hooks/usePrintHead';
 
-export default function LightToggle() {
-  console.log('rendering LightToggle');
+export default function ChamberLightToggle() {
+  console.log('rendering ChamberLightToggle');
   
   const chamberLightMode = useSelector(state => state.printer.chamberLightMode)
   const { setLight, isSettingLight } = usePrintHead();

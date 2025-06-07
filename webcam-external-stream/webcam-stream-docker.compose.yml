@@ -1,0 +1,34 @@
+services:
+
+  #debug on host: 
+  #ls -l /dev/v4l/by-id
+  #v4l2-ctl --list-formats-ext -d /dev/video<NUMMER>
+
+  mjpg-streamer-0:
+    image: mjpg-streamer-custom:latest
+    container_name: mjpg-streamer-0
+    devices:
+      - "/dev/v4l/by-id/usb-046d_C270_HD_WEBCAM_200901010001-video-index0:/dev/cam-c270"
+    environment:
+      CAMERA_DEV: /dev/cam-c270
+      MJPEG_STREAMER_INPUT: "-y -r 1920x1080"
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  mjpg-streamer-1:
+    image: mjpg-streamer-custom:latest
+    container_name: mjpg-streamer-1
+
+    devices:
+      - "/dev/v4l/by-id/usb-Sonix_Technology_Co.__Ltd._Terra_HD1080PC_Camera_SN0001-video-index0:/dev/cam-terra"
+    environment:
+      CAMERA_DEV: /dev/cam-terra
+      MJPEG_STREAMER_INPUT: "-n -r 1920x1080 -f mjpeg"
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "8081:8080"
+    restart: unless-stopped
