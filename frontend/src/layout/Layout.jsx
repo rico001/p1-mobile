@@ -11,7 +11,7 @@ import { OfflineCheck } from '../components/OfflineCheck';
 export default function Layout() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <Header title="P1S Mobile" />
+      <Header title="P1 Mobile" />
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
         {/* <PrintErrorCheck> */}
           <OfflineCheck>
