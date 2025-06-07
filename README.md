@@ -1,6 +1,20 @@
 # 🖨️ P1 Mobile – Local Web App for Bambu Lab P1S
 
-**P1 Mobile** is a local-first web application for managing your Bambu Lab P1S 3D printer – fully independent from the cloud. It is built using a Node.js (TypeScript) backend and a React frontend and communicates solely via local printer APIs.
+<table border="0">
+  <tr style="vertical-align: top; border: none;">
+    <td>
+      <img src="./screenshots/printer.png" alt="P1 Mobile Logo" width="150"/>
+    </td>
+    <td>
+      **P1 Mobile** is a local-first web application for managing your Bambu Lab P1S 3D printer – fully independent from the cloud.  
+      It is built using a Node.js (TypeScript) backend and a React frontend and communicates solely via local printer APIs.
+    </td>
+  </tr>
+</table>
+
+## 💡 Motivation
+While Bambu Lab printers are technically impressive and deliver outstanding print quality, their ecosystem is increasingly tied to cloud services.  
+Unfortunately, this trend limits local control, offline usability, and integration into private or self-hosted environments.
 
 ## 🔧 Features
 
