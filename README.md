@@ -8,11 +8,10 @@
 - 📁 **Manage and start prints directly** from the web UI  
 - 📸 **Live video stream integration** directly from the printer  
 - 📤 **Native FTP server support** for file uploads  
-- 🧭 **Pre-print calibration** (bed leveling, flow, vibration)  
+- 🎥 **Native Live Video** for Stream & Status
 - 🧠 **Optional MQTT proxy** to your smart home system  
-- 💡 **Direct control of external devices** (e.g. via Tasmota)  
+- 💡 **Direct control of external devices** (e.g. via Tasmota Switch)
 - 🖼️ **Model thumbnails** for easy recognition  
-- 🔒 **Uses internal CA certificate** for secure local communication  
 
 ## ✅ Tested Firmware Versions
 
@@ -27,17 +26,20 @@ The following Bambu Lab firmware versions have been verified for compatibility:
 
 ## 📷 Screenshots
 
-### Model Overview
-![Model Overview](./screenshots/Bildschirmfoto1.png)
+### 🧱 AMS Management *(Work in Progress)*
+![AMS Management](./screenshots/1.png)
 
-### Start Print with Calibration Options
-![Start Print](./screenshots/Bildschirmfoto2.png)
+### 🎥 Live Video Stream & Status
+![Live Stream](./screenshots/2.png)
 
-### Live Video Stream & Printer Controls
-![Live Stream](./screenshots/Bildschirmfoto3.png)
+### 🎛️ Printer Controls & Live Data
+![Printer Controls](./screenshots/3.png)
 
-### AMS Management
-![AMS](./screenshots/Bildschirmfoto4.png)
+### 🚀 Start Print with Calibration Options
+![Start Printing](./screenshots/4.png)
+
+### 📤 Upload & Manage Print Models
+![Model Upload](./screenshots/5.png)
 
 ---
 
@@ -82,3 +84,25 @@ services:
     restart: unless-stopped
     volumes:
       - ./thumbnails:/app/thumbnails
+
+
+## 🔒 Security Notice
+
+> ⚠️ **Important:**  
+> This app **does not include user authentication** or **built-in SSL/TLS encryption**.
+
+For your safety, **do not expose this service directly to the internet.**  
+Instead, consider one of the following secure deployment methods:
+
+### ✅ Recommended Secure Alternatives
+
+- 🛡️ **VPN Access (Recommended)**  
+  Use VPN-based remote access to your local network, such as:
+  - **WireGuard**
+  - **OpenVPN**
+  - **Tailscale**
+
+- 🔐 **Reverse Proxy with HTTPS**  
+  Deploy behind a reverse proxy such as **NGINX** or **Traefik** to:
+  - Enable **SSL encryption** (e.g. via Let’s Encrypt)
+  - add **HTTP basic authentication** or token-based access
