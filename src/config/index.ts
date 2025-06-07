@@ -23,7 +23,7 @@ interface FTPConfig {
   user?: string;
   port?: number;
   password?: string;
-  secure: 'implicit' | 'explicit' | boolean;
+  secure: boolean | "implicit"
 }
 
 interface VideoConfig {
@@ -108,4 +108,4 @@ const config: AppConfig = {
 
 console.log('[Config] Konfiguration geladen:', config);
 
-export { config };
+export { config, MQTTConfig, FTPConfig, VideoConfig, TasmotaConfig, WebSocketConfig, MQTTProxyConfig };
