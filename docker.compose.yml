@@ -1,7 +1,7 @@
 services:
-  bambu-p1s-mobile:
-    image: ghcr.io/rico001/bambu-p1s-mobile:latest
-    container_name: bambu-p1s-mobile
+  p1-mobile:
+    image: ghcr.io/rico001/p1-mobile:latest
+    container_name: p1-mobile
     ports:
       - "3003:3000" #change to your desired port(s)
     environment:
