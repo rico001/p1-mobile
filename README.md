@@ -26,34 +26,13 @@ The following Bambu Lab firmware versions have been verified for compatibility:
 
 ## 📷 Screenshots
 
-<div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: space-between;">
-
-  <div style="text-align: center;">
-    <img src="./screenshots/1.png" alt="AMS Management" width="200"/>
-    <p>🧱 AMS Management</p>
-  </div>
-
-  <div style="text-align: center;">
-    <img src="./screenshots/2.png" alt="Live Stream" width="200"/>
-    <p>🎥 Live Video Stream</p>
-  </div>
-
-  <div style="text-align: center;">
-    <img src="./screenshots/3.png" alt="Printer Controls" width="200"/>
-    <p>🎛️ Printer Controls</p>
-  </div>
-
-  <div style="text-align: center;">
-    <img src="./screenshots/4.png" alt="Start Printing" width="200"/>
-    <p>🚀 Start Print</p>
-  </div>
-
-  <div style="text-align: center;">
-    <img src="./screenshots/5.png" alt="Model Upload" width="200"/>
-    <p>📤 Upload & Manage Print Models</p>
-  </div>
-
-</div>
+<p align="center">
+  <img src="./screenshots/1.png" alt="AMS Management" width="150"/>
+  <img src="./screenshots/2.png" alt="Live Stream" width="150"/>
+  <img src="./screenshots/3.png" alt="Printer Controls" width="150"/>
+  <img src="./screenshots/4.png" alt="Start Printing" width="150"/>
+  <img src="./screenshots/5.png" alt="Model Upload" width="150"/>
+</p>
 
 ## 🐳 Docker Compose Setup
 
