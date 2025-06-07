@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - ts-backend-support
     paths:
       - 'Dockerfile'
       - 'package.json'
@@ -53,5 +54,5 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.actor }}/bambu-p1s-mobile:latest
-            ghcr.io/${{ github.actor }}/bambu-p1s-mobile:${{ env.APP_VERSION }}
+            ghcr.io/${{ github.actor }}/p1-mobile:${{ github.ref_name }}-latest
+            ghcr.io/${{ github.actor }}/p1-mobile:${{ github.ref_name }}-${{ env.APP_VERSION }}
