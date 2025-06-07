@@ -1,22 +1,33 @@
 services:
   p1-mobile:
-    image: ghcr.io/rico001/p1-mobile:latest
+    image: ghcr.io/rico001/p1-mobile:main-latest
     container_name: p1-mobile
     ports:
-      - "3003:3000" #change to your desired port(s)
+      - "3003:3000" #CHANGE to your desired port(s)
     environment:
-      - TASMOTA_SWITCH_IP=192.168.178.100 #change to your Tasmota switch IP
-      - PRINTER_SERIAL_NUMBER= #change to your printer serial number
-      - PRINTER_IP=192.168.178.79 #change to your printer IP
-      - PRINTER_VIDEO_PORT=6000
-      - PRINTER_MQTT_PORT=8883
-      - PRINTER_FTP_PORT=990
-      - PRINTER_USER=bblp
-      - PRINTER_ACCESS_CODE=88223979 #change to your printer access code
-      - PRINTER_CA_CERT_PATH=cert/blcert.pem
-      - SERVER_PORT=3000 #change to your desired port
-      - PRINTER_ERRORS_WHITELIST=0500-C011
-      - THIRD_PARTY_IFRAME_TOGGLE_SRC=http://portainer-my-apps.fritz.box:5000/?deviceId=6827c4887ea5ad00133d18d6 #if set a icon in printersteam is shown for open this iframe
+      # required environment variables:
+      - SERVER_PORT=3000 # CHANGE to your desired port, if you want 
+      - PRINTER_SERIAL_NUMBER=12345 #!! CHANGE to your printer serial number
+      - PRINTER_IP=192.168.178.79 #!! CHANGE to your printer IP
+      - PRINTER_ACCESS_CODE=88223979 #!! CHANGE to your printer access code
+      - PRINTER_VIDEO_PORT=6000 # should be allways 6000 for p1s
+      - PRINTER_MQTT_PORT=8883 # should be allways 8883 for p1s
+      - PRINTER_FTP_PORT=990 # should be allways 990 for p1s
+      - PRINTER_USER=bblp # should be allways bblp for p1s
+      - PRINTER_CA_CERT_PATH=cert/blcert.pem # currently only internal cert/blcert.pem is supported, do not change this
+      # optional environment variables:
+      - EXTERN_VIDEO_STREAM_1=http://192.168.178.52:8080/?action=stream # to set an external video stream, e.g. for a old webcam connected to a Raspberry Pi (see dir webcam-external-stream in this repo)
+      - EXTERN_VIDEO_STREAM_2=http://192.168.178.52:8081/?action=stream # to set a second external video stream, e.g. for a old webcam connected to a Raspberry Pi (see dir webcam-external-stream in this repo)
+      - PRINTER_ERRORS_WHITELIST=0500-C011 #to ignore specific errors in frontend, e.g. 0500-C011 (https://wiki.bambulab.com/en/hms/error-code)
+      - THIRD_PARTY_IFRAME_TOGGLE_SRC=http://portainer-my-apps.fritz.box:5000/?deviceId=6827c4887ea5ad00133d18d6 #to set a icon in printersteam, for external lamp or other devices
+      - TASMOTA_SWITCH_IP=192.168.178.100 # to set an icon-button for external tasmota power switch
+      # optional, if you want send messages to a another MQTT broker for home automation or other purposes
+      - PROXY_MQTT_BROKER_IP=192.168.178.173
+      - PROXY_MQTT_BROKER_PORT=1883
+      - PROXY_MQTT_BROKER_USER= 
+      - PROXY_MQTT_BROKER_PASSWORD=
+      - PROXY_MQTT_BROKER_TOPIC_PREFIX=bambu-p1s
+      - PROXY_MQTT_BROKER_ENABLED=true
     restart: unless-stopped
     volumes:
       - ./thumbnails:/app/thumbnails
