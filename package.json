@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon --watch src --ext ts --exec ts-node src/server.ts"
+    "dev": "tsx watch src/server.ts"
   },
   "dependencies": {
     "adm-zip": "^0.5.16",
@@ -27,8 +27,8 @@
     "@types/multer": "^1.4.13",
     "@types/node": "^22.15.30",
     "@types/ws": "^8.18.1",
-    "nodemon": "^3.1.10",
     "ts-node-dev": "^2.0.0",
+    "tsx": "^4.19.4",
     "typescript": "^5.8.3"
   }
 }
