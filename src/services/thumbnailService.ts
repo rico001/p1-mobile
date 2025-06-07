@@ -1,5 +1,3 @@
-// src/services/thumbnailService.ts
-
 import AdmZip from 'adm-zip';
 import path from 'path';
 import fs from 'fs';
