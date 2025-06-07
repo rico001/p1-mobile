@@ -1,5 +1,9 @@
 import { Router } from 'express';
-import { videoStream, videoStreamExtern1, videoStreamExtern2 } from '../controllers/videoController.js';
+import {
+  videoStream,
+  videoStreamExtern1,
+  videoStreamExtern2
+} from '../controllers/videoController';
 
 const router = Router();
 
