@@ -7,6 +7,7 @@ on:
       - develop
     paths:
       - '.github/workflows/build-external-videostream-image.yml'
+      - 'webcam-external-stream/**'       # reagiert auf alle Änderungen im Docker-Ordner
   workflow_dispatch:
 
 permissions:
@@ -39,5 +40,6 @@ jobs:
           context: ./webcam-external-stream
           file: ./webcam-external-stream/Dockerfile
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/${{ github.actor }}/external-videostream:${{ github.ref_name }}-latest
