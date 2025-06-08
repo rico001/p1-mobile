@@ -21,6 +21,10 @@ class MqttProxyService extends EventEmitter {
    * Initialisiert den MQTT-Proxy (Verbindung & Event-Registration).
    */
   public init(): void {
+    if(this.config.enabled === false || !this.config.brokerUrl || !this.config.topicPrefix) {
+      console.warn('[MQTT-PROXY] ❗ MQTT-Proxy ist deaktiviert oder Konfiguration unvollständig.');
+      return;
+    }
     const opts: IClientOptions = {
       clientId: this.clientId,
       username: this.config.username,

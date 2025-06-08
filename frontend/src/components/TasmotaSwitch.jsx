@@ -36,11 +36,7 @@ export default function TasmotaSwitch() {
   }, [toggle]);
 
   if (error) {
-    return (
-      <Typography color="error" p={2}>
-        Fehler: {error.message}
-      </Typography>
-    );
+    return null
   }
 
   return (
