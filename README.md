@@ -66,7 +66,6 @@ services:
     ports:
       - "3003:3000" #CHANGE to your desired port(s)
     environment:
-
       # required environment variables:
       - SERVER_PORT=3000 # CHANGE to your desired port, if you want 
       - PRINTER_SERIAL_NUMBER=12345 #!! CHANGE to your printer serial number
@@ -94,7 +93,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./thumbnails:/app/thumbnails
-
 ```
 
 ## 🎥 (Optional) External Video Stream
