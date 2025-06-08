@@ -16,6 +16,7 @@
 While Bambu Lab printers are technically impressive and deliver outstanding print quality, their ecosystem is increasingly tied to cloud services.  
 Unfortunately, this trend limits local control, offline usability, and integration into private or self-hosted environments.
 
+
 ## 🔧 Features
 
 - 🌐 **100% local** – No cloud, no account, no internet dependency  
@@ -54,6 +55,7 @@ P1 Mobile is fully containerized and can be started with Docker Compose.
 
 ### `docker-compose.yml`
 ```yaml
+
 services:
   p1-mobile:
     image: ghcr.io/rico001/p1-mobile:main-latest
@@ -74,8 +76,8 @@ services:
       - PRINTER_CA_CERT_PATH=cert/blcert.pem # currently only internal cert/blcert.pem is supported, do not change this
 
       # -------- optional environment variables --------
-      - EXTERN_VIDEO_STREAM_1=http://192.168.178.52:8080/?action=stream # to set an external video stream, e.g. for a old webcam connected to a Raspberry Pi (see dir webcam-external-stream in this repo)
-      - EXTERN_VIDEO_STREAM_2=http://192.168.178.52:8081/?action=stream # to set a second external video stream, e.g. for a old webcam connected to a Raspberry Pi (see dir webcam-external-stream in this repo)
+      - EXTERN_VIDEO_STREAM_1=http://192.168.178.52:8080/?action=stream # to set an external video, see section below for more details
+      - EXTERN_VIDEO_STREAM_2=http://192.168.178.52:8081/?action=stream # to set an external video, see sectio below for more details
       - PRINTER_ERRORS_WHITELIST=0500-C011 #to ignore specific errors in frontend, e.g. 0500-C011 (https://wiki.bambulab.com/en/hms/error-code)
       - THIRD_PARTY_IFRAME_TOGGLE_SRC=http://portainer-my-apps.fritz.box:5000/?deviceId=6827c4887ea5ad00133d18d6 #to set a icon in printersteam, for external lamp or other devices
       - TASMOTA_SWITCH_IP=192.168.178.100 # to set an icon-button for external tasmota power switch
@@ -90,6 +92,49 @@ services:
     volumes:
       - ./thumbnails:/app/thumbnails
 
+```
+
+## 🎥 (Optional) External Video Stream
+
+If you want to use an external video stream (e.g., from a Raspberry Pi with an old webcam or similar), you can set it up as follows:
+
+### 1. Connect a Camera to the Raspberry Pi
+
+After connecting a camera to your Raspberry Pi, you can use the following Docker Compose configuration to run MJPEG Streamer:
+
+### 2. Install MJPEG Streamer on Raspberry Pi
+### `docker-compose.yml`
+```yaml
+
+  mjpg-streamer-0:
+    image: ghcr.io/rico001/external-videostream:main-latest
+    container_name: mjpg-streamer-0
+    devices:
+      - "/dev/v4l/by-id/<CAM_ID>:/dev/cam-0" # Replace <CAM_ID> with your camera's ID from /dev/v4l/by-id
+    environment:
+      CAMERA_DEV: /dev/cam-0
+      MJPEG_STREAMER_INPUT: "-y -r 1920x1080" # Change resolution as needed
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  mjpg-streamer-1:
+    image: ghcr.io/rico001/external-videostream:main-latest
+    container_name: mjpg-streamer-1
+
+    devices:
+      - "/dev/v4l/by-id/<CAM_ID>:/dev/cam-1"
+    environment:
+      CAMERA_DEV: /dev/cam-1
+      MJPEG_STREAMER_INPUT: "-n -r 1920x1080 -f mjpeg"
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "8081:8080"
+    restart: unless-stopped
+  
 ```
 
 ## 🔒 Security Notice
