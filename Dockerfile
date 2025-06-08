@@ -1,7 +1,11 @@
 FROM node:20.9.0
 
-# ✅ PING installieren (für ICMP im OfflineDetectionService)
-RUN apt-get update && apt-get install -y iputils-ping
+# OpenSSL installieren  für Bambu Certificate Download
+RUN apt-get update && \
+    apt-get install -y \
+      iputils-ping \
+      openssl && \
+    rm -rf /var/lib/apt/lists/*
 
 # App-Setup
 WORKDIR /app
@@ -19,7 +23,7 @@ RUN npm run build
 WORKDIR /app
 COPY . .
 
-# ⬇️ Backend TypeScript kompilieren
+RUN chmod +x ./get-cert.sh
 RUN npm run build
 EXPOSE 3000
 ENV SERVER_PORT=3000
