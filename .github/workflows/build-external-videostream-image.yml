@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - develop
     paths:
       - '.github/workflows/build-external-videostream-image.yml'
   workflow_dispatch:

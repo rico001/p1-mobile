@@ -16,6 +16,7 @@
 While Bambu Lab printers are technically impressive and deliver outstanding print quality, their ecosystem is increasingly tied to cloud services.  
 Unfortunately, this trend limits local control, offline usability, and integration into private or self-hosted environments.
 
+
 ## 🔧 Features
 
 - 🌐 **100% local** – No cloud, no account, no internet dependency  
