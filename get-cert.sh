@@ -21,7 +21,7 @@ fi
 
 mkdir -p ./cert
 openssl s_client -connect "${IP}:990" -showcerts </dev/null \
-  | sed -n '/***REMOVED***/,/***REMOVED***/p' \
+  | sed -n '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/p'
   > ./cert/blcert.pem
 
 echo "✔ Zertifikat von $IP in ./cert/blcert.pem gespeichert"
