@@ -1,5 +1,4 @@
 #!/bin/sh
-
 if ! expr "${MJPEG_STREAMER_INPUT}" : ".*\.so.*" > /dev/null; then
   MJPEG_STREAMER_INPUT="input_uvc.so ${MJPEG_STREAMER_INPUT}"
 fi
