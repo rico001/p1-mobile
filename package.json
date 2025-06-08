@@ -9,7 +9,7 @@
     "build": "tsc",
     "prestart": "sh ./get-cert.sh",
     "start": "node dist/server.js",
-    "dev": "tsx watch src/server.ts"
+    "dev": "npm run prestart && tsx watch src/server.ts"
   },
   "dependencies": {
     "adm-zip": "^0.5.16",
