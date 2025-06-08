@@ -40,7 +40,7 @@ The following Bambu Lab firmware versions have been verified for compatibility:
 | `-`              | -          |
 | `-`              | -          |
 
-> Compatibility with future firmware releases is expected, but will be tested incrementally.
+- Compatibility with future firmware releases is expected, but will be tested incrementally.
 
 ## 📷 Screenshots
 
