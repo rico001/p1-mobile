@@ -5,7 +5,7 @@ services:
   #v4l2-ctl --list-formats-ext -d /dev/video<NUMMER>
 
   mjpg-streamer-0:
-    image: mjpg-streamer-custom:latest
+    image: ghcr.io/rico001/external-videostream:main-latest
     container_name: mjpg-streamer-0
     devices:
       - "/dev/v4l/by-id/usb-046d_C270_HD_WEBCAM_200901010001-video-index0:/dev/cam-c270"
@@ -19,7 +19,7 @@ services:
     restart: unless-stopped
 
   mjpg-streamer-1:
-    image: mjpg-streamer-custom:latest
+    image: ghcr.io/rico001/external-videostream:main-latest
     container_name: mjpg-streamer-1
 
     devices:
