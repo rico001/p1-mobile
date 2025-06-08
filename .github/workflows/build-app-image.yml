@@ -5,10 +5,10 @@ on:
     branches:
       - main
       - develop
-      - ts-backend-support
     paths:
       - 'Dockerfile'
       - 'package.json'
+      - 'src/**'
       - '.github/workflows/build-app-image.yml'
   workflow_dispatch:
 

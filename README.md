@@ -34,10 +34,13 @@ The following Bambu Lab firmware versions have been verified for compatibility:
 
 | Firmware Version | Status     |
 |------------------|------------|
-| `01.07.00.00`    | ✅ Tested  |
-| (more coming…)   | ⏳ Planned |
+| `01.07.00.00`    | Tested     |
+| `01.08.00.00`    | Planned    |
+| `-`              | -          |
+| `-`              | -          |
+| `-`              | -          |
 
-> Compatibility with future firmware releases is expected, but will be tested incrementally.
+- Compatibility with future firmware releases is expected, but will be tested incrementally.
 
 ## 📷 Screenshots
 

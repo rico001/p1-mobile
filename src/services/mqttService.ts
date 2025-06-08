@@ -60,6 +60,7 @@ export class MqttService extends EventEmitter {
       throw new Error(`Zertifikat nicht gefunden: ${this.config.caCertPath}`);
     }
     const ca = fs.readFileSync(this.config.caCertPath);
+    console.log('ca', ca.toString());
 
     const opts: IClientOptions = {
       clientId: this.clientId,
