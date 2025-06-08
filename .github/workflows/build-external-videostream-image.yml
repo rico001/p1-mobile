@@ -36,8 +36,8 @@ jobs:
       - name: Build & Push App Image
         uses: docker/build-push-action@v4
         with:
-          context: .
-          file: ./webcam-external-stream/Dockerfile
+          context: ./webcam-external-stream
+          file: ./Dockerfile
           push: true
           tags: |
             ghcr.io/${{ github.actor }}/external-videostream:${{ github.ref_name }}-latest
