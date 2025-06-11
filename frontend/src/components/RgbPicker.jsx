@@ -6,10 +6,9 @@ import { Box, TextField, Grid } from '@mui/material';
 
 const RgbPicker = ({ color, onChange }) => {
   return (
-    <Box sx={{ width: 300, mx: 'auto', textAlign: 'center', pt: 2, margin: 'auto' }}>
-
-      <RgbColorPicker color={color} onChange={onChange} />
-      <Grid container sx={{ mt: 1 }} spacing={2} justifyContent={'center'} alignItems={'center'}>
+    <Box sx={{ width: 300, mx: 'auto', textAlign: 'center', pt: 1, margin: 'auto' }}>
+      <RgbColorPicker color={color} onChange={onChange} style={{ width: '100%' }} />
+      <Grid container spacing={1} justifyContent={'center'} alignItems={'center'}>
         {['r', 'g', 'b'].map((ch) => (
           <Grid item xs={4} key={ch} pt={5}>
             <TextField
