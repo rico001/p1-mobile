@@ -21,7 +21,7 @@ class MqttProxyService extends EventEmitter {
    * Initialisiert den MQTT-Proxy (Verbindung & Event-Registration).
    */
   public init(): void {
-    if(this.config.enabled === false || !this.config.brokerUrl || !this.config.topicPrefix) {
+    if (!this.config.enabled || !this.config.brokerUrl || !this.config.topicPrefix) {
       console.warn('[MQTT-PROXY] ❗ MQTT-Proxy ist deaktiviert oder Konfiguration unvollständig.');
       return;
     }
@@ -30,7 +30,7 @@ class MqttProxyService extends EventEmitter {
       username: this.config.username,
       password: this.config.password,
       clean: true,
-      reconnectPeriod: 1000,
+      reconnectPeriod: 10000,
       keepalive: 15,
       rejectUnauthorized: false,
     };
@@ -48,21 +48,36 @@ class MqttProxyService extends EventEmitter {
   private registerEvents(): void {
     if (!this.client) return;
     this.client.on('connect', this.onConnect.bind(this));
+    this.client.on('close', this.onClose.bind(this));
+    this.client.on('offline', this.onOffline.bind(this));
     this.client.on('error', this.onError.bind(this));
   }
 
-  /**
-   * Handler für Verbindungsfehler.
-   */
-  private onError(err: Error): void {
-    console.error('[MQTT-PROXY] ❌ Verbindungsfehler:', err);
-  }
-
-  /**
-   * Handler für erfolgreiche Verbindung.
-   */
   private onConnect(): void {
     console.log('[MQTT-PROXY] ✅ Verbunden mit MQTT-Broker:', this.config.brokerUrl);
+  }
+
+
+  private tryReconnect(err: Error | null = null): void {
+    setTimeout(() => {
+      console.log('[MQTT-PROXY] 🔄 try reconnect after error')
+      this.client?.reconnect();
+    }, 5000);
+  }
+
+  private onOffline(): void {
+    console.warn('[MQTT-PROXY] 📴 Client ist offline.');
+    this.tryReconnect(null);
+  }
+
+  private onClose(): void {
+    console.warn('[MQTT-PROXY] ⚠️ Verbindung geschlossen.');
+    this.tryReconnect(null);
+  }
+
+  private onError(err: Error): void {
+    console.error('[MQTT-PROXY] ❌ Verbindungsfehler');
+    this.tryReconnect(err);
   }
 
   /**
