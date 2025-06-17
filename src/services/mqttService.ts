@@ -101,6 +101,11 @@ export class MqttService extends EventEmitter {
     this.client.on('error', this.onError.bind(this));
     this.client.on('offline', this.onOffline.bind(this));
     this.client.on('close', this.onClose.bind(this));
+    this.client.on('reconnect', this.onReconnect.bind(this));
+  }
+
+  private onReconnect(): void {
+    console.log('[MQTT] 🔄 Reconnecting...') 
   }
 
   private tryReconnect(err: Error | null = null): void {
@@ -113,13 +118,11 @@ export class MqttService extends EventEmitter {
   private onOffline(): void {
     console.warn('[MQTT] 📴 Client ist offline.');
     websocketService.broadcast({ type: 'wifi_signal_update', payload: 'offline' });
-    this.tryReconnect(null);
   }
 
   private onClose(): void {
     console.warn('[MQTT] ⚠️ Verbindung geschlossen.');
     websocketService.broadcast({ type: 'wifi_signal_update', payload: 'offline' });
-    this.tryReconnect(null);
   }
 
   private onError(err: Error): void {

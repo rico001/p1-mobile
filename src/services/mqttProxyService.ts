@@ -51,12 +51,17 @@ class MqttProxyService extends EventEmitter {
     this.client.on('close', this.onClose.bind(this));
     this.client.on('offline', this.onOffline.bind(this));
     this.client.on('error', this.onError.bind(this));
+    this.client.on('reconnect', this.onReconnect.bind(this));
   }
 
   private onConnect(): void {
     console.log('[MQTT-PROXY] ✅ Verbunden mit MQTT-Broker:', this.config.brokerUrl);
   }
 
+  /** Reconnect-Handler */
+  private onReconnect(): void {
+    console.log('[MQTT-PROXY] 🔄 Reconnecting...') 
+  }
 
   private tryReconnect(err: Error | null = null): void {
     setTimeout(() => {
@@ -67,12 +72,10 @@ class MqttProxyService extends EventEmitter {
 
   private onOffline(): void {
     console.warn('[MQTT-PROXY] 📴 Client ist offline.');
-    this.tryReconnect(null);
   }
 
   private onClose(): void {
     console.warn('[MQTT-PROXY] ⚠️ Verbindung geschlossen.');
-    this.tryReconnect(null);
   }
 
   private onError(err: Error): void {
