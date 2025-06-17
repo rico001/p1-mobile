@@ -10,9 +10,21 @@ import {
   TextField,
   Box,
   Grid,
-  InputAdornment
+  InputAdornment,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel
 } from '@mui/material';
 import RgbPicker from './RgbPicker';
+
+const posstibleTrayTypes = [
+  "ABS", "ABS-GF", "ASA", "ASA-Aero", "BVOH", "PCTG", "EVA", "HIPS",
+  "PA", "PA-CF", "PA-GF", "PA6-CF", "PA11-CF", "PC", "PC-CF", "PCTG",
+  "PE", "PE-CF", "PET-CF", "PETG", "PETG-CF", "PETG-CF10", "PHA", "PLA",
+  "PLA-AERO", "PLA-CF", "PP", "PP-CF", "PP-GF", "PPA-CF", "PPA-GF",
+  "PPS", "PPS-CF", "PVA", "PVB", "SBS", "TPU"
+]
 
 const TraySettingsDialog = ({ open, onClose, tray, trayIndex, onSave }) => {
   const [type, setType] = useState('');
@@ -77,22 +89,29 @@ const TraySettingsDialog = ({ open, onClose, tray, trayIndex, onSave }) => {
           <Box component="form" noValidate autoComplete="off" sx={{ mt: 1 }}>
             <Grid container spacing={2} justifyContent={'center'} alignItems={'center'}>
               <Grid item xs={12}>
-                <TextField
-                  label="Material"
-                  value={type}
-                  onChange={e => setType(e.target.value)}
-                  // feature currently disabled
-                  disabled
-                  fullWidth
-                />
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel id="tray-type-label">Typ</InputLabel>
+                  <Select
+                    labelId="tray-type-label"
+                    id="tray-type"
+                    value={type}
+                    label="Typ"
+                    onChange={e => setType(e.target.value)}
+                    sx={{ textTransform: 'capitalize' }}
+                  >
+                    {posstibleTrayTypes.map(trayType => (
+                      <MenuItem key={trayType} value={trayType}>
+                        {trayType}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   label="Farbe (Hex)"
                   value={hexString()}
                   fullWidth
-                  // feature currently disabled
-                  disabled
                   InputProps={{
                     readOnly: true,
                     endAdornment: (
@@ -119,8 +138,6 @@ const TraySettingsDialog = ({ open, onClose, tray, trayIndex, onSave }) => {
                 <TextField
                   label="max. Nozzle Temp."
                   value={tempMax}
-                  // feature currently disabled
-                  disabled
                   onChange={e => setTempMax(e.target.value)}
                   type="number"
                   fullWidth
@@ -130,8 +147,6 @@ const TraySettingsDialog = ({ open, onClose, tray, trayIndex, onSave }) => {
                 <TextField
                   label="min. Nozzle Temp."
                   value={tempMin}
-                  // feature currently disabled
-                  disabled
                   onChange={e => setTempMin(e.target.value)}
                   type="number"
                   fullWidth
@@ -145,8 +160,6 @@ const TraySettingsDialog = ({ open, onClose, tray, trayIndex, onSave }) => {
           <Button
             onClick={handleSave}
             variant="contained"
-            // feature currently disabled
-            disabled
           >
             Aktualisieren
           </Button>
@@ -171,8 +184,6 @@ const TraySettingsDialog = ({ open, onClose, tray, trayIndex, onSave }) => {
               setColorDialogOpen(false);
             }}
             variant="contained"
-            // feature currently disabled
-            disabled
           >
             Übernehmen
           </Button>
