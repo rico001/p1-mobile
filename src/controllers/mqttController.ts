@@ -125,8 +125,19 @@ interface AmsTrayQuery {
   trayInfoIdx?: string;
 }
 
+const posstibleTrayTypes = [
+    "ABS", "ABS-GF", "ASA", "ASA-Aero", "BVOH", "PCTG", "EVA", "HIPS",
+    "PA", "PA-CF", "PA-GF", "PA6-CF", "PA11-CF", "PC", "PC-CF", "PCTG",
+    "PE", "PE-CF", "PET-CF", "PETG", "PETG-CF", "PETG-CF10", "PHA", "PLA",
+    "PLA-AERO", "PLA-CF", "PP", "PP-CF", "PP-GF", "PPA-CF", "PPA-GF",
+    "PPS", "PPS-CF", "PVA", "PVB", "SBS", "TPU"
+]
 export async function setAmsTray(req: Request, res: Response, next: NextFunction): Promise<void> {
   console.log('setAmsTray, query:', req.query);
+  if (req.query.trayType && !posstibleTrayTypes.includes(req.query.trayType as string)) {
+      next(new Error(`Invalid trayType: ${req.query.trayType}. Possible values: ${posstibleTrayTypes.join(', ')}`));
+      return;
+  }
   try {
     const {
       trayIndex = '0',

@@ -67,7 +67,7 @@ export class MqttService extends EventEmitter {
       username: this.config.username,
       password: this.config.password,
       clean: true,
-      reconnectPeriod: 1000,
+      reconnectPeriod: 8000,
       keepalive: 15,
       rejectUnauthorized: false,
       ca
@@ -99,11 +99,36 @@ export class MqttService extends EventEmitter {
     this.client.on('connect', this.onConnect.bind(this));
     this.client.on('message', this.onMessage.bind(this));
     this.client.on('error', this.onError.bind(this));
+    this.client.on('offline', this.onOffline.bind(this));
+    this.client.on('close', this.onClose.bind(this));
+    this.client.on('reconnect', this.onReconnect.bind(this));
+  }
+
+  private onReconnect(): void {
+    console.log('[MQTT] 🔄 Reconnecting...') 
+  }
+
+  private tryReconnect(err: Error | null = null): void {
+    setTimeout(() => {
+      console.log('[MQTT] 🔄 try reconnect after error, time:' + Date.now().toLocaleString())
+      this.client?.reconnect();
+    }, 5000);
+  }
+
+  private onOffline(): void {
+    console.warn('[MQTT] 📴 Client ist offline.');
+    websocketService.broadcast({ type: 'wifi_signal_update', payload: 'offline' });
+  }
+
+  private onClose(): void {
+    console.warn('[MQTT] ⚠️ Verbindung geschlossen.');
+    websocketService.broadcast({ type: 'wifi_signal_update', payload: 'offline' });
   }
 
   private onError(err: Error): void {
-    console.error('[MQTT] ❌ Verbindungsfehler:', err);
+    console.error('[MQTT] ❌ Verbindungsfehler');
     websocketService.broadcast({ type: 'wifi_signal_update', payload: 'offline' });
+    this.tryReconnect(err);
   }
 
   private onConnect(): void {
