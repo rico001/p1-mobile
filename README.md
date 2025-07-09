@@ -42,14 +42,16 @@ The following Bambu Lab firmware versions have been verified for compatibility:
 
 - Compatibility with future firmware releases is expected, but will be tested incrementally.
 
-## 📷 Screenshots
-
+## 📷 Preview
 <p align="center">
-  <img src="./screenshots/1.png" alt="AMS Management" width="150"/>
-  <img src="./screenshots/2.png" alt="Live Stream" width="150"/>
-  <img src="./screenshots/3.png" alt="Printer Controls" width="150"/>
-  <img src="./screenshots/4.png" alt="Start Printing" width="150"/>
-  <img src="./screenshots/5.png" alt="Model Upload" width="150"/>
+  <img src="./screenshots/1.png" alt="AMS Management" width="100"/>
+  <img src="./screenshots/2.png" alt="Live Stream" width="100"/>
+  <img src="./screenshots/3.png" alt="Printer Controls" width="100"/>
+  <img src="./screenshots/4.png" alt="Start Printing" width="100"/>
+  <img src="./screenshots/5.png" alt="Model Upload" width="100"/>
+</p>
+<p align="center">
+  <img src="./screenshots/demo.gif" alt="P1 Mobile Preview" width="200"/>
 </p>
 
 ## 🐳 Docker Compose Setup
