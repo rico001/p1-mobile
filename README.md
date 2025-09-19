@@ -56,7 +56,7 @@ The following Bambu Lab firmware versions have been verified for compatibility:
 
 To run **P1 Mobile** locally, you'll need:
 
-- A **Bambu Lab P1S** printer with **Local Mode enabled** (for firmware **01.07.00.00 or higher, Developer Mode must also be enabled**)
+- A **Bambu Lab P1S** printer with **Local Mode enabled** (for firmware **01.08.00.00 or higher, Developer Mode must also be enabled!**)
 - **Docker** and **Docker Compose** installed on the machine where you want to run the app (e.g. your homelab or local server)
 - Your **P1S must be powered on** and **connected to the same network** as the machine running the app at startup
 ## 🐳 Docker Compose Setup
