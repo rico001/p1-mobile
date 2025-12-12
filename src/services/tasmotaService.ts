@@ -18,7 +18,7 @@ export default class TasmotaService {
       return null;
     }
     const data = await response.json() as Record<string, any>;
-    return data.POWER1 === 'ON';
+    return (data.POWER1 === 'ON' || data.POWER === 'ON');
   }
 
   /**
