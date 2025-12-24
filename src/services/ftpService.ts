@@ -1,7 +1,8 @@
 import { Client, AccessOptions, FileInfo } from 'basic-ftp';
 import { config, FTPConfig } from '../config';
+import path from 'path';
 
-const rootPath = '/';
+const rootPath = '/p1-app-models';
 
 class FTPService {
   private config: FTPConfig;
@@ -121,6 +122,120 @@ class FTPService {
     } catch (err: any) {
       this.close();
       throw new Error('Fehler beim Löschen der Datei: ' + err.message);
+    }
+  }
+
+  /**
+   * Listet Dateien UND Ordner im gegebenen Verzeichnis auf.
+   */
+  async listFilesAndFolders(remoteDir: string = rootPath): Promise<FileInfo[]> {
+    try {
+      await this.connect();
+      return await this.client.list(remoteDir);
+    } catch (err: any) {
+      this.close();
+      throw new Error('Fehler beim Listen der Dateien und Ordner: ' + err.message);
+    }
+  }
+
+  /**
+   * Erstellt ein neues Verzeichnis auf dem FTP-Server.
+   */
+  async createFolder(remotePath: string): Promise<void> {
+    try {
+      await this.connect();
+      await this.client.ensureDir(remotePath);
+      console.log(`Ordner erstellt: ${remotePath}`);
+    } catch (err: any) {
+      this.close();
+      throw new Error('Fehler beim Erstellen des Ordners: ' + err.message);
+    }
+  }
+
+  /**
+   * Löscht ein Verzeichnis (rekursiv).
+   */
+  async deleteFolder(remotePath: string): Promise<void> {
+    try {
+      await this.connect();
+      await this.deleteFolderRecursive(remotePath);
+      console.log(`[FTP] Ordner gelöscht: ${remotePath}`);
+    } catch (err: any) {
+      this.close();
+      throw new Error(err.message);
+    }
+  }
+
+  /**
+   * Hilfsmethode für rekursives Löschen.
+   */
+  private async deleteFolderRecursive(remotePath: string): Promise<void> {
+    let files: FileInfo[] = [];
+
+    // Liste Inhalte des Ordners
+    try {
+      files = await this.client.list(remotePath);
+    } catch (err) {
+      // Wenn Listing fehlschlägt, versuche trotzdem zu löschen (könnte leer sein)
+      console.log(`[FTP] Konnte Ordner nicht listen: ${remotePath}, versuche zu löschen...`);
+    }
+
+    // Lösche alle Dateien und Unterordner
+    for (const file of files) {
+      const filePath = path.posix.join(remotePath, file.name);
+
+      if (file.isDirectory) {
+        // Rekursiv Unterordner löschen
+        await this.deleteFolderRecursive(filePath);
+      } else {
+        // Datei löschen
+        await this.client.remove(filePath);
+        console.log(`[FTP]   Datei gelöscht: ${filePath}`);
+      }
+    }
+
+    // Lösche das leere Verzeichnis mit direktem RMD-Befehl
+    try {
+      await this.client.send('RMD ' + remotePath);
+      console.log(`[FTP]   Verzeichnis gelöscht: ${remotePath}`);
+    } catch (err: any) {
+      // Fallback: versuche removeDir
+      try {
+        await this.client.removeDir(remotePath);
+      } catch (err2) {
+        console.error(`[FTP] Fehler beim Löschen von ${remotePath}:`, err2);
+        throw err;
+      }
+    }
+  }
+
+  /**
+   * Verschiebt eine Datei/Ordner.
+   */
+  async moveFile(oldPath: string, newPath: string): Promise<void> {
+    try {
+      await this.connect();
+      await this.client.rename(oldPath, newPath);
+      console.log(`Verschoben: ${oldPath} -> ${newPath}`);
+    } catch (err: any) {
+      this.close();
+      throw new Error('Fehler beim Verschieben: ' + err.message);
+    }
+  }
+
+  /**
+   * Initialisiert das Root-Verzeichnis beim Server-Start.
+   * Erstellt /p1-app-models falls es nicht existiert.
+   */
+  async ensureRootFolder(): Promise<void> {
+    try {
+      await this.connect();
+      await this.client.ensureDir(rootPath);
+      console.log(`[FTP] ✅ Root-Verzeichnis sichergestellt: ${rootPath}`);
+      this.close();
+    } catch (err: any) {
+      this.close();
+      console.error(`[FTP] ❌ Fehler beim Sicherstellen des Root-Verzeichnisses: ${err.message}`);
     }
   }
 }

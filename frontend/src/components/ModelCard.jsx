@@ -18,6 +18,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PrintIcon from '@mui/icons-material/Print';
+import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import StepperDialog from './StepperDialog';
 import { useNavigate } from 'react-router-dom';
 import { objectToQueryString } from '../utils/functions';
@@ -32,7 +33,7 @@ function bytesToMB(bytes) {
   return Math.round(mb * 100) / 100;
 }
 
-const ModelCard = ({ model, onAction }) => {
+const ModelCard = ({ model, onAction, onMove }) => {
   const { name, size, thumbnail, operations } = model;
   const [previewOpen, setPreviewOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -142,6 +143,10 @@ const ModelCard = ({ model, onAction }) => {
               <PrintIcon />
             </IconButton>
 
+            <IconButton onClick={() => onMove(model)} title="Verschieben">
+              <DriveFileMoveIcon />
+            </IconButton>
+
             <IconButton onClick={() => handleAction('refreshThumbnail')} title="Thumbnail aktualisieren">
               <RefreshIcon />
             </IconButton>
@@ -213,10 +218,13 @@ ModelCard.propTypes = {
   model: PropTypes.shape({
     name: PropTypes.string.isRequired,
     size: PropTypes.number.isRequired,
-    thumbnail: PropTypes.string.isRequired,
+    type: PropTypes.string,
+    path: PropTypes.string,
+    thumbnail: PropTypes.string,
     operations: PropTypes.object.isRequired
   }).isRequired,
-  onAction: PropTypes.func.isRequired
+  onAction: PropTypes.func.isRequired,
+  onMove: PropTypes.func.isRequired
 };
 
 export default memo(ModelCard);

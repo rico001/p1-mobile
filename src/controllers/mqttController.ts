@@ -49,6 +49,7 @@ export async function calibratePrinter(req: Request, res: Response, next: NextFu
 
 interface PrintFileQuery {
   fileName?: string;
+  path?: string;
   bed_levelling?: string;
   flow_cali?: string;
   vibration_cali?: string;
@@ -56,11 +57,13 @@ interface PrintFileQuery {
 
 export async function printFile3mf(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { fileName, bed_levelling, flow_cali, vibration_cali } = req.query as PrintFileQuery;
+    const { fileName, path: filePath, bed_levelling, flow_cali, vibration_cali } = req.query as PrintFileQuery;
     console.log('printFile3mf, query:', req.query);
 
-    if (!fileName) {
-      res.status(400).json({ message: 'fileName is required' });
+    // Unterstütze beide: path (neu) und fileName (alt)
+    const filePathToUse = filePath || fileName;
+    if (!filePathToUse) {
+      res.status(400).json({ message: 'path or fileName is required' });
       return;
     }
 
@@ -78,7 +81,7 @@ export async function printFile3mf(req: Request, res: Response, next: NextFuncti
         task_id: '0',
         subtask_id: 'aktuellePlateTest',
         subtask_name: '0',
-        url: `file:///sdcard/${fileName}`,
+        url: `file:///sdcard${filePathToUse}`,
         md5: '',
         timelapse: true,
         bed_type: 'auto',

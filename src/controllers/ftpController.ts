@@ -3,6 +3,7 @@ import ftpService from '../services/ftpService';
 import path from 'path';
 import fs from 'fs';
 import { thumbnailService } from '../services/thumbnailService';
+import { FileInfo as FtpFileInfo } from 'basic-ftp';
 
 interface FileInfo {
   name: string;
@@ -12,14 +13,22 @@ interface FileInfo {
 interface FileResponse {
   name: string;
   size: number;
+  type: 'file' | 'folder';
+  path: string;
   thumbnail: string | null;
   operations: {
-    download: { method: string; path: string };
+    download?: { method: string; path: string };
     delete: { method: string; path: string };
-    refreshThumbnail: { method: string; path: string };
-    print: { method: string; path: string };
+    refreshThumbnail?: { method: string; path: string };
+    print?: { method: string; path: string };
     rename: { method: string; path: string };
+    move: { method: string; path: string };
   };
+}
+
+interface MoveRequest {
+  sourcePath: string;
+  targetFolder: string;
 }
 
 // GET /api/ftp/list-files
@@ -34,47 +43,77 @@ export const listFiles = async (req: Request, res: Response): Promise<void> => {
   }
 
   try {
+    const currentPath = (req.query.path as string) || '/';
     const fileType = (req.query.type as string) || '3mf';
-    const files: FileInfo[] = await ftpService.listFiles('/');
-    let filteredFiles = files;
 
-    if (fileType) {
-      filteredFiles = files.filter(file =>
-        file.name.toLowerCase().endsWith(`.${fileType.toLowerCase()}`)
-      );
-    }
+    const items: FtpFileInfo[] = await ftpService.listFilesAndFolders(currentPath);
 
-    const response: FileResponse[] = filteredFiles.map(file => {
-      const baseName = file.name;
-      const thumb = thumbnailFiles.find(fn => fn.startsWith(baseName));
-      return {
-        name: baseName,
-        size: file.size,
-        thumbnail: thumb ? path.posix.join('/thumbnails', thumb) : null,
-        operations: {
-          download: {
-            method: 'GET',
-            path: path.posix.join('/api/ftp/download-file', `?fileName=${baseName}`),
+    const response: FileResponse[] = items
+      .map(item => {
+        const isFolder = item.isDirectory;
+        const itemPath = path.posix.join(currentPath, item.name);
+
+        if (isFolder) {
+          return {
+            name: item.name,
+            size: 0,
+            type: 'folder' as const,
+            path: itemPath,
+            thumbnail: null,
+            operations: {
+              delete: { method: 'DELETE', path: `/api/ftp/delete-folder?path=${encodeURIComponent(itemPath)}` },
+              rename: { method: 'POST', path: `/api/ftp/rename-folder?path=${encodeURIComponent(itemPath)}` },
+              move: { method: 'POST', path: `/api/ftp/move?sourcePath=${encodeURIComponent(itemPath)}` }
+            }
+          };
+        }
+
+        // Nur Dateien mit gewünschtem Typ
+        if (!item.name.toLowerCase().endsWith(`.${fileType.toLowerCase()}`)) {
+          return null;
+        }
+
+        // Thumbnail-Suche: Berücksichtige Pfad in Unterordnern
+        const relativePath = itemPath.replace(/^\//, '').replace(/\//g, '_');
+        const thumb = thumbnailFiles.find(fn =>
+          fn === `${item.name}.png` || fn === `${relativePath}.png`
+        );
+
+        return {
+          name: item.name,
+          size: item.size,
+          type: 'file' as const,
+          path: itemPath,
+          thumbnail: thumb ? path.posix.join('/thumbnails', thumb) : null,
+          operations: {
+            download: {
+              method: 'GET',
+              path: `/api/ftp/download-file?path=${encodeURIComponent(itemPath)}`,
+            },
+            delete: {
+              method: 'DELETE',
+              path: `/api/ftp/delete-file?path=${encodeURIComponent(itemPath)}`,
+            },
+            refreshThumbnail: {
+              method: 'GET',
+              path: `/api/thumbnail/files?path=${encodeURIComponent(itemPath)}`,
+            },
+            print: {
+              method: 'GET',
+              path: `/api/mqtt/print-file?path=${encodeURIComponent(itemPath)}`,
+            },
+            rename: {
+              method: 'POST',
+              path: `/api/ftp/rename-file?path=${encodeURIComponent(itemPath)}`,
+            },
+            move: {
+              method: 'POST',
+              path: `/api/ftp/move?sourcePath=${encodeURIComponent(itemPath)}`,
+            },
           },
-          delete: {
-            method: 'GET',
-            path: path.posix.join('/api/ftp/delete-file', `?fileName=${baseName}`),
-          },
-          refreshThumbnail: {
-            method: 'GET',
-            path: path.posix.join('/api/thumbnail/files', `?fileName=${baseName}`),
-          },
-          print: {
-            method: 'GET',
-            path: path.posix.join('/api/mqtt/print-file', `?fileName=${baseName}`),
-          },
-          rename: {
-            method: 'GET',
-            path: path.posix.join('/api/ftp/rename-file', `?oldFileName=${baseName}`),
-          },
-        },
-      };
-    });
+        };
+      })
+      .filter(Boolean) as FileResponse[];
 
     res.json(response);
   } catch (error: any) {
@@ -96,19 +135,25 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    if (await ftpService.fileExists(originalName)) {
-      res.status(409).json({ message: 'Dateinname bereits vergeben.', type: 'fileExists' });
+    const parentPath = req.body.parentPath || '/';
+    const remotePath = path.posix.join(parentPath, originalName);
+
+    // Prüfe ob Datei bereits existiert im Zielordner
+    const targetItems = await ftpService.listFilesAndFolders(parentPath);
+    if (targetItems.some(item => item.name === originalName)) {
+      res.status(409).json({ message: 'Dateiname bereits vergeben.', type: 'fileExists' });
       return;
     }
 
     const fileLocalPath = path.resolve(process.cwd(), 'files', originalName);
-    const remotePath = path.posix.join('/', originalName);
     await ftpService.uploadFile(fileLocalPath, remotePath);
 
+    // Thumbnail-Name basierend auf vollständigem Pfad
+    const relativePathForThumb = remotePath.replace(/^\//, '').replace(/\//g, '_');
     const thumbnailPath = path.resolve(
       process.cwd(),
       'thumbnails',
-      `${originalName}.png`
+      `${relativePathForThumb}.png`
     );
     try {
       await thumbnailService.extractThumbnail(fileLocalPath, thumbnailPath);
@@ -130,22 +175,37 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
-// GET /api/ftp/rename-file
+// POST /api/ftp/rename-file
 export const renameFile = async (req: Request, res: Response): Promise<void> => {
   try {
-    const oldFileName = req.query.oldFileName as string;
-    const newFileName = req.query.newFileName as string;
-    console.log('renameFile', `${oldFileName} -> ${newFileName}`);
+    // Unterstütze beide: path (neu) und oldFileName (alt)
+    const filePath = (req.query.path as string) || (req.query.oldFileName as string);
+    const newFileName = req.query.newFileName as string || req.body.newName;
 
-    await ftpService.renameFile(oldFileName, `${newFileName}.3mf`);
+    if (!filePath || !newFileName) {
+      res.status(400).json({ message: 'path/oldFileName und newFileName/newName sind erforderlich.' });
+      return;
+    }
 
-    const oldThumb = path.resolve(process.cwd(), 'thumbnails', `${oldFileName}.png`);
-    const newThumb = path.resolve(
-      process.cwd(),
-      'thumbnails',
-      `${newFileName}.3mf.png`
-    );
-    thumbnailService.renameThumbnail(oldThumb, newThumb);
+    console.log('renameFile', `${filePath} -> ${newFileName}`);
+
+    const parentPath = path.dirname(filePath);
+    const newPath = path.posix.join(parentPath, `${newFileName}.3mf`);
+
+    await ftpService.moveFile(filePath, newPath);
+
+    // Thumbnail umbenennen
+    const oldRelativePath = filePath.replace(/^\//, '').replace(/\//g, '_');
+    const newRelativePath = newPath.replace(/^\//, '').replace(/\//g, '_');
+
+    const oldThumb = path.resolve(process.cwd(), 'thumbnails', `${oldRelativePath}.png`);
+    const newThumb = path.resolve(process.cwd(), 'thumbnails', `${newRelativePath}.png`);
+
+    try {
+      await thumbnailService.renameThumbnail(oldThumb, newThumb);
+    } catch (err) {
+      console.warn('Thumbnail konnte nicht umbenannt werden:', err);
+    }
 
     res.json({ message: 'success', command: 'renameFile', fileName: newFileName });
   } catch (error: any) {
@@ -156,11 +216,14 @@ export const renameFile = async (req: Request, res: Response): Promise<void> => 
 // GET /api/ftp/download-file
 export const downloadFile = async (req: Request, res: Response): Promise<void> => {
   try {
-    const fileName = req.query.fileName as string;
-    if (!fileName) {
-      res.status(400).json({ message: 'fileName ist erforderlich.' });
+    // Unterstütze beide: path (neu) und fileName (alt)
+    const filePath = (req.query.path as string) || (req.query.fileName as string);
+    if (!filePath) {
+      res.status(400).json({ message: 'path oder fileName ist erforderlich.' });
       return;
     }
+
+    const fileName = path.basename(filePath);
 
     const localDir = path.resolve(process.cwd(), 'files');
     if (!fs.existsSync(localDir)) {
@@ -168,7 +231,7 @@ export const downloadFile = async (req: Request, res: Response): Promise<void> =
     }
 
     const localPath = path.join(localDir, fileName);
-    await ftpService.downloadFile(path.posix.join('/', fileName), localPath);
+    await ftpService.downloadFile(filePath, localPath);
 
     res.download(localPath, fileName, err => {
       if (err) {
@@ -191,21 +254,145 @@ export const downloadFile = async (req: Request, res: Response): Promise<void> =
 // DELETE /api/ftp/delete-file
 export const deleteFile = async (req: Request, res: Response): Promise<void> => {
   try {
-    const fileName = req.query.fileName as string;
-    if (!fileName) {
-      res.status(400).json({ message: 'fileName ist erforderlich.' });
+    // Unterstütze beide: path (neu) und fileName (alt)
+    const filePath = (req.query.path as string) || (req.query.fileName as string);
+    if (!filePath) {
+      res.status(400).json({ message: 'path oder fileName ist erforderlich.' });
       return;
     }
 
-    await ftpService.deleteFile(fileName);
-    const thumbPath = path.resolve(
-      process.cwd(),
-      'thumbnails',
-      `${fileName}.png`
-    );
-    thumbnailService.deleteThumbnail(thumbPath);
+    await ftpService.deleteFile(filePath);
 
-    res.json({ message: 'success', command: 'deleteFile', fileName });
+    // Thumbnail löschen
+    const relativePath = filePath.replace(/^\//, '').replace(/\//g, '_');
+    const thumbPath = path.resolve(process.cwd(), 'thumbnails', `${relativePath}.png`);
+
+    try {
+      await thumbnailService.deleteThumbnail(thumbPath);
+    } catch (err) {
+      console.warn('Thumbnail konnte nicht gelöscht werden:', err);
+    }
+
+    res.json({ message: 'success', command: 'deleteFile', fileName: path.basename(filePath) });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// POST /api/ftp/create-folder
+export const createFolder = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { folderName, parentPath = '/' } = req.body;
+
+    if (!folderName || !folderName.trim()) {
+      res.status(400).json({ message: 'folderName ist erforderlich.' });
+      return;
+    }
+
+    const newFolderPath = path.posix.join(parentPath, folderName);
+    await ftpService.createFolder(newFolderPath);
+
+    res.json({ message: 'Ordner erfolgreich erstellt.', path: newFolderPath });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// DELETE /api/ftp/delete-folder
+export const deleteFolder = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const folderPath = req.query.path as string;
+
+    if (!folderPath) {
+      res.status(400).json({ message: 'path ist erforderlich.' });
+      return;
+    }
+
+    await ftpService.deleteFolder(folderPath);
+    res.json({ message: 'Ordner erfolgreich gelöscht.', path: folderPath });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// POST /api/ftp/move
+export const moveItem = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { sourcePath, targetFolder } = req.body as MoveRequest;
+
+    if (!sourcePath || !targetFolder) {
+      res.status(400).json({ message: 'sourcePath und targetFolder sind erforderlich.' });
+      return;
+    }
+
+    // Verhindere Verschieben eines Ordners in sich selbst
+    if (targetFolder.startsWith(sourcePath + '/')) {
+      res.status(400).json({
+        message: 'Ein Ordner kann nicht in sich selbst verschoben werden.'
+      });
+      return;
+    }
+
+    const fileName = path.basename(sourcePath);
+    const newPath = path.posix.join(targetFolder, fileName);
+
+    // Prüfe ob Ziel bereits existiert
+    const targetItems = await ftpService.listFilesAndFolders(targetFolder);
+    const exists = targetItems.some(item => item.name === fileName);
+
+    if (exists) {
+      res.status(409).json({
+        message: 'Eine Datei/Ordner mit diesem Namen existiert bereits im Zielordner.',
+        code: 'TARGET_EXISTS'
+      });
+      return;
+    }
+
+    await ftpService.moveFile(sourcePath, newPath);
+
+    // Thumbnail verschieben wenn es eine Datei ist
+    if (sourcePath.toLowerCase().endsWith('.3mf')) {
+      const sourceFileName = path.basename(sourcePath);
+      const oldThumbPath = path.resolve(process.cwd(), 'thumbnails', `${sourceFileName}.png`);
+
+      // Neuer Name inkludiert den Ordnerpfad
+      const relativePath = newPath.replace(/^\//, '').replace(/\//g, '_');
+      const newThumbPath = path.resolve(process.cwd(), 'thumbnails', `${relativePath}.png`);
+
+      try {
+        await thumbnailService.renameThumbnail(oldThumbPath, newThumbPath);
+      } catch (err) {
+        console.warn('Thumbnail konnte nicht verschoben werden:', err);
+      }
+    }
+
+    res.json({
+      message: 'Erfolgreich verschoben.',
+      oldPath: sourcePath,
+      newPath
+    });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// POST /api/ftp/rename-folder
+export const renameFolder = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const oldPath = req.query.path as string;
+    const { newName } = req.body;
+
+    if (!oldPath || !newName) {
+      res.status(400).json({ message: 'path und newName sind erforderlich.' });
+      return;
+    }
+
+    const parentPath = path.dirname(oldPath);
+    const newPath = path.posix.join(parentPath, newName);
+
+    await ftpService.renameFile(oldPath, newPath);
+
+    res.json({ message: 'Ordner umbenannt.', oldPath, newPath });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }

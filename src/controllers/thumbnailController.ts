@@ -5,62 +5,57 @@ import ftpService from '../services/ftpService';
 import { thumbnailService } from '../services/thumbnailService';
 /**
  * Generiert Thumbnails für 3MF-Dateien im FTP-Server.
- * Optionales Query-Param 'fileName' filtert auf eine Datei.
+ * Optionales Query-Param 'path' für eine spezifische Datei (unterstützt auch 'fileName' für Abwärtskompatibilität).
  */
 export async function generateThumbnails(req: Request, res: Response): Promise<void> {
   try {
-    const requestedFileName = (req.query.fileName as string) || null;
-    const remoteDir = '/';
-    const fileType = '3mf';
+    // Unterstütze beide: path (neu) und fileName (alt)
+    const filePath = (req.query.path as string) || (req.query.fileName as string) || null;
 
-    // 1. Liste aller 3MF-Dateien im Remote-Verzeichnis
-    const files: Array<{ name: string }> = await ftpService.listFiles(remoteDir);
-    let targets = files.filter(f => f.name.toLowerCase().endsWith(`.${fileType.toLowerCase()}`));
-
-    // 2. Auf Wunsch nur eine bestimmte Datei bearbeiten
-    if (requestedFileName) {
-      targets = targets.filter(f => f.name.toLowerCase() === requestedFileName.toLowerCase());
-      if (targets.length === 0) {
-        res.status(404).json({ message: `File "${requestedFileName}" nicht gefunden.` });
-        return;
-      }
+    if (!filePath) {
+      res.status(400).json({ message: 'Parameter "path" ist erforderlich.' });
+      return;
     }
 
-    // 3. Lokale Ordner für Downloads und Thumbnails anlegen
+    // 1. Lokale Ordner für Downloads und Thumbnails anlegen
     const tmpDir = path.resolve(process.cwd(), 'files');
     const thumbDir = path.resolve(process.cwd(), 'thumbnails');
     await fs.mkdir(tmpDir, { recursive: true });
     await fs.mkdir(thumbDir, { recursive: true });
 
-    const results: Array<{ message: string; command: string; fileName: string; refreshedThumbnail: string }> = [];
+    const fileName = path.basename(filePath);
+    const localFilePath = path.resolve(tmpDir, fileName);
 
-    for (const file of targets) {
-      const localFilePath = path.resolve(tmpDir, file.name);
+    // 2. Datei vom FTP herunterladen
+    console.log(`[Thumbnail] Lade ${filePath} herunter...`);
+    await ftpService.downloadFile(filePath, localFilePath);
+    console.log(`[Thumbnail] Download abgeschlossen: ${fileName}`);
 
-      // 4. Herunterladen
-      console.log(`Lade ${file.name} herunter...`);
-      await ftpService.downloadFile(path.posix.join(remoteDir, file.name), localFilePath);
-      console.log(`Herunterladen von ${file.name} abgeschlossen.`);
+    // 3. Thumbnail extrahieren mit pfad-basiertem Namen
+    const relativePath = filePath.replace(/^\//, '').replace(/\//g, '_');
+    const thumbnailFileName = `${relativePath}.png`;
+    const thumbnailPath = path.resolve(thumbDir, thumbnailFileName);
+    await thumbnailService.extractThumbnail(localFilePath, thumbnailPath);
 
-      // 5. Thumbnail extrahieren
-      const baseName = file.name;
-      const thumbnailFileName = `${baseName}.png`;
-      const thumbnailPath = path.resolve(thumbDir, thumbnailFileName);
-      await thumbnailService.extractThumbnail(localFilePath, thumbnailPath);
+    console.log(`[Thumbnail] Thumbnail erstellt: ${thumbnailFileName}`);
 
-      // 6. Ergebnis sammeln
-      results.push({
-        message: 'success',
-        command: 'generateThumbnails',
-        fileName: file.name,
-        refreshedThumbnail: `/thumbnails/${thumbnailFileName}`,
-      });
+    // 4. Lokale Datei aufräumen
+    try {
+      await fs.unlink(localFilePath);
+    } catch (err) {
+      console.warn('[Thumbnail] Konnte temporäre Datei nicht löschen:', err);
     }
 
-    // 7. Antwort senden
-    res.json(results);
+    // 5. Erfolg zurückmelden
+    res.json({
+      message: 'success',
+      command: 'generateThumbnails',
+      fileName: fileName,
+      path: filePath,
+      refreshedThumbnail: `/thumbnails/${thumbnailFileName}`,
+    });
   } catch (err: any) {
-    console.error(err);
+    console.error('[Thumbnail] Fehler:', err);
     res.status(500).json({ message: err.message });
   }
 }

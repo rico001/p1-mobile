@@ -6,7 +6,11 @@ import {
   downloadFile,
   deleteFile,
   listFiles,
-  renameFile
+  renameFile,
+  createFolder,
+  deleteFolder,
+  moveItem,
+  renameFolder
 } from '../controllers/ftpController';
 
 const router = Router();
@@ -34,9 +38,17 @@ const upload = multer({ storage, fileFilter });
 
 // GET-Routen
 router.get('/list-files', listFiles);
-router.get('/delete-file', deleteFile);
 router.get('/download-file', downloadFile);
-router.get('/rename-file', renameFile);
+
+// DELETE-Routen
+router.delete('/delete-file', deleteFile);
+router.delete('/delete-folder', deleteFolder);
+
+// POST-Routen
+router.post('/rename-file', renameFile);
+router.post('/rename-folder', renameFolder);
+router.post('/create-folder', createFolder);
+router.post('/move', moveItem);
 
 // POST-Route für Datei-Upload (.3mf)
 router.post(
