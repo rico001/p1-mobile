@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - 'feature/**'
     paths:
       - 'Dockerfile'
       - 'package.json'
