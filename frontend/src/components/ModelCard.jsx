@@ -11,7 +11,11 @@ import {
   DialogActions,
   Button,
   TextField,
-  Zoom
+  Zoom,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -19,6 +23,7 @@ import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutli
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PrintIcon from '@mui/icons-material/Print';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import StepperDialog from './StepperDialog';
 import { useNavigate } from 'react-router-dom';
 import { objectToQueryString } from '../utils/functions';
@@ -33,14 +38,25 @@ function bytesToMB(bytes) {
   return Math.round(mb * 100) / 100;
 }
 
-const ModelCard = ({ model, onAction, onMove }) => {
+const ModelCard = ({ model, onAction, onMove, dragState, onDragStart, onDragEnd }) => {
   const { name, size, thumbnail, operations } = model;
   const [previewOpen, setPreviewOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [renameValue, setRenameValue] = useState(name);
   const [renameError, setRenameError] = useState('');
+  const [anchorEl, setAnchorEl] = useState(null);
+  const menuOpen = Boolean(anchorEl);
   const navigate = useNavigate();
+
+  const handleMenuOpen = (event) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleAction = useCallback(
     (actionKey, query) => {
@@ -60,6 +76,7 @@ const ModelCard = ({ model, onAction, onMove }) => {
     setRenameValue(name);
     setRenameError('');
     setRenameDialogOpen(true);
+    handleMenuClose();
   }, [name]);
 
   const closeRenameDialog = useCallback(() => {
@@ -93,6 +110,13 @@ const ModelCard = ({ model, onAction, onMove }) => {
     <>
       <Zoom in={true} timeout={300}>
         <Card
+          draggable={true}
+          onDragStart={(e) => {
+            onDragStart(model);
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('application/json', JSON.stringify(model));
+          }}
+          onDragEnd={onDragEnd}
           sx={{
             width: '100%',
             aspectRatio: '1 / 1',
@@ -100,7 +124,10 @@ const ModelCard = ({ model, onAction, onMove }) => {
             flexDirection: 'column',
             borderRadius: 2,
             boxShadow: 3,
-            overflow: 'hidden'
+            overflow: 'hidden',
+            opacity: dragState.isDragging && dragState.draggedItem?.path === model.path ? 0.5 : 1,
+            cursor: dragState.isDragging ? 'grabbing' : 'grab',
+            transition: 'opacity 0.2s ease-in-out'
           }}
         >
           <Box
@@ -129,16 +156,6 @@ const ModelCard = ({ model, onAction, onMove }) => {
           </Box>
 
           <Box sx={{ display: 'flex', justifyContent: 'space-around', py: 1, px: 1, pb: 0 }}>
-            <IconButton
-              component="a"
-              href={operations.download.path}
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Download"
-            >
-              <DownloadIcon />
-            </IconButton>
-
             <IconButton onClick={() => setModalOpen(true)} title="Drucken">
               <PrintIcon />
             </IconButton>
@@ -151,14 +168,49 @@ const ModelCard = ({ model, onAction, onMove }) => {
               <RefreshIcon />
             </IconButton>
 
-            <IconButton onClick={openRenameDialog} title="Umbenennen">
-              <DriveFileRenameOutlineIcon />
-            </IconButton>
-
             <IconButton onClick={handleDelete} title="Löschen">
               <DeleteIcon />
             </IconButton>
+
+            <IconButton onClick={handleMenuOpen} title="Mehr">
+              <MoreVertIcon />
+            </IconButton>
           </Box>
+
+          {/* More Menu */}
+          <Menu
+            anchorEl={anchorEl}
+            open={menuOpen}
+            onClose={handleMenuClose}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+          >
+            <MenuItem
+              component="a"
+              href={operations.download.path}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleMenuClose}
+            >
+              <ListItemIcon>
+                <DownloadIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Download</ListItemText>
+            </MenuItem>
+
+            <MenuItem onClick={openRenameDialog}>
+              <ListItemIcon>
+                <DriveFileRenameOutlineIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Umbenennen</ListItemText>
+            </MenuItem>
+          </Menu>
         </Card>
       </Zoom>
 
@@ -224,7 +276,10 @@ ModelCard.propTypes = {
     operations: PropTypes.object.isRequired
   }).isRequired,
   onAction: PropTypes.func.isRequired,
-  onMove: PropTypes.func.isRequired
+  onMove: PropTypes.func.isRequired,
+  dragState: PropTypes.object.isRequired,
+  onDragStart: PropTypes.func.isRequired,
+  onDragEnd: PropTypes.func.isRequired
 };
 
 export default memo(ModelCard);

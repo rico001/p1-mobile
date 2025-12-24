@@ -368,8 +368,9 @@ export const moveItem = async (req: Request, res: Response): Promise<void> => {
 
     // Thumbnail verschieben wenn es eine Datei ist
     if (sourcePath.toLowerCase().endsWith('.3mf')) {
-      const sourceFileName = path.basename(sourcePath);
-      const oldThumbPath = path.resolve(process.cwd(), 'thumbnails', `${sourceFileName}.png`);
+      // Alter Name inkludiert den Ordnerpfad (falls die Datei bereits in einem Unterordner ist)
+      const oldRelativePath = sourcePath.replace(/^\//, '').replace(/\//g, '_');
+      const oldThumbPath = path.resolve(process.cwd(), 'thumbnails', `${oldRelativePath}.png`);
 
       // Neuer Name inkludiert den Ordnerpfad
       const relativePath = newPath.replace(/^\//, '').replace(/\//g, '_');

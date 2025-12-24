@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchModels, performModelAction, createFolder, moveItem, deleteFolder } from '../api/models.js';
+import { fetchModels, performModelAction, createFolder, moveItem, deleteFolder, renameFolder } from '../api/models.js';
+import { toast } from 'react-toastify';
 
 export function useModels() {
   const queryClient = useQueryClient();
@@ -31,6 +32,16 @@ export function useModels() {
     mutationFn: moveItem,
     onSuccess: () => {
       queryClient.invalidateQueries(['models']);
+      toast.success('Erfolgreich verschoben!', {
+        position: 'top-right',
+        autoClose: 3000
+      });
+    },
+    onError: (error) => {
+      toast.error(`Verschieben fehlgeschlagen: ${error.message}`, {
+        position: 'top-right',
+        autoClose: 5000
+      });
     }
   });
 
@@ -38,6 +49,23 @@ export function useModels() {
     mutationFn: deleteFolder,
     onSuccess: () => {
       queryClient.invalidateQueries(['models', currentPath]);
+    }
+  });
+
+  const renameFolderMutation = useMutation({
+    mutationFn: renameFolder,
+    onSuccess: () => {
+      queryClient.invalidateQueries(['models', currentPath]);
+      toast.success('Ordner erfolgreich umbenannt!', {
+        position: 'top-right',
+        autoClose: 3000
+      });
+    },
+    onError: (error) => {
+      toast.error(`Umbenennen fehlgeschlagen: ${error.message}`, {
+        position: 'top-right',
+        autoClose: 5000
+      });
     }
   });
 
@@ -54,6 +82,7 @@ export function useModels() {
     createFolder: createFolderMutation.mutate,
     moveItem: moveItemMutation.mutate,
     deleteFolder: deleteFolderMutation.mutate,
-    isFolderActionPending: createFolderMutation.isPending || moveItemMutation.isPending || deleteFolderMutation.isPending,
+    renameFolder: renameFolderMutation.mutate,
+    isFolderActionPending: createFolderMutation.isPending || moveItemMutation.isPending || deleteFolderMutation.isPending || renameFolderMutation.isPending,
   };
 }

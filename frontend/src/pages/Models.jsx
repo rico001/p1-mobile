@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Box, Alert } from '@mui/material';
 import ModelCard from '../components/ModelCard';
 import FolderCard from '../components/FolderCard';
@@ -27,12 +27,18 @@ export default function Models() {
         createFolder,
         moveItem,
         deleteFolder,
+        renameFolder,
         isFolderActionPending,
         refetch
     } = useModels();
 
     const [moveDialogOpen, setMoveDialogOpen] = useState(false);
     const [itemToMove, setItemToMove] = useState(null);
+    const [dragState, setDragState] = useState({
+        isDragging: false,
+        draggedItem: null,
+        dragOverFolder: null
+    });
 
     const handleNavigate = (newPath) => {
         setCurrentPath(newPath);
@@ -46,6 +52,109 @@ export default function Models() {
     const handleMoveConfirm = ({ sourcePath, targetFolder }) => {
         moveItem({ sourcePath, targetFolder });
     };
+
+    const handleDragStart = (item) => {
+        setDragState({
+            isDragging: true,
+            draggedItem: item,
+            dragOverFolder: null
+        });
+    };
+
+    const handleDragEnd = () => {
+        setDragState({
+            isDragging: false,
+            draggedItem: null,
+            dragOverFolder: null
+        });
+    };
+
+    const handleDrop = (targetFolder) => {
+        if (!dragState.draggedItem) return;
+
+        // Prevent dropping folder into itself
+        if (dragState.draggedItem.path === targetFolder.path) {
+            handleDragEnd();
+            return;
+        }
+
+        // Call existing moveItem mutation
+        moveItem({
+            sourcePath: dragState.draggedItem.path,
+            targetFolder: targetFolder.path
+        });
+
+        handleDragEnd();
+    };
+
+    const handleDragOverFolder = (folderId) => {
+        setDragState(prev => ({
+            ...prev,
+            dragOverFolder: folderId
+        }));
+    };
+
+    // Auto-Scrolling beim Dragging
+    const scrollIntervalRef = useRef(null);
+
+    useEffect(() => {
+        if (!dragState.isDragging) {
+            if (scrollIntervalRef.current) {
+                cancelAnimationFrame(scrollIntervalRef.current);
+                scrollIntervalRef.current = null;
+            }
+            return;
+        }
+
+        const SCROLL_ZONE = 150; // Pixel vom Rand (breiter gemacht)
+        const SCROLL_SPEED = 10; // Pixel pro Frame
+
+        const handleDragMove = (e) => {
+            const viewportHeight = window.innerHeight;
+            const mouseY = e.clientY;
+
+            const distanceFromTop = mouseY;
+            const distanceFromBottom = viewportHeight - mouseY;
+
+            let scrollAmount = 0;
+            const inTopZone = distanceFromTop < SCROLL_ZONE;
+            const inBottomZone = distanceFromBottom < SCROLL_ZONE;
+
+            if (inTopZone) {
+                // Nahe am oberen Rand - nach oben scrollen
+                scrollAmount = -SCROLL_SPEED * ((SCROLL_ZONE - distanceFromTop) / SCROLL_ZONE);
+            } else if (inBottomZone) {
+                // Nahe am unteren Rand - nach unten scrollen
+                scrollAmount = SCROLL_SPEED * ((SCROLL_ZONE - distanceFromBottom) / SCROLL_ZONE);
+            }
+
+            if (scrollAmount !== 0) {
+                const scroll = () => {
+                    window.scrollBy(0, scrollAmount);
+                    if (dragState.isDragging) {
+                        scrollIntervalRef.current = requestAnimationFrame(scroll);
+                    }
+                };
+                if (!scrollIntervalRef.current) {
+                    scrollIntervalRef.current = requestAnimationFrame(scroll);
+                }
+            } else {
+                if (scrollIntervalRef.current) {
+                    cancelAnimationFrame(scrollIntervalRef.current);
+                    scrollIntervalRef.current = null;
+                }
+            }
+        };
+
+        document.addEventListener('dragover', handleDragMove);
+
+        return () => {
+            document.removeEventListener('dragover', handleDragMove);
+            if (scrollIntervalRef.current) {
+                cancelAnimationFrame(scrollIntervalRef.current);
+            }
+        };
+    }, [dragState.isDragging]);
 
     // Trenne Ordner und Dateien
     const folders = models.filter(m => m.type === 'folder');
@@ -77,10 +186,13 @@ export default function Models() {
                     gap: `${GRID_GAP}px`,
                 }}
             >
-                {/* Neuer Ordner Button */}
+                {/* Neuer Ordner Button / Parent Directory Drop Target */}
                 <CreateFolderButton
                     onCreateFolder={createFolder}
                     currentPath={currentPath}
+                    dragState={dragState}
+                    onDrop={handleDrop}
+                    onDragOverFolder={handleDragOverFolder}
                 />
 
                 {/* Upload Button */}
@@ -99,6 +211,12 @@ export default function Models() {
                         onAction={performAction}
                         onMove={handleMoveClick}
                         onDelete={deleteFolder}
+                        onRename={renameFolder}
+                        dragState={dragState}
+                        onDragStart={handleDragStart}
+                        onDragEnd={handleDragEnd}
+                        onDrop={handleDrop}
+                        onDragOverFolder={handleDragOverFolder}
                     />
                 ))}
 
@@ -109,6 +227,9 @@ export default function Models() {
                         model={file}
                         onAction={performAction}
                         onMove={handleMoveClick}
+                        dragState={dragState}
+                        onDragStart={handleDragStart}
+                        onDragEnd={handleDragEnd}
                     />
                 ))}
             </Box>
