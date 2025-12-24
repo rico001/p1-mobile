@@ -53,6 +53,11 @@ export const listFiles = async (req: Request, res: Response): Promise<void> => {
         const isFolder = item.isDirectory;
         const itemPath = path.posix.join(currentPath, item.name);
 
+        // Filtere "thumbnail"-Ordner im /timelapse-Verzeichnis aus
+        if (isFolder && currentPath === '/timelapse' && item.name.toLowerCase() === 'thumbnail') {
+          return null;
+        }
+
         if (isFolder) {
           return {
             name: item.name,
@@ -73,18 +78,23 @@ export const listFiles = async (req: Request, res: Response): Promise<void> => {
           return null;
         }
 
-        // Thumbnail-Suche: Berücksichtige Pfad in Unterordnern
-        const relativePath = itemPath.replace(/^\//, '').replace(/\//g, '_');
-        const thumb = thumbnailFiles.find(fn =>
-          fn === `${item.name}.png` || fn === `${relativePath}.png`
-        );
+        // Thumbnail-Handling (nur für 3MF-Dateien)
+        let thumbnailPath = null;
+
+        if (fileType.toLowerCase() === '3mf') {
+          const relativePath = itemPath.replace(/^\//, '').replace(/\//g, '_');
+          const thumb = thumbnailFiles.find(fn =>
+            fn === `${item.name}.png` || fn === `${relativePath}.png`
+          );
+          thumbnailPath = thumb ? path.posix.join('/thumbnails', thumb) : null;
+        }
 
         return {
           name: item.name,
           size: item.size,
           type: 'file' as const,
           path: itemPath,
-          thumbnail: thumb ? path.posix.join('/thumbnails', thumb) : null,
+          thumbnail: thumbnailPath,
           operations: {
             download: {
               method: 'GET',
@@ -232,6 +242,12 @@ export const downloadFile = async (req: Request, res: Response): Promise<void> =
 
     const localPath = path.join(localDir, fileName);
     await ftpService.downloadFile(filePath, localPath);
+
+    // Setze Content-Type basierend auf Dateiendung
+    const ext = path.extname(fileName).toLowerCase();
+    if (ext === '.avi') {
+      res.set('Content-Type', 'video/x-msvideo');
+    }
 
     res.download(localPath, fileName, err => {
       if (err) {

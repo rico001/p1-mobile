@@ -53,11 +53,12 @@ interface PrintFileQuery {
   bed_levelling?: string;
   flow_cali?: string;
   vibration_cali?: string;
+  timelapse?: string;
 }
 
 export async function printFile3mf(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { fileName, path: filePath, bed_levelling, flow_cali, vibration_cali } = req.query as PrintFileQuery;
+    const { fileName, path: filePath, bed_levelling, flow_cali, vibration_cali, timelapse } = req.query as PrintFileQuery;
     console.log('printFile3mf, query:', req.query);
 
     // Unterstütze beide: path (neu) und fileName (alt)
@@ -70,8 +71,39 @@ export async function printFile3mf(req: Request, res: Response, next: NextFuncti
     const bedLevellingFlag: boolean = bed_levelling ? JSON.parse(bed_levelling) : true;
     const flowCaliFlag: boolean = flow_cali ? JSON.parse(flow_cali) : true;
     const vibrationCaliFlag: boolean = vibration_cali ? JSON.parse(vibration_cali) : true;
+    const timelapseFlag: boolean = timelapse ? JSON.parse(timelapse) : true;
 
     const sequenceId: string = `print-file-3mf__${Date.now()}`;
+
+    /*
+    Auszug aus Doku vom Dezember 2025, OpenBambuAPI Dokumentation: https://github.com/Doridian/OpenBambuAPI/blob/main/mqtt.md
+    {
+      "print": {
+          "sequence_id": "0",
+          "command": "project_file",
+          "param": "Metadata/plate_X.gcode",
+          "project_id": "0", // Always 0 for local prints
+          "profile_id": "0", // Always 0 for local prints
+          "task_id": "0", // Always 0 for local prints
+          "subtask_id": "0", // Always 0 for local prints
+          "subtask_name": "",
+
+          "file": "", // Filename to print, not needed when "url" is specified with filepath
+          "url": "file:///mnt/sdcard", // URL to print. Root path, protocol can vary. E.g., if sd card, "ftp:///myfile.3mf", "ftp:///cache/myotherfile.3mf"
+          "md5": "",
+
+          "timelapse": true,
+          "bed_type": "auto", // Always "auto" for local prints
+          "bed_levelling": true,
+          "flow_cali": true,
+          "vibration_cali": true,
+          "layer_inspect": true,
+          "ams_mapping": "",
+          "use_ams": false
+      }
+    }
+    */
+
     const payload: any = {
       print: {
         sequence_id: sequenceId,
@@ -79,11 +111,11 @@ export async function printFile3mf(req: Request, res: Response, next: NextFuncti
         project_id: '0',
         profile_id: '0',
         task_id: '0',
-        subtask_id: 'aktuellePlateTest',
+        subtask_id: '0',
         subtask_name: '0',
         url: `file:///sdcard${filePathToUse}`,
         md5: '',
-        timelapse: true,
+        timelapse: timelapseFlag,
         bed_type: 'auto',
         bed_levelling: bedLevellingFlag,
         flow_cali: flowCaliFlag,
@@ -129,17 +161,17 @@ interface AmsTrayQuery {
 }
 
 const posstibleTrayTypes = [
-    "ABS", "ABS-GF", "ASA", "ASA-Aero", "BVOH", "PCTG", "EVA", "HIPS",
-    "PA", "PA-CF", "PA-GF", "PA6-CF", "PA11-CF", "PC", "PC-CF", "PCTG",
-    "PE", "PE-CF", "PET-CF", "PETG", "PETG-CF", "PETG-CF10", "PHA", "PLA",
-    "PLA-AERO", "PLA-CF", "PP", "PP-CF", "PP-GF", "PPA-CF", "PPA-GF",
-    "PPS", "PPS-CF", "PVA", "PVB", "SBS", "TPU"
+  "ABS", "ABS-GF", "ASA", "ASA-Aero", "BVOH", "PCTG", "EVA", "HIPS",
+  "PA", "PA-CF", "PA-GF", "PA6-CF", "PA11-CF", "PC", "PC-CF", "PCTG",
+  "PE", "PE-CF", "PET-CF", "PETG", "PETG-CF", "PETG-CF10", "PHA", "PLA",
+  "PLA-AERO", "PLA-CF", "PP", "PP-CF", "PP-GF", "PPA-CF", "PPA-GF",
+  "PPS", "PPS-CF", "PVA", "PVB", "SBS", "TPU"
 ]
 export async function setAmsTray(req: Request, res: Response, next: NextFunction): Promise<void> {
   console.log('setAmsTray, query:', req.query);
   if (req.query.trayType && !posstibleTrayTypes.includes(req.query.trayType as string)) {
-      next(new Error(`Invalid trayType: ${req.query.trayType}. Possible values: ${posstibleTrayTypes.join(', ')}`));
-      return;
+    next(new Error(`Invalid trayType: ${req.query.trayType}. Possible values: ${posstibleTrayTypes.join(', ')}`));
+    return;
   }
   try {
     const {

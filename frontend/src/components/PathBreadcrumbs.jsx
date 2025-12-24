@@ -48,7 +48,7 @@ const PathBreadcrumbs = ({ currentPath, onNavigate }) => {
           }
         }}
       >
-        <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
+        <HomeIcon sx={{ mr: 0.5 }} />
       </Link>
 
       {pathParts.map((part, index) => {

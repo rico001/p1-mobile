@@ -29,6 +29,7 @@ export default function PrintJobStepper({ onClose, onConfirm }) {
       bed_levelling: true,
       flow_cali: true,
       vibration_cali: true,
+      timelapse: true,
     }
   );
 
@@ -75,6 +76,10 @@ export default function PrintJobStepper({ onClose, onConfirm }) {
                     <FormControlLabel
                       control={<Switch checked={printJobConfig.vibration_cali} onChange={handleToggle} name="vibration_cali" />}
                       label="Vibrationskalibrierung"
+                    />
+                    <FormControlLabel
+                      control={<Switch checked={printJobConfig.timelapse} onChange={handleToggle} name="timelapse" />}
+                      label="Timelapse"
                     />
                   </FormGroup>
                 </Box>

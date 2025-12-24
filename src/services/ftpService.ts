@@ -224,18 +224,29 @@ class FTPService {
   }
 
   /**
-   * Initialisiert das Root-Verzeichnis beim Server-Start.
-   * Erstellt /p1-app-models falls es nicht existiert.
+   * Initialisiert die benötigten Verzeichnisse beim Server-Start.
+   * Erstellt /p1-app-models, /timelapse und /timelapse/thumbnail falls sie nicht existieren.
    */
   async ensureRootFolder(): Promise<void> {
     try {
       await this.connect();
+
+      // Models-Verzeichnis
       await this.client.ensureDir(rootPath);
       console.log(`[FTP] ✅ Root-Verzeichnis sichergestellt: ${rootPath}`);
+
+      // Timelapse-Verzeichnis
+      await this.client.ensureDir('/timelapse');
+      console.log(`[FTP] ✅ Timelapse-Verzeichnis sichergestellt: /timelapse`);
+
+      // Timelapse-Thumbnail-Verzeichnis
+      await this.client.ensureDir('/timelapse/thumbnail');
+      console.log(`[FTP] ✅ Timelapse-Thumbnail-Verzeichnis sichergestellt: /timelapse/thumbnail`);
+
       this.close();
     } catch (err: any) {
       this.close();
-      console.error(`[FTP] ❌ Fehler beim Sicherstellen des Root-Verzeichnisses: ${err.message}`);
+      console.error(`[FTP] ❌ Fehler beim Sicherstellen der Verzeichnisse: ${err.message}`);
     }
   }
 }

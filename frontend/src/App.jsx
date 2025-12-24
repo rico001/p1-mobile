@@ -9,6 +9,7 @@ import AMS from './pages/AMS';
 import Layout from './layout/Layout';
 import { PAGES, setPage } from './store/uiSlice';
 import Logs from './pages/Logs';
+import Timelapse from './pages/Timelapse';
 
 // Wrapper, der auf Location-Änderungen reagiert
 function RouteChangeHandler() {
@@ -33,6 +34,7 @@ export default function App() {
           <Route path={PAGES.PRINTER} element={<Printer />} />
           <Route path={PAGES.AMS} element={<AMS />} />
           <Route path={PAGES.LOG} element={<Logs />} />
+          <Route path={PAGES.TIMELAPSE} element={<Timelapse />} />
         </Route>
       </Routes>
     </Provider>

@@ -132,7 +132,7 @@ const ModelCard = ({ model, onAction, onMove }) => {
             <IconButton
               component="a"
               href={operations.download.path}
-              download
+              target="_blank"
               rel="noopener noreferrer"
               title="Download"
             >
