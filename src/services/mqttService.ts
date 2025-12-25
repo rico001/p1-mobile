@@ -87,6 +87,16 @@ export class MqttService extends EventEmitter {
       }
     };
     this.publish(this.config.topics.request, getStatePayload);
+
+    //stop print on start to avoid phantom printing on reconnect or restart app
+    const stopPrintPayload = {
+      print: { 
+        sequence_id: `init-print-stop__${Date.now()}`, 
+        command: 'stop', 
+        param: '' 
+      },
+    };
+    this.publish(this.config.topics.request, stopPrintPayload);
   }
 
   /** Setze Proxy-Service für Publishes */
