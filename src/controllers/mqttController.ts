@@ -103,7 +103,7 @@ export async function printFile3mf(req: Request, res: Response, next: NextFuncti
       }
     }
     */
-
+    //const amsMapping = [-1, 3, 2, 1, 0];
     const payload: any = {
       print: {
         sequence_id: sequenceId,
@@ -122,7 +122,7 @@ export async function printFile3mf(req: Request, res: Response, next: NextFuncti
         flow_cali: flowCaliFlag,
         vibration_cali: vibrationCaliFlag,
         layer_inspect: true,
-        ams_mapping: '',
+        ams_mapping: [],
         use_ams: true,
       },
     };
