@@ -107,6 +107,7 @@ export async function printFile3mf(req: Request, res: Response, next: NextFuncti
     const payload: any = {
       print: {
         sequence_id: sequenceId,
+        param: "Metadata/plate_1.gcode",
         command: 'project_file',
         project_id: '0',
         profile_id: '0',
