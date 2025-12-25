@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useEffect } from 'react';
 import { Provider, useDispatch } from 'react-redux';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
@@ -11,7 +10,6 @@ import { PAGES, setPage } from './store/uiSlice';
 import Logs from './pages/Logs';
 import Timelapse from './pages/Timelapse';
 
-// Wrapper, der auf Location-Änderungen reagiert
 function RouteChangeHandler() {
   const location = useLocation();
   const dispatch = useDispatch();

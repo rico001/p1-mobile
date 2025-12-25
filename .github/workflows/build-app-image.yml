@@ -9,6 +9,7 @@ on:
     paths:
       - 'Dockerfile'
       - 'package.json'
+      - 'frontend/**'
       - 'src/**'
       - '.github/workflows/build-app-image.yml'
   workflow_dispatch:
