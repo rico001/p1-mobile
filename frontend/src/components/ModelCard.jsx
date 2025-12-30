@@ -64,7 +64,7 @@ const ModelCard = ({ model, onAction, onMove, dragState, onDragStart, onDragEnd 
   const handleAction = useCallback(
     (actionKey, query) => {
       const { method, path } = operations[actionKey];
-      onAction({ method, path, query });
+      return onAction({ method, path, query });
     },
     [operations, onAction]
   );
@@ -86,7 +86,7 @@ const ModelCard = ({ model, onAction, onMove, dragState, onDragStart, onDragEnd 
     setRenameDialogOpen(false);
   }, []);
 
-  const handleRenameConfirm = () => {
+  const handleRenameConfirm = async () => {
     if (!renameValue.trim()) {
       setRenameError('Der Dateiname darf nicht leer sein.');
       return;
@@ -96,9 +96,14 @@ const ModelCard = ({ model, onAction, onMove, dragState, onDragStart, onDragEnd 
       setRenameDialogOpen(false);
       return;
     }
-    const query = objectToQueryString({ newFileName: renameValue });
-    handleAction('rename', query);
-    setRenameDialogOpen(false);
+    try {
+      const query = objectToQueryString({ newFileName: renameValue });
+      await handleAction('rename', query);
+      setRenameDialogOpen(false);
+    } catch (error) {
+      // Wenn Fehler auftritt, Fehlermeldung anzeigen aber Dialog offen lassen
+      setRenameError(error.message || 'Fehler beim Umbenennen');
+    }
   };
 
   const handleDelete = () => {

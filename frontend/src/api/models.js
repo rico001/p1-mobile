@@ -17,7 +17,12 @@ export async function performModelAction({ method, path, query = '' }) {
   try {
     const response = await fetchWithTimeout(path + query, { method });
     if (!response.ok) {
-      throw new Error(`Aktion fehlgeschlagen: ${response.statusText}`);
+      const errorData = await response.json().catch(() => ({}));
+      const error = new Error(errorData.message || `Aktion fehlgeschlagen: ${response.statusText}`);
+      error.type = errorData.type;
+      error.existingPath = errorData.existingPath;
+      error.status = response.status;
+      throw error;
     }
     return response.json();
   } catch (error) {

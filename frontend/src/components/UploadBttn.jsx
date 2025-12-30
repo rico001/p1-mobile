@@ -68,9 +68,9 @@ export default function UploadFabDialog({ uploadUrl, onUploaded, currentPath = '
 
       if (!res.ok) {
         // If server indicates file exists, allow rename
-        if (res.status === 409 || json.code === 'fileExists') {
+        if (res.status === 409 || json.type === 'fileExists') {
           setExistsError(true);
-          setMessage('Eine Datei mit diesem Namen existiert bereits. Bitte umbenennen.');
+          setMessage(json.message || 'Eine Datei mit diesem Namen existiert bereits. Bitte umbenennen.');
         } else {
           setExistsError(false);
           throw new Error(json.message || 'Fehler beim Upload');

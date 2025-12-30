@@ -5,11 +5,6 @@ import fs from 'fs';
 import { thumbnailService } from '../services/thumbnailService';
 import { FileInfo as FtpFileInfo } from 'basic-ftp';
 
-interface FileInfo {
-  name: string;
-  size: number;
-}
-
 interface FileResponse {
   name: string;
   size: number;
@@ -78,14 +73,11 @@ export const listFiles = async (req: Request, res: Response): Promise<void> => {
           return null;
         }
 
-        // Thumbnail-Handling (nur für 3MF-Dateien)
+        // Thumbnail-Handling (nur für 3MF-Dateien, nur nach Dateinamen)
         let thumbnailPath = null;
 
         if (fileType.toLowerCase() === '3mf') {
-          const relativePath = itemPath.replace(/^\//, '').replace(/\//g, '_');
-          const thumb = thumbnailFiles.find(fn =>
-            fn === `${item.name}.png` || fn === `${relativePath}.png`
-          );
+          const thumb = thumbnailFiles.find(fn => fn === `${item.name}.png`);
           thumbnailPath = thumb ? path.posix.join('/thumbnails', thumb) : null;
         }
 
@@ -148,22 +140,24 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
     const parentPath = req.body.parentPath || '/';
     const remotePath = path.posix.join(parentPath, originalName);
 
-    // Prüfe ob Datei bereits existiert im Zielordner
-    const targetItems = await ftpService.listFilesAndFolders(parentPath);
-    if (targetItems.some(item => item.name === originalName)) {
-      res.status(409).json({ message: 'Dateiname bereits vergeben.', type: 'fileExists' });
+    // Prüfe ob Dateiname global bereits existiert (über alle Ordner hinweg)
+    const existingFile = await ftpService.findFileByName(originalName);
+    if (existingFile) {
+      res.status(409).json({
+        message: `Dateiname bereits vergeben: "${originalName}"`,
+        type: 'fileExists'
+      });
       return;
     }
 
     const fileLocalPath = path.resolve(process.cwd(), 'files', originalName);
     await ftpService.uploadFile(fileLocalPath, remotePath);
 
-    // Thumbnail-Name basierend auf vollständigem Pfad
-    const relativePathForThumb = remotePath.replace(/^\//, '').replace(/\//g, '_');
+    // Thumbnail-Name basierend nur auf Dateinamen (ohne Pfad)
     const thumbnailPath = path.resolve(
       process.cwd(),
       'thumbnails',
-      `${relativePathForThumb}.png`
+      `${originalName}.png`
     );
     try {
       await thumbnailService.extractThumbnail(fileLocalPath, thumbnailPath);
@@ -201,15 +195,25 @@ export const renameFile = async (req: Request, res: Response): Promise<void> => 
 
     const parentPath = path.dirname(filePath);
     const newPath = path.posix.join(parentPath, `${newFileName}.3mf`);
+    const newFullFileName = `${newFileName}.3mf`;
+
+    // Prüfe ob neuer Dateiname global bereits existiert (außer die aktuelle Datei)
+    const existingFile = await ftpService.findFileByName(newFullFileName);
+    if (existingFile && existingFile !== filePath) {
+      res.status(409).json({
+        message: `Dateiname bereits vergeben: "${newFullFileName}"`,
+        type: 'fileExists',
+        existingPath: existingFile
+      });
+      return;
+    }
 
     await ftpService.moveFile(filePath, newPath);
 
-    // Thumbnail umbenennen
-    const oldRelativePath = filePath.replace(/^\//, '').replace(/\//g, '_');
-    const newRelativePath = newPath.replace(/^\//, '').replace(/\//g, '_');
-
-    const oldThumb = path.resolve(process.cwd(), 'thumbnails', `${oldRelativePath}.png`);
-    const newThumb = path.resolve(process.cwd(), 'thumbnails', `${newRelativePath}.png`);
+    // Thumbnail umbenennen (nur Dateiname, kein Pfad)
+    const oldFileName = path.basename(filePath);
+    const oldThumb = path.resolve(process.cwd(), 'thumbnails', `${oldFileName}.png`);
+    const newThumb = path.resolve(process.cwd(), 'thumbnails', `${newFullFileName}.png`);
 
     try {
       await thumbnailService.renameThumbnail(oldThumb, newThumb);
@@ -279,9 +283,9 @@ export const deleteFile = async (req: Request, res: Response): Promise<void> => 
 
     await ftpService.deleteFile(filePath);
 
-    // Thumbnail löschen
-    const relativePath = filePath.replace(/^\//, '').replace(/\//g, '_');
-    const thumbPath = path.resolve(process.cwd(), 'thumbnails', `${relativePath}.png`);
+    // Thumbnail löschen (nur Dateiname, kein Pfad)
+    const fileName = path.basename(filePath);
+    const thumbPath = path.resolve(process.cwd(), 'thumbnails', `${fileName}.png`);
 
     try {
       await thumbnailService.deleteThumbnail(thumbPath);
@@ -352,36 +356,35 @@ export const moveItem = async (req: Request, res: Response): Promise<void> => {
     const fileName = path.basename(sourcePath);
     const newPath = path.posix.join(targetFolder, fileName);
 
-    // Prüfe ob Ziel bereits existiert
-    const targetItems = await ftpService.listFilesAndFolders(targetFolder);
-    const exists = targetItems.some(item => item.name === fileName);
+    // Bei 3MF-Dateien: Prüfe global, ob der Name bereits existiert (außer die Quelldatei selbst)
+    if (fileName.toLowerCase().endsWith('.3mf')) {
+      const existingFile = await ftpService.findFileByName(fileName);
+      if (existingFile && existingFile !== sourcePath) {
+        res.status(409).json({
+          message: `Dateiname bereits vergeben: "${fileName}"`,
+          code: 'TARGET_EXISTS',
+          existingPath: existingFile
+        });
+        return;
+      }
+    } else {
+      // Bei Ordnern: Prüfe nur im Zielordner
+      const targetItems = await ftpService.listFilesAndFolders(targetFolder);
+      const exists = targetItems.some(item => item.name === fileName);
 
-    if (exists) {
-      res.status(409).json({
-        message: 'Eine Datei/Ordner mit diesem Namen existiert bereits im Zielordner.',
-        code: 'TARGET_EXISTS'
-      });
-      return;
+      if (exists) {
+        res.status(409).json({
+          message: 'Eine Datei/Ordner mit diesem Namen existiert bereits im Zielordner.',
+          code: 'TARGET_EXISTS'
+        });
+        return;
+      }
     }
 
     await ftpService.moveFile(sourcePath, newPath);
 
-    // Thumbnail verschieben wenn es eine Datei ist
-    if (sourcePath.toLowerCase().endsWith('.3mf')) {
-      // Alter Name inkludiert den Ordnerpfad (falls die Datei bereits in einem Unterordner ist)
-      const oldRelativePath = sourcePath.replace(/^\//, '').replace(/\//g, '_');
-      const oldThumbPath = path.resolve(process.cwd(), 'thumbnails', `${oldRelativePath}.png`);
-
-      // Neuer Name inkludiert den Ordnerpfad
-      const relativePath = newPath.replace(/^\//, '').replace(/\//g, '_');
-      const newThumbPath = path.resolve(process.cwd(), 'thumbnails', `${relativePath}.png`);
-
-      try {
-        await thumbnailService.renameThumbnail(oldThumbPath, newThumbPath);
-      } catch (err) {
-        console.warn('Thumbnail konnte nicht verschoben werden:', err);
-      }
-    }
+    // Thumbnail bleibt unverändert (nur Dateiname, kein Pfad)
+    // Da sich der Dateiname beim Verschieben nicht ändert, bleibt auch das Thumbnail gleich
 
     res.json({
       message: 'Erfolgreich verschoben.',

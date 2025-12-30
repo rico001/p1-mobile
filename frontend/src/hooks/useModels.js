@@ -74,7 +74,7 @@ export function useModels() {
     isLoading: modelsQuery.isLoading,
     isError: modelsQuery.isError,
     error: modelsQuery.error,
-    performAction: actionMutation.mutate,
+    performAction: actionMutation.mutateAsync,
     isActionPending: actionMutation.isPending,
     refetch: modelsQuery.refetch,
     currentPath,

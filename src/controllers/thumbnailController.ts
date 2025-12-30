@@ -31,9 +31,8 @@ export async function generateThumbnails(req: Request, res: Response): Promise<v
     await ftpService.downloadFile(filePath, localFilePath);
     console.log(`[Thumbnail] Download abgeschlossen: ${fileName}`);
 
-    // 3. Thumbnail extrahieren mit pfad-basiertem Namen
-    const relativePath = filePath.replace(/^\//, '').replace(/\//g, '_');
-    const thumbnailFileName = `${relativePath}.png`;
+    // 3. Thumbnail extrahieren (nur Dateiname, kein Pfad)
+    const thumbnailFileName = `${fileName}.png`;
     const thumbnailPath = path.resolve(thumbDir, thumbnailFileName);
     await thumbnailService.extractThumbnail(localFilePath, thumbnailPath);
 

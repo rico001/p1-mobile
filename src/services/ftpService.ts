@@ -60,15 +60,6 @@ class FTPService {
   }
 
   /**
-   * Prüft, ob eine Datei existiert (im rootPath).
-   */
-  async fileExists(remotePath: string): Promise<boolean> {
-    await this.connect();
-    const files = await this.client.list(rootPath);
-    return files.some(file => file.name === remotePath);
-  }
-
-  /**
    * Bennent eine Datei um.
    */
   async renameFile(oldPath: string, newPath: string): Promise<void> {
@@ -220,6 +211,34 @@ class FTPService {
     } catch (err: any) {
       this.close();
       throw new Error('Fehler beim Verschieben: ' + err.message);
+    }
+  }
+
+  /**
+   * Prüft rekursiv, ob ein Dateiname bereits existiert (über alle Unterordner hinweg).
+   */
+  async findFileByName(fileName: string, searchPath: string = rootPath): Promise<string | null> {
+    try {
+      await this.connect();
+      const items = await this.client.list(searchPath);
+
+      for (const item of items) {
+        const itemPath = path.posix.join(searchPath, item.name);
+
+        if (item.isDirectory) {
+          // Rekursiv in Unterordner suchen
+          const found = await this.findFileByName(fileName, itemPath);
+          if (found) return found;
+        } else if (item.name === fileName) {
+          // Datei gefunden
+          return itemPath;
+        }
+      }
+
+      return null;
+    } catch (err: any) {
+      this.close();
+      throw new Error('Fehler beim Suchen der Datei: ' + err.message);
     }
   }
 
