@@ -106,11 +106,18 @@ export async function parse3mfFile(arrayBuffer) {
     }
   }
 
-  // Extract all PNG images
+  // Extract all PNG images (exclude no_light and _small variants)
   const pngPromises = [];
 
   zipFile.forEach((relativePath, file) => {
     if (relativePath.toLowerCase().endsWith('.png')) {
+      // Skip images with no_light or _small in the name
+      const fileName = relativePath.toLowerCase();
+      if (fileName.includes('no_light') || fileName.includes('_small')) {
+        console.log(`Skipping image: ${relativePath}`);
+        return;
+      }
+
       pngPromises.push(
         file.async('blob').then(blob => ({
           name: relativePath,
