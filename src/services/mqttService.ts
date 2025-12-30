@@ -122,7 +122,7 @@ export class MqttService extends EventEmitter {
 
   private tryReconnect(err: Error | null = null): void {
     setTimeout(() => {
-      console.log('[MQTT] 🔄 try reconnect after error, time:' + Date.now().toLocaleString())
+      console.log('[MQTT] 🔄 try reconnect after error or after onOffline, time:' + Date.now().toLocaleString())
       this.client?.reconnect();
     }, 5000);
   }
@@ -130,6 +130,7 @@ export class MqttService extends EventEmitter {
   private onOffline(): void {
     console.warn('[MQTT] 📴 Client ist offline.');
     websocketService.broadcast({ type: 'wifi_signal_update', payload: 'offline' });
+    this.tryReconnect(null);
   }
 
   private onClose(): void {
