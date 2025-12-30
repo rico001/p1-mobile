@@ -54,11 +54,12 @@ interface PrintFileQuery {
   flow_cali?: string;
   vibration_cali?: string;
   timelapse?: string;
+  plate?: string;
 }
 
 export async function printFile3mf(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { fileName, path: filePath, bed_levelling, flow_cali, vibration_cali, timelapse } = req.query as PrintFileQuery;
+    const { fileName, path: filePath, bed_levelling, flow_cali, vibration_cali, timelapse, plate } = req.query as PrintFileQuery;
     console.log('printFile3mf, query:', req.query);
 
     // Unterstütze beide: path (neu) und fileName (alt)
@@ -72,6 +73,7 @@ export async function printFile3mf(req: Request, res: Response, next: NextFuncti
     const flowCaliFlag: boolean = flow_cali ? JSON.parse(flow_cali) : true;
     const vibrationCaliFlag: boolean = vibration_cali ? JSON.parse(vibration_cali) : true;
     const timelapseFlag: boolean = timelapse ? JSON.parse(timelapse) : true;
+    const plateNumber: number = plate ? parseInt(plate, 10) : 1;
 
     const sequenceId: string = `print-file-3mf__${Date.now()}`;
 
@@ -188,7 +190,7 @@ export async function printFile3mf(req: Request, res: Response, next: NextFuncti
     const payload: any = {
       print: {
         sequence_id: sequenceId,
-        param: "Metadata/plate_1.gcode",
+        param: `Metadata/plate_${plateNumber}.gcode`,
         command: 'project_file',
         project_id: '0',
         profile_id: '0',

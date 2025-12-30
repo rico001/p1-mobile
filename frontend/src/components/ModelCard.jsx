@@ -29,6 +29,7 @@ import StepperDialog from './StepperDialog';
 import ModelDetailsDialog from './ModelDetailsDialog';
 import { useNavigate } from 'react-router-dom';
 import { objectToQueryString } from '../utils/functions';
+import { use3mfFile } from '../hooks/use3mfFile';
 
 function bytesToKB(bytes) {
   const kb = bytes / 1024;
@@ -51,6 +52,18 @@ const ModelCard = ({ model, onAction, onMove, dragState, onDragStart, onDragEnd 
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const menuOpen = Boolean(anchorEl);
   const navigate = useNavigate();
+
+  // Load 3mf file metadata only when explicitly requested
+  const downloadUrl = operations.download?.path;
+  const [shouldAnalyze, setShouldAnalyze] = useState(false);
+  const { data: modelData, reload: reloadModelData } = use3mfFile(downloadUrl, shouldAnalyze);
+  const plateCount = modelData?.metadata?.plate_count || 1;
+  const plateImages = modelData?.images || [];
+
+  const handleAnalyzePlates = async () => {
+    setShouldAnalyze(true);
+    await reloadModelData();
+  };
 
   const handleMenuOpen = (event) => {
     event.stopPropagation();
@@ -258,6 +271,9 @@ const ModelCard = ({ model, onAction, onMove, dragState, onDragStart, onDragEnd 
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={handleConfirmPrint}
+        plateCount={plateCount}
+        onAnalyzePlates={handleAnalyzePlates}
+        plateImages={plateImages}
       />
 
       {/* Umbenennen-Dialog */}
