@@ -76,34 +76,115 @@ export async function printFile3mf(req: Request, res: Response, next: NextFuncti
     const sequenceId: string = `print-file-3mf__${Date.now()}`;
 
     /*
-    Auszug aus Doku vom Dezember 2025, OpenBambuAPI Dokumentation: https://github.com/Doridian/OpenBambuAPI/blob/main/mqtt.md
-    {
-      "print": {
-          "sequence_id": "0",
-          "command": "project_file",
-          "param": "Metadata/plate_X.gcode",
-          "project_id": "0", // Always 0 for local prints
-          "profile_id": "0", // Always 0 for local prints
-          "task_id": "0", // Always 0 for local prints
-          "subtask_id": "0", // Always 0 for local prints
-          "subtask_name": "",
+    Print Job Doku vom Dezember 2025, OpenBambuAPI Dokumentation: https://github.com/Doridian/OpenBambuAPI/blob/main/mqtt.md
 
-          "file": "", // Filename to print, not needed when "url" is specified with filepath
-          "url": "file:///mnt/sdcard", // URL to print. Root path, protocol can vary. E.g., if sd card, "ftp:///myfile.3mf", "ftp:///cache/myotherfile.3mf"
-          "md5": "",
-
-          "timelapse": true,
-          "bed_type": "auto", // Always "auto" for local prints
-          "bed_levelling": true,
-          "flow_cali": true,
-          "vibration_cali": true,
-          "layer_inspect": true,
-          "ams_mapping": "",
-          "use_ams": false
+      Referenz: Bambu Studio Print Command Example (ams slot leftmost):
+      print: {
+        ams_mapping: [
+          0,
+          -1,
+          -1,
+          -1
+        ],
+        ams_mapping2: [
+          {
+            ams_id: 0,
+            slot_id: 0
+          },
+          {
+            ams_id: 255,
+            slot_id: 255
+          },
+          {
+            ams_id: 255,
+            slot_id: 255
+          },
+          {
+            ams_id: 255,
+            slot_id: 255
+          }
+        ],
+        auto_bed_leveling: 1,
+        bed_leveling: true,
+        bed_type: textured_plate,
+        cfg: 0,
+        command: project_file,
+        extrude_cali_flag: 2,
+        extrude_cali_manual_mode: 0,
+        file: 4354352345234.gcode.gcode.3mf,
+        flow_cali: false,
+        layer_inspect: true,
+        md5: 865E330F85A23118E51A45546B26CF35,
+        nozzle_offset_cali: 2,
+        param: Metadata/plate_1.gcode,
+        profile_id: 0,
+        project_id: 0,
+        sequence_id: 20000,
+        subtask_id: 0,
+        subtask_name: 4354352345234.gcode,
+        task_id: 0,
+        timelapse: false,
+        url: ftp://4354352345234.gcode.gcode.3mf,
+        use_ams: true,
+        vibration_cali: false,
+        reason: success,
+        result: success
       }
-    }
-    */
-    const default_ams_mapping = [-1, 3, 2, 1, 0];
+
+      Referenz: Bambu Studio Print Command Example (ams slot second from right):
+      print: {
+        ams_mapping: [
+          -1,
+          -1,
+          2,
+          -1
+        ],
+        ams_mapping2: [
+          {
+            ams_id: 255,
+            slot_id: 255
+          },
+          {
+            ams_id: 255,
+            slot_id: 255
+          },
+          {
+            ams_id: 0,
+            slot_id: 2
+          },
+          {
+            ams_id: 255,
+            slot_id: 255
+          }
+        ],
+        auto_bed_leveling: 1,
+        bed_leveling: true,
+        bed_type: textured_plate,
+        cfg: 0,
+        command: project_file,
+        extrude_cali_flag: 2,
+        extrude_cali_manual_mode: 0,
+        file: 4354352345234.gcode.3mf,
+        flow_cali: false,
+        layer_inspect: true,
+        md5: 4A12E9D113098B065EDAD133466C3317,
+        nozzle_offset_cali: 2,
+        param: Metadata/plate_1.gcode,
+        profile_id: 0,
+        project_id: 0,
+        sequence_id: 20002,
+        subtask_id: 0,
+        subtask_name: 4354352345234,
+        task_id: 0,
+        timelapse: false,
+        url: ftp://4354352345234.gcode.3mf,
+        use_ams: true,
+        vibration_cali: false,
+        reason: success,
+        result: success
+      }
+  */
+    const default_ams_mapping = [0, 1, 2, 3, -1]; // -1 bedeutet kein AMS Tray in diesem Slot (hier die externe AMS Einheit / 0=Fach links außen ... 3=rechts außen)
     const payload: any = {
       print: {
         sequence_id: sequenceId,
