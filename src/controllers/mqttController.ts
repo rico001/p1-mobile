@@ -211,6 +211,7 @@ export async function printFile3mf(req: Request, res: Response, next: NextFuncti
     };
 
     const report = await mqttService.request(payload, sequenceId);
+    websocketService.broadcast({ type: 'plateNumber_update', payload: plateNumber });
     res.json({ report });
   } catch (err) {
     next(err);

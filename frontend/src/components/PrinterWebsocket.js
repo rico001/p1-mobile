@@ -17,7 +17,8 @@ import {
   setAMS,
   setSpdLvl,
   setLog,
-  setPrintError
+  setPrintError,
+  setPlateNumber
 } from '../store/printerSlice';
 import { 
   setEnv 
@@ -107,6 +108,9 @@ export default function PrinterWebSocket() {
         break;
       case 'gcode_file_update':
         dispatch(setGcodeFile(payload));
+        break;
+      case 'plateNumber_update':
+        dispatch(setPlateNumber(payload));
         break;
       case 'ams_update':
         console.log('ams_update', payload);

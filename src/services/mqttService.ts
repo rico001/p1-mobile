@@ -174,6 +174,14 @@ export class MqttService extends EventEmitter {
       return;
     }
 
+    if(json?.print?.command === 'project_file'){
+      //add param in state and broadcast
+      const updatedFields = { plateNumber_update: json.print.param };
+      const prevState = { ...this.state };
+      this.state = { ...prevState, ...updatedFields };
+      this.broadcastUpdatedFields(updatedFields, prevState);
+    }
+
     // Push-Status: State aktualisieren & broadcasten
     if (json?.print?.command === 'push_status') {
       const updatedFields = Object.fromEntries(Object.entries(json.print).filter(([_, v]) => v !== undefined));

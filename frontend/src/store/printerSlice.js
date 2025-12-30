@@ -20,6 +20,8 @@ const initialState = {
   gcodeFile: 'k.A.',
   spdLvl: 2,
 
+  plateNumber: 'k.A.',
+
   //deep objects
   ams: null,
   printError : {
@@ -76,6 +78,9 @@ const printerSlice = createSlice({
     setSpdLvl(state, action) {
       state.spdLvl = action.payload;
     },
+    setPlateNumber(state, action) {
+      state.plateNumber = action.payload;
+    },
     setLog(state, action) {
       const newLog = action.payload;
     
@@ -111,6 +116,7 @@ export const {
   setGcodeFile,
   setAMS,
   setSpdLvl,
+  setPlateNumber,
   setLog,
   setPrintError
 } = printerSlice.actions;

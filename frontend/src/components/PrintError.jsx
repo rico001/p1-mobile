@@ -15,10 +15,10 @@ export const PrintError = ({ code, message, infoLink }) => {
                 flexDirection: "column",
             }}
         >
-            <Typography variant="h7" color="error" maxWidth={400} mb={2}>
+            <Typography variant="h7" color="error" maxWidth={400} mb={1}>
                 Fehler {code}
             </Typography>
-            <Typography variant="body2" color="error" mt={2} maxWidth={400}>
+            <Typography variant="body2" color="error" mt={1} maxWidth={400}>
                 {message}
             </Typography>
             <Button
