@@ -172,10 +172,6 @@ const ModelCard = ({ model, onAction, onMove, dragState, onDragStart, onDragEnd 
               <DriveFileMoveIcon />
             </IconButton>
 
-            <IconButton onClick={() => handleAction('refreshThumbnail')} title="Thumbnail aktualisieren">
-              <RefreshIcon />
-            </IconButton>
-
             <IconButton onClick={() => setDetailsDialogOpen(true)} title="Details">
               <InfoIcon />
             </IconButton>
@@ -214,6 +210,17 @@ const ModelCard = ({ model, onAction, onMove, dragState, onDragStart, onDragEnd 
                 <DownloadIcon fontSize="small" />
               </ListItemIcon>
               <ListItemText>Download</ListItemText>
+            </MenuItem>
+
+
+            <MenuItem onClick={async () => {
+              await handleAction('refreshThumbnail');
+              handleMenuClose();
+            }}>
+              <ListItemIcon>
+              <RefreshIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Refresh Thumbnail</ListItemText>
             </MenuItem>
 
             <MenuItem onClick={openRenameDialog}>
