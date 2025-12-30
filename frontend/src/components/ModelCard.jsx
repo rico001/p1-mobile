@@ -24,7 +24,9 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import PrintIcon from '@mui/icons-material/Print';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import InfoIcon from '@mui/icons-material/Info';
 import StepperDialog from './StepperDialog';
+import ModelDetailsDialog from './ModelDetailsDialog';
 import { useNavigate } from 'react-router-dom';
 import { objectToQueryString } from '../utils/functions';
 
@@ -46,6 +48,7 @@ const ModelCard = ({ model, onAction, onMove, dragState, onDragStart, onDragEnd 
   const [renameValue, setRenameValue] = useState(name);
   const [renameError, setRenameError] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const menuOpen = Boolean(anchorEl);
   const navigate = useNavigate();
 
@@ -168,6 +171,10 @@ const ModelCard = ({ model, onAction, onMove, dragState, onDragStart, onDragEnd 
               <RefreshIcon />
             </IconButton>
 
+            <IconButton onClick={() => setDetailsDialogOpen(true)} title="Details">
+              <InfoIcon />
+            </IconButton>
+
             <IconButton onClick={handleDelete} title="Löschen">
               <DeleteIcon />
             </IconButton>
@@ -262,6 +269,13 @@ const ModelCard = ({ model, onAction, onMove, dragState, onDragStart, onDragEnd 
           <Button onClick={handleRenameConfirm} variant="contained">Umbenennen</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Details-Dialog */}
+      <ModelDetailsDialog
+        open={detailsDialogOpen}
+        onClose={() => setDetailsDialogOpen(false)}
+        model={model}
+      />
     </>
   );
 };
