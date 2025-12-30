@@ -49,6 +49,13 @@ The following Bambu Lab firmware versions have been verified for compatibility:
   <img src="./screenshots/5.png" alt="Model Upload" width="100"/>
 </p>
 <p align="center">
+  <img src="./screenshots/6.png" alt="Model Upload" width="100"/>
+  <img src="./screenshots/7.png" alt="Model Upload" width="100"/>
+  <img src="./screenshots/8.png" alt="Model Upload" width="100"/>
+  <img src="./screenshots/9.png" alt="Model Upload" width="100"/>
+  <img src="./screenshots/10.png" alt="Model Upload" width="100"/>
+</p>
+<p align="center">
   <img src="./screenshots/demo.gif" alt="P1 Mobile Preview" width="200"/>
 </p>
 
