@@ -17,7 +17,7 @@ export function use3mfFile(downloadUrl, enabled = false) {
 
     try {
       // Fetch .3mf file as ArrayBuffer
-      const response = await fetchWithTimeout(downloadUrl, {}, 60000); // 60s timeout for large files
+      const response = await fetchWithTimeout(downloadUrl, {}, 120000); // 60s timeout for large files
 
       if (!response.ok) {
         throw new Error(`Download fehlgeschlagen: ${response.statusText}`);

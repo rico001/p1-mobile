@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { thumbnailService } from '../services/thumbnailService';
 import { FileInfo as FtpFileInfo } from 'basic-ftp';
+import { cacheService } from '../services/cacheService';
 
 interface FileResponse {
   name: string;
@@ -172,9 +173,14 @@ export const uploadFile = async (req: Request, res: Response): Promise<void> => 
   } finally {
     if (req.file) {
       const fileLocalPath = path.resolve(process.cwd(), 'files', req.file.originalname);
-      fs.unlink(fileLocalPath, err => {
-        if (err) console.error('Fehler beim Löschen der Datei:', err);
-      });
+      // Nur löschen wenn Caching deaktiviert ist
+      if (!cacheService.isEnabled()) {
+        fs.unlink(fileLocalPath, err => {
+          if (err) console.error('Fehler beim Löschen der Datei:', err);
+        });
+      } else {
+        console.log('Datei gecacht:', fileLocalPath);
+      }
     }
   }
 };
@@ -221,6 +227,9 @@ export const renameFile = async (req: Request, res: Response): Promise<void> => 
       console.warn('Thumbnail konnte nicht umbenannt werden:', err);
     }
 
+    // Gecachte Datei umbenennen
+    cacheService.renameCachedFile(oldFileName, newFullFileName);
+
     res.json({ message: 'success', command: 'renameFile', fileName: newFileName });
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -245,7 +254,18 @@ export const downloadFile = async (req: Request, res: Response): Promise<void> =
     }
 
     const localPath = path.join(localDir, fileName);
-    await ftpService.downloadFile(filePath, localPath);
+    const cacheEnabled = cacheService.isEnabled();
+
+    // Prüfe ob Datei bereits gecacht ist
+    const fileExists = fs.existsSync(localPath);
+
+    if (!fileExists || !cacheEnabled) {
+      console.log('Downloading file to', localPath);
+      await ftpService.downloadFile(filePath, localPath);
+      console.log('Download abgeschlossen:', localPath);
+    } else {
+      console.log('Using cached file:', localPath);
+    }
 
     // Setze Content-Type basierend auf Dateiendung
     const ext = path.extname(fileName).toLowerCase();
@@ -260,9 +280,12 @@ export const downloadFile = async (req: Request, res: Response): Promise<void> =
           res.status(500).json({ message: 'Fehler beim Senden der Datei.' });
         }
       } else {
-        fs.unlink(localPath, unlinkErr => {
-          if (unlinkErr) console.warn('Konnte temporäre Datei nicht löschen:', unlinkErr);
-        });
+        // Nur löschen wenn Caching deaktiviert ist
+        if (!cacheEnabled) {
+          fs.unlink(localPath, unlinkErr => {
+            if (unlinkErr) console.warn('Konnte temporäre Datei nicht löschen:', unlinkErr);
+          });
+        }
       }
     });
   } catch (error: any) {
@@ -292,6 +315,9 @@ export const deleteFile = async (req: Request, res: Response): Promise<void> => 
     } catch (err) {
       console.warn('Thumbnail konnte nicht gelöscht werden:', err);
     }
+
+    // Gecachte Datei löschen
+    cacheService.deleteCachedFile(fileName);
 
     res.json({ message: 'success', command: 'deleteFile', fileName: path.basename(filePath) });
   } catch (error: any) {
@@ -385,6 +411,7 @@ export const moveItem = async (req: Request, res: Response): Promise<void> => {
 
     // Thumbnail bleibt unverändert (nur Dateiname, kein Pfad)
     // Da sich der Dateiname beim Verschieben nicht ändert, bleibt auch das Thumbnail gleich
+    // Gecachte Datei bleibt ebenfalls unverändert (nur Dateiname, kein Pfad)
 
     res.json({
       message: 'Erfolgreich verschoben.',
