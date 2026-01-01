@@ -24,7 +24,6 @@ export default function ModelDetailsDialog({ open, onClose, model }) {
   const { isLoading, error, data } = use3mfFile(downloadUrl, open);
 
   const handleClose = () => {
-    setActiveTab(0); // Reset to first tab
     onClose();
   };
 
@@ -36,7 +35,7 @@ export default function ModelDetailsDialog({ open, onClose, model }) {
       fullWidth
       slotProps={{ paper: { sx: { height: '80vh' } } }}
     >
-      <DialogTitle>
+      <DialogTitle textAlign={'center'}>
         {model?.name || 'Model Details'}
       </DialogTitle>
 

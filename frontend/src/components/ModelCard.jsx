@@ -166,6 +166,7 @@ const ModelCard = ({ model, onAction, onMove, dragState, onDragStart, onDragEnd 
             <Typography
               variant="subtitle1"
               noWrap
+              textAlign='center'
               title={name}
               sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
             >
