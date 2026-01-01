@@ -2,6 +2,9 @@ import { useRef, useEffect, useState } from 'react';
 import { Box, CircularProgress, Alert, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { Line2 } from 'three/addons/lines/Line2.js';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 
 function parseGcode(gcode) {
   const positions = [];
@@ -10,9 +13,29 @@ function parseGcode(gcode) {
   let currentX = 0, currentY = 0, currentZ = 0;
   let currentE = 0;
 
+  // Helper function to safely parse float and validate
+  const safeParseFloat = (str) => {
+    const value = parseFloat(str);
+    return isNaN(value) ? null : value;
+  };
+
   for (const line of lines) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith(';')) continue;
+
+    // Handle G92 E0 (E reset) - common in sliced files
+    if (trimmed.startsWith('G92 ')) {
+      const parts = trimmed.split(' ');
+      for (const part of parts) {
+        if (part.startsWith('E')) {
+          const val = safeParseFloat(part.substring(1));
+          if (val !== null) {
+            currentE = val;
+          }
+        }
+      }
+      continue;
+    }
 
     // Parse G1 (linear move) commands - only draw lines with extrusion
     if (trimmed.startsWith('G1 ')) {
@@ -22,19 +45,36 @@ function parseGcode(gcode) {
       let hasE = false;
 
       for (const part of parts) {
-        if (part.startsWith('X')) newX = parseFloat(part.substring(1));
-        if (part.startsWith('Y')) newY = parseFloat(part.substring(1));
-        if (part.startsWith('Z')) newZ = parseFloat(part.substring(1));
+        if (part.startsWith('X')) {
+          const val = safeParseFloat(part.substring(1));
+          if (val !== null) newX = val;
+        }
+        if (part.startsWith('Y')) {
+          const val = safeParseFloat(part.substring(1));
+          if (val !== null) newY = val;
+        }
+        if (part.startsWith('Z')) {
+          const val = safeParseFloat(part.substring(1));
+          if (val !== null) newZ = val;
+        }
         if (part.startsWith('E')) {
-          newE = parseFloat(part.substring(1));
-          hasE = true;
+          const val = safeParseFloat(part.substring(1));
+          if (val !== null) {
+            newE = val;
+            hasE = true;
+          }
         }
       }
 
-      // Draw line if extruding (E value increases)
-      if (hasE && newE > currentE) {
-        positions.push(currentX, currentY, currentZ);
-        positions.push(newX, newY, newZ);
+      // Draw line if extruding (E value increases significantly) and all values are valid
+      // Use threshold to account for floating point precision
+      const eDelta = newE - currentE;
+      if (hasE && eDelta > 0.00001 &&
+          !isNaN(currentX) && !isNaN(currentY) && !isNaN(currentZ) &&
+          !isNaN(newX) && !isNaN(newY) && !isNaN(newZ)) {
+        // Map G-code coordinates (X, Y, Z) to THREE.js (X, Z, Y) - Z in G-code is height
+        positions.push(currentX, currentZ, currentY);
+        positions.push(newX, newZ, newY);
       }
 
       currentX = newX;
@@ -46,11 +86,24 @@ function parseGcode(gcode) {
     else if (trimmed.startsWith('G0 ')) {
       const parts = trimmed.split(' ');
       for (const part of parts) {
-        if (part.startsWith('X')) currentX = parseFloat(part.substring(1));
-        if (part.startsWith('Y')) currentY = parseFloat(part.substring(1));
-        if (part.startsWith('Z')) currentZ = parseFloat(part.substring(1));
+        if (part.startsWith('X')) {
+          const val = safeParseFloat(part.substring(1));
+          if (val !== null) currentX = val;
+        }
+        if (part.startsWith('Y')) {
+          const val = safeParseFloat(part.substring(1));
+          if (val !== null) currentY = val;
+        }
+        if (part.startsWith('Z')) {
+          const val = safeParseFloat(part.substring(1));
+          if (val !== null) currentZ = val;
+        }
       }
     }
+  }
+
+  if (positions.length === 0) {
+    throw new Error('Keine gültigen G-Code-Daten gefunden');
   }
 
   const geometry = new THREE.BufferGeometry();
@@ -83,29 +136,55 @@ export default function Model3DViewer({ modelXml, gcodes }) {
         let object;
 
         // Render G-code visualization (preferred for print jobs)
+        let gridYPosition = 0;
         if (currentGcode) {
           console.log('Creating G-code visualization');
-          const geometry = parseGcode(currentGcode);
+          const bufferGeometry = parseGcode(currentGcode);
 
-          // Use LineSegments for G-code paths
-          const material = new THREE.LineBasicMaterial({
-            color: 0x00a8e8,
-            linewidth: 2
-          });
-
-          object = new THREE.LineSegments(geometry, material);
-
-          // Center and scale
-          geometry.computeBoundingBox();
-          const box = geometry.boundingBox;
+          // Center and scale first
+          bufferGeometry.computeBoundingBox();
+          const box = bufferGeometry.boundingBox;
           const center = box.getCenter(new THREE.Vector3());
           const size = box.getSize(new THREE.Vector3());
 
           const maxDim = Math.max(size.x, size.y, size.z);
           const scale = maxDim > 0 ? 200 / maxDim : 1;
 
+          // Convert BufferGeometry to LineGeometry for thick lines
+          const positions = bufferGeometry.getAttribute('position').array;
+          const lineGeometry = new LineGeometry();
+          lineGeometry.setPositions(positions);
+
+          // Use LineMaterial for proper line thickness
+          const lineMaterial = new LineMaterial({
+            color: 0x000000,
+            linewidth: 1, // in pixels (will be responsive to screen size)
+            resolution: new THREE.Vector2(containerRef.current.clientWidth, containerRef.current.clientHeight)
+          });
+
+          object = new Line2(lineGeometry, lineMaterial);
           object.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
           object.scale.setScalar(scale);
+
+          // Calculate grid position (at Z=0 of G-code, which is Y in THREE.js)
+          // box.min.y represents the minimum Z value in G-code (build plate level)
+          gridYPosition = (box.min.y - center.y) * scale;
+
+          // Update material resolution on resize
+          const updateLineWidth = () => {
+            if (lineMaterial && containerRef.current) {
+              lineMaterial.resolution.set(
+                containerRef.current.clientWidth,
+                containerRef.current.clientHeight
+              );
+            }
+          };
+          window.addEventListener('resize', updateLineWidth);
+
+          // Store reference for cleanup
+          object.userData.lineWidthCleanup = () => {
+            window.removeEventListener('resize', updateLineWidth);
+          };
         }
         // Fall back to 3D model XML (not available in print jobs)
         else if (modelXml) {
@@ -148,6 +227,7 @@ export default function Model3DViewer({ modelXml, gcodes }) {
 
         // Grid helper (build plate)
         const gridHelper = new THREE.GridHelper(400, 20, 0xcccccc, 0xeeeeee);
+        gridHelper.position.y = gridYPosition;
         scene.add(gridHelper);
 
         // Add object
@@ -196,6 +276,10 @@ export default function Model3DViewer({ modelXml, gcodes }) {
           }
           if (scene) {
             scene.traverse((obj) => {
+              // Clean up line width event listener
+              if (obj.userData?.lineWidthCleanup) {
+                obj.userData.lineWidthCleanup();
+              }
               if (obj.geometry) {
                 obj.geometry.dispose();
               }
