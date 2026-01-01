@@ -3,6 +3,7 @@ import { Box, Alert } from '@mui/material';
 import ModelCard from '../components/ModelCard';
 import FolderCard from '../components/FolderCard';
 import CreateFolderButton from '../components/CreateFolderButton';
+import NavigateUpCard from '../components/NavigateUpCard';
 import MoveDialog from '../components/MoveDialog';
 import PathBreadcrumbs from '../components/PathBreadcrumbs';
 import { useModels } from '../hooks/useModels';
@@ -160,6 +161,9 @@ export default function Models() {
     const folders = models.filter(m => m.type === 'folder');
     const files = models.filter(m => m.type === 'file');
 
+    // Prüfe, ob wir in einem Unterordner sind
+    const isInSubfolder = currentPath !== '/p1-app-models';
+
     if (isError) {
         return (
             <Alert severity="error" sx={{ mt: 4 }}>
@@ -186,6 +190,15 @@ export default function Models() {
                     gap: `${GRID_GAP}px`,
                 }}
             >
+                {/* Nach oben navigieren (nur in Unterordnern) */}
+                {isInSubfolder && (
+                    <NavigateUpCard
+                        currentPath={currentPath}
+                        onNavigate={handleNavigate}
+                        dragState={dragState}
+                    />
+                )}
+
                 {/* Neuer Ordner Button / Parent Directory Drop Target */}
                 <CreateFolderButton
                     onCreateFolder={createFolder}
