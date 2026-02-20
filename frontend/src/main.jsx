@@ -14,6 +14,12 @@ const theme = createTheme({
 
 const queryClient = new QueryClient();
 
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    queryClient.invalidateQueries();
+  }
+});
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
