@@ -7,7 +7,13 @@ import {
   Switch,
   FormControlLabel,
   Box,
-  Grid,
+  Select,
+  MenuItem,
+  Checkbox,
+  ListItemText,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useSelector } from 'react-redux';
@@ -23,7 +29,6 @@ const messageTypeColors = {
   other: 'rgb(189, 204, 205)',
 };
 
-//filter functions
 const filters = {
   error: msg => {
     if (msg.print) return msg.print.print_error > 0;
@@ -34,63 +39,82 @@ const filters = {
   report: msg => !!msg.report,
   print: msg => !!msg.print,
   system: msg => !!msg.system,
-  other: msg => !Object.keys(filters)
-    .filter(key => key !== 'other')
-    .some(key => filters[key](msg)),
+  other: msg =>
+    !Object.keys(filters)
+      .filter(key => key !== 'other')
+      .some(key => filters[key](msg)),
+};
+
+const getType = message => {
+  if (filters.error(message)) return 'error';
+  if (filters.print(message)) return 'print';
+  if (filters.report(message)) return 'report';
+  if (filters.info(message)) return 'info';
+  if (filters.system(message)) return 'system';
+  return 'other';
 };
 
 const messageTypes = Object.keys(filters);
 
 const Logs = () => {
   const logs = useSelector(state => state.printer.logs);
-  const [autoUpdate, setAutoUpdate] = useLocalStorage('logs-autoUpdate', true);
+
+  const [autoUpdate, setAutoUpdate] = useLocalStorage(
+    'logs-autoUpdate',
+    true
+  );
+
   const [displayedLogs, setDisplayedLogs] = useState([]);
 
-  // Filter-Zustände
-  const [show, setShow] = useLocalStorage('logs-show', {
-    error: true,
-    info: true,
-    report: true,
-    print: true,
-    system: true,
-    other: true,
-  });
+  const [selectedTypes, setSelectedTypes] = useLocalStorage(
+    'logs-selectedTypes',
+    messageTypes
+  );
 
-  const toggleShow = useCallback(type => {
-    setShow(prev => ({ ...prev, [type]: !prev[type] }));
-  }, [setShow]);
+  const isTypeSelected = useCallback(
+    type => selectedTypes.includes(type),
+    [selectedTypes]
+  );
 
-  // Auto-Update-Effekt
+
   useEffect(() => {
-    setDisplayedLogs(prev => (
-      prev.length === 0 || autoUpdate
-        ? [...logs]
-        : prev
-    ));
+    setDisplayedLogs(prev =>
+      prev.length === 0 || autoUpdate ? [...logs] : prev
+    );
   }, [logs, autoUpdate]);
 
-  // Sortieren & Filtern
-  const preparedLogs = useMemo(() => (
-    [...displayedLogs]
+
+  const preparedLogs = useMemo(() => {
+    if (selectedTypes.length === 0) return [];
+
+    return [...displayedLogs]
       .sort((a, b) => b.timeStamp.localeCompare(a.timeStamp))
       .filter(({ message }) =>
-        messageTypes.some(type => show[type] && filters[type](message))
-      )
-  ), [displayedLogs, show]);
+        selectedTypes.some(type => filters[type](message))
+      );
+  }, [displayedLogs, selectedTypes]);
 
-  // Zähle Einträge pro Typ
-  const counts = useMemo(() => (
-    messageTypes.reduce((acc, type) => ({
-      ...acc,
-      [type]: displayedLogs.filter(({ message }) => filters[type](message)).length,
-    }), {})
-  ), [displayedLogs]);
 
-  const getBorder = message => (
+  const counts = useMemo(
+    () =>
+      messageTypes.reduce(
+        (acc, type) => ({
+          ...acc,
+          [type]: displayedLogs.filter(({ message }) =>
+            filters[type](message)
+          ).length,
+        }),
+        {}
+      ),
+    [displayedLogs]
+  );
+
+  /* ------------------ Styling ------------------ */
+
+  const getBorder = message =>
     filters.error(message)
       ? `20px solid ${messageTypeColors.error}`
-      : '20px solid transparent'
-  );
+      : '20px solid transparent';
 
   const getBackground = message => {
     const type = messageTypes.find(type => filters[type](message));
@@ -118,43 +142,82 @@ const Logs = () => {
         />
       </Box>
 
-      {/* Filter-Switches */}
-      <Grid container spacing={2} justifyContent="center" mb={2}>
-        {messageTypes.map(type => (
-          <Grid item xs={12} sm={6} md={4} lg={2} key={type} sx={{ display: 'flex', justifyContent: 'center' }}>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={show[type]}
-                  onChange={() => toggleShow(type)}
+      {/* MultiSelect Filter */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+        <FormControl sx={{ minWidth: 320 }} size="small">
+          <InputLabel
+            sx={{
+              color: 'white'
+            }}
+            id="log-filter-label">
+            Log-Typen
+          </InputLabel>
+          <Select
+            labelId="log-filter-label"
+            multiple
+            sx={{
+              background: '#333',
+              color: 'white'
+            }}
+            value={selectedTypes}
+            onChange={e => setSelectedTypes(e.target.value)}
+            input={<OutlinedInput label="Log-Typen" />}
+            renderValue={selected =>
+              selected
+                .map(type => `${type} (${counts[type] || 0})`)
+                .join(', ')
+            }
+          >
+            {messageTypes.map(type => (
+              <MenuItem key={type} value={type}>
+                <Checkbox checked={isTypeSelected(type)} />
+                <ListItemText
+                  sx={{
+                    color: messageTypeColors[type]
+                  }}
+                  primary={`${type.charAt(0).toUpperCase() + type.slice(
+                    1
+                  )} (${counts[type] || 0})`}
                 />
-              }
-              label={`${type.charAt(0).toUpperCase() + type.slice(1)} (${counts[type] || 0})`}
-              sx={{ color: messageTypeColors[type] }}
-            />
-          </Grid>
-        ))}
-      </Grid>
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
 
-      {/* Log-Liste */}
+      {/* Logs */}
       <Box sx={{ maxHeight: '55vh', overflowY: 'auto', m: 2 }}>
         {preparedLogs.map(log => (
           <Accordion
             key={log.id}
             expanded={expandedId === log.id}
             onChange={handleChange(log.id)}
-            sx={{ borderLeft: getBorder(log.message), background: getBackground(log.message) }}
+            sx={{
+              borderLeft: getBorder(log.message),
+              background: getBackground(log.message),
+            }}
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography sx={{ flexBasis: '33.33%', flexShrink: 0 }}>
                 {new Date(log.timeStamp).toLocaleString()}
               </Typography>
-              <Typography sx={{ color: 'text.secondary', textAlign: 'center', width: '100%' }}>
-                {log.type}
+              <Typography
+                sx={{
+                  color: 'text.secondary',
+                  textAlign: 'center',
+                }}
+              >
+                {getType(log.message).toUpperCase()}
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <Box component="pre" sx={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
+              <Box
+                component="pre"
+                sx={{
+                  fontFamily: 'monospace',
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
                 {(() => {
                   try {
                     return JSON.stringify(log.message, null, 2)
@@ -170,7 +233,11 @@ const Logs = () => {
         ))}
       </Box>
 
-      <AppLoader open={logs.length === 0} texts={["Lade Logs…"]} displayTime={3000} />
+      <AppLoader
+        open={logs.length === 0}
+        texts={['Lade Logs…']}
+        displayTime={3000}
+      />
     </Box>
   );
 };

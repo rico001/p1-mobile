@@ -87,6 +87,18 @@ export class MqttService extends EventEmitter {
       }
     };
     this.publish(this.config.topics.request, getStatePayload);
+
+    //stop print on start to avoid phantom printing on reconnect or restart app
+    /*
+    const stopPrintPayload = {
+      print: { 
+        sequence_id: `init-print-stop__${Date.now()}`, 
+        command: 'stop', 
+        param: '' 
+      },
+    };
+    this.publish(this.config.topics.request, stopPrintPayload);
+    */
   }
 
   /** Setze Proxy-Service für Publishes */
@@ -110,7 +122,7 @@ export class MqttService extends EventEmitter {
 
   private tryReconnect(err: Error | null = null): void {
     setTimeout(() => {
-      console.log('[MQTT] 🔄 try reconnect after error, time:' + Date.now().toLocaleString())
+      console.log('[MQTT] 🔄 try reconnect after error or after onOffline, time:' + Date.now().toLocaleString())
       this.client?.reconnect();
     }, 5000);
   }
@@ -118,6 +130,7 @@ export class MqttService extends EventEmitter {
   private onOffline(): void {
     console.warn('[MQTT] 📴 Client ist offline.');
     websocketService.broadcast({ type: 'wifi_signal_update', payload: 'offline' });
+    this.tryReconnect(null);
   }
 
   private onClose(): void {
@@ -159,6 +172,14 @@ export class MqttService extends EventEmitter {
       this._responseCallbacks.delete(seqId);
       cb(json);
       return;
+    }
+
+    if(json?.print?.command === 'project_file'){
+      //add param in state and broadcast
+      const updatedFields = { plateNumber_update: json.print.param };
+      const prevState = { ...this.state };
+      this.state = { ...prevState, ...updatedFields };
+      this.broadcastUpdatedFields(updatedFields, prevState);
     }
 
     // Push-Status: State aktualisieren & broadcasten

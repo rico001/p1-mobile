@@ -49,49 +49,169 @@ export async function calibratePrinter(req: Request, res: Response, next: NextFu
 
 interface PrintFileQuery {
   fileName?: string;
+  path?: string;
   bed_levelling?: string;
   flow_cali?: string;
   vibration_cali?: string;
+  timelapse?: string;
+  plate?: string;
 }
 
 export async function printFile3mf(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { fileName, bed_levelling, flow_cali, vibration_cali } = req.query as PrintFileQuery;
+    const { fileName, path: filePath, bed_levelling, flow_cali, vibration_cali, timelapse, plate } = req.query as PrintFileQuery;
     console.log('printFile3mf, query:', req.query);
 
-    if (!fileName) {
-      res.status(400).json({ message: 'fileName is required' });
+    // Unterstütze beide: path (neu) und fileName (alt)
+    const filePathToUse = filePath || fileName;
+    if (!filePathToUse) {
+      res.status(400).json({ message: 'path or fileName is required' });
       return;
     }
 
     const bedLevellingFlag: boolean = bed_levelling ? JSON.parse(bed_levelling) : true;
     const flowCaliFlag: boolean = flow_cali ? JSON.parse(flow_cali) : true;
     const vibrationCaliFlag: boolean = vibration_cali ? JSON.parse(vibration_cali) : true;
+    const timelapseFlag: boolean = timelapse ? JSON.parse(timelapse) : true;
+    const plateNumber: number = plate ? parseInt(plate, 10) : 1;
 
     const sequenceId: string = `print-file-3mf__${Date.now()}`;
+
+    /*
+    Print Job Doku vom Dezember 2025, OpenBambuAPI Dokumentation: https://github.com/Doridian/OpenBambuAPI/blob/main/mqtt.md
+
+      Referenz: Bambu Studio Print Command Example (ams slot leftmost):
+      print: {
+        ams_mapping: [
+          0,
+          -1,
+          -1,
+          -1
+        ],
+        ams_mapping2: [
+          {
+            ams_id: 0,
+            slot_id: 0
+          },
+          {
+            ams_id: 255,
+            slot_id: 255
+          },
+          {
+            ams_id: 255,
+            slot_id: 255
+          },
+          {
+            ams_id: 255,
+            slot_id: 255
+          }
+        ],
+        auto_bed_leveling: 1,
+        bed_leveling: true,
+        bed_type: textured_plate,
+        cfg: 0,
+        command: project_file,
+        extrude_cali_flag: 2,
+        extrude_cali_manual_mode: 0,
+        file: 4354352345234.gcode.gcode.3mf,
+        flow_cali: false,
+        layer_inspect: true,
+        md5: 865E330F85A23118E51A45546B26CF35,
+        nozzle_offset_cali: 2,
+        param: Metadata/plate_1.gcode,
+        profile_id: 0,
+        project_id: 0,
+        sequence_id: 20000,
+        subtask_id: 0,
+        subtask_name: 4354352345234.gcode,
+        task_id: 0,
+        timelapse: false,
+        url: ftp://4354352345234.gcode.gcode.3mf,
+        use_ams: true,
+        vibration_cali: false,
+        reason: success,
+        result: success
+      }
+
+      Referenz: Bambu Studio Print Command Example (ams slot second from right):
+      print: {
+        ams_mapping: [
+          -1,
+          -1,
+          2,
+          -1
+        ],
+        ams_mapping2: [
+          {
+            ams_id: 255,
+            slot_id: 255
+          },
+          {
+            ams_id: 255,
+            slot_id: 255
+          },
+          {
+            ams_id: 0,
+            slot_id: 2
+          },
+          {
+            ams_id: 255,
+            slot_id: 255
+          }
+        ],
+        auto_bed_leveling: 1,
+        bed_leveling: true,
+        bed_type: textured_plate,
+        cfg: 0,
+        command: project_file,
+        extrude_cali_flag: 2,
+        extrude_cali_manual_mode: 0,
+        file: 4354352345234.gcode.3mf,
+        flow_cali: false,
+        layer_inspect: true,
+        md5: 4A12E9D113098B065EDAD133466C3317,
+        nozzle_offset_cali: 2,
+        param: Metadata/plate_1.gcode,
+        profile_id: 0,
+        project_id: 0,
+        sequence_id: 20002,
+        subtask_id: 0,
+        subtask_name: 4354352345234,
+        task_id: 0,
+        timelapse: false,
+        url: ftp://4354352345234.gcode.3mf,
+        use_ams: true,
+        vibration_cali: false,
+        reason: success,
+        result: success
+      }
+  */
+    const default_ams_mapping = [0, 1, 2, 3, -1]; // -1 bedeutet kein AMS Tray in diesem Slot (hier die externe AMS Einheit / 0=Fach links außen ... 3=rechts außen)
     const payload: any = {
       print: {
         sequence_id: sequenceId,
+        param: `Metadata/plate_${plateNumber}.gcode`,
         command: 'project_file',
         project_id: '0',
         profile_id: '0',
         task_id: '0',
-        subtask_id: 'aktuellePlateTest',
+        subtask_id: '0',
         subtask_name: '0',
-        url: `file:///sdcard/${fileName}`,
+        url: `file:///sdcard${filePathToUse}`,
         md5: '',
-        timelapse: true,
+        timelapse: timelapseFlag,
         bed_type: 'auto',
         bed_levelling: bedLevellingFlag,
         flow_cali: flowCaliFlag,
         vibration_cali: vibrationCaliFlag,
         layer_inspect: true,
-        ams_mapping: '',
+        ams_mapping: default_ams_mapping,
         use_ams: true,
       },
     };
 
     const report = await mqttService.request(payload, sequenceId);
+    websocketService.broadcast({ type: 'plateNumber_update', payload: plateNumber });
     res.json({ report });
   } catch (err) {
     next(err);
@@ -126,17 +246,17 @@ interface AmsTrayQuery {
 }
 
 const posstibleTrayTypes = [
-    "ABS", "ABS-GF", "ASA", "ASA-Aero", "BVOH", "PCTG", "EVA", "HIPS",
-    "PA", "PA-CF", "PA-GF", "PA6-CF", "PA11-CF", "PC", "PC-CF", "PCTG",
-    "PE", "PE-CF", "PET-CF", "PETG", "PETG-CF", "PETG-CF10", "PHA", "PLA",
-    "PLA-AERO", "PLA-CF", "PP", "PP-CF", "PP-GF", "PPA-CF", "PPA-GF",
-    "PPS", "PPS-CF", "PVA", "PVB", "SBS", "TPU"
+  "ABS", "ABS-GF", "ASA", "ASA-Aero", "BVOH", "PCTG", "EVA", "HIPS",
+  "PA", "PA-CF", "PA-GF", "PA6-CF", "PA11-CF", "PC", "PC-CF", "PCTG",
+  "PE", "PE-CF", "PET-CF", "PETG", "PETG-CF", "PETG-CF10", "PHA", "PLA",
+  "PLA-AERO", "PLA-CF", "PP", "PP-CF", "PP-GF", "PPA-CF", "PPA-GF",
+  "PPS", "PPS-CF", "PVA", "PVB", "SBS", "TPU"
 ]
 export async function setAmsTray(req: Request, res: Response, next: NextFunction): Promise<void> {
   console.log('setAmsTray, query:', req.query);
   if (req.query.trayType && !posstibleTrayTypes.includes(req.query.trayType as string)) {
-      next(new Error(`Invalid trayType: ${req.query.trayType}. Possible values: ${posstibleTrayTypes.join(', ')}`));
-      return;
+    next(new Error(`Invalid trayType: ${req.query.trayType}. Possible values: ${posstibleTrayTypes.join(', ')}`));
+    return;
   }
   try {
     const {

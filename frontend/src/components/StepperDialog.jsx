@@ -14,7 +14,7 @@ import PrintJobStepper from './PrintJobStepper';
     const vibration_cali = req.query.vibration_cali;
 */
 
-export default function StepperDialog({ name, thumbnail, onConfirm, open, onClose }) {
+export default function StepperDialog({ name, thumbnail, onConfirm, open, onClose, plateCount = 1, onAnalyzePlates, plateImages = [] }) {
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle margin={'auto'}>Druckauftrag: { name }</DialogTitle>
@@ -29,7 +29,7 @@ export default function StepperDialog({ name, thumbnail, onConfirm, open, onClos
         }}
       />
       <DialogContent dividers>
-        <PrintJobStepper onConfirm={onConfirm} onClose={onClose} />
+        <PrintJobStepper onConfirm={onConfirm} onClose={onClose} plateCount={plateCount} onAnalyzePlates={onAnalyzePlates} plateImages={plateImages} />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Abbrechen</Button>

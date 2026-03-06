@@ -4,6 +4,7 @@ import { config } from './config';
 import mqttService from './services/mqttService';
 import websocketService from './services/websocketService';
 import mqttProxyService from './services/mqttProxyService';
+import ftpService from './services/ftpService';
 
 // HTTP-Server als Express-Instanz
 const server: Server = http.createServer(app);
@@ -14,6 +15,11 @@ console.log(`[Express] Initialisiere Server auf Port ${config.port}...`);
 mqttProxyService.init();
 mqttService.setMqttProxyService(mqttProxyService);
 websocketService.init(server);
+
+// FTP Root-Verzeichnis sicherstellen
+ftpService.ensureRootFolder().catch(err => {
+  console.error('[FTP] Fehler beim Initialisieren:', err);
+});
 
 // Beispiel: zyklisches Broadcasting („Heartbeat“ alle 15 Sekunden)
 setInterval(() => {

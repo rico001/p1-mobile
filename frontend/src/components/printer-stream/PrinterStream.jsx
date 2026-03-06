@@ -28,6 +28,20 @@ export default function PrinterStream(props) {
     return () => clearTimeout(timer);
   }, [streamSource]);
 
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        reloadStream();
+      } else {
+        setSrc(transparentPng());
+        setLoading(false);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
+
   const handleError = (e) => {
     e.currentTarget.onerror = null;
     e.currentTarget.src = transparentPng();

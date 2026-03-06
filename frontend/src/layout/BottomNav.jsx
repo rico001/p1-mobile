@@ -6,6 +6,7 @@ import ViewInArIcon from '@mui/icons-material/ViewInAr';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import PrinterIcon from '../assets/printer.svg?react';
 import BookIcon from '@mui/icons-material/Book';
+import VideocamIcon from '@mui/icons-material/Videocam';
 
 export default function BottomNav() {
   const navigate = useNavigate();
@@ -36,10 +37,15 @@ export default function BottomNav() {
           value="/ams"
           icon={<AccountTreeIcon />}
         />
-        <BottomNavigationAction 
-          label="Logs" 
-          value="/log" 
-          icon={<BookIcon />} 
+        <BottomNavigationAction
+          label="Timelapse"
+          value="/timelapse"
+          icon={<VideocamIcon />}
+        />
+        <BottomNavigationAction
+          label="Logs"
+          value="/log"
+          icon={<BookIcon />}
         />
       </BottomNavigation>
     </Paper>

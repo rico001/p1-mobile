@@ -11,16 +11,25 @@ import {
   DialogActions,
   Button,
   TextField,
-  Zoom
+  Zoom,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PrintIcon from '@mui/icons-material/Print';
+import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import InfoIcon from '@mui/icons-material/Info';
 import StepperDialog from './StepperDialog';
+import ModelDetailsDialog from './ModelDetailsDialog';
 import { useNavigate } from 'react-router-dom';
 import { objectToQueryString } from '../utils/functions';
+import { use3mfFile } from '../hooks/use3mfFile';
 
 function bytesToKB(bytes) {
   const kb = bytes / 1024;
@@ -32,19 +41,43 @@ function bytesToMB(bytes) {
   return Math.round(mb * 100) / 100;
 }
 
-const ModelCard = ({ model, onAction }) => {
+const ModelCard = ({ model, onAction, onMove, dragState, onDragStart, onDragEnd }) => {
   const { name, size, thumbnail, operations } = model;
   const [previewOpen, setPreviewOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [renameValue, setRenameValue] = useState(name);
   const [renameError, setRenameError] = useState('');
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const menuOpen = Boolean(anchorEl);
   const navigate = useNavigate();
+
+  // Load 3mf file metadata only when explicitly requested
+  const downloadUrl = operations.download?.path;
+  const [shouldAnalyze, setShouldAnalyze] = useState(false);
+  const { data: modelData, reload: reloadModelData } = use3mfFile(downloadUrl, shouldAnalyze);
+  const plateCount = modelData?.metadata?.plate_count || 1;
+  const plateImages = modelData?.images || [];
+
+  const handleAnalyzePlates = async () => {
+    setShouldAnalyze(true);
+    await reloadModelData();
+  };
+
+  const handleMenuOpen = (event) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleAction = useCallback(
     (actionKey, query) => {
       const { method, path } = operations[actionKey];
-      onAction({ method, path, query });
+      return onAction({ method, path, query });
     },
     [operations, onAction]
   );
@@ -59,13 +92,14 @@ const ModelCard = ({ model, onAction }) => {
     setRenameValue(name);
     setRenameError('');
     setRenameDialogOpen(true);
+    handleMenuClose();
   }, [name]);
 
   const closeRenameDialog = useCallback(() => {
     setRenameDialogOpen(false);
   }, []);
 
-  const handleRenameConfirm = () => {
+  const handleRenameConfirm = async () => {
     if (!renameValue.trim()) {
       setRenameError('Der Dateiname darf nicht leer sein.');
       return;
@@ -75,9 +109,14 @@ const ModelCard = ({ model, onAction }) => {
       setRenameDialogOpen(false);
       return;
     }
-    const query = objectToQueryString({ newFileName: renameValue });
-    handleAction('rename', query);
-    setRenameDialogOpen(false);
+    try {
+      const query = objectToQueryString({ newFileName: renameValue });
+      await handleAction('rename', query);
+      setRenameDialogOpen(false);
+    } catch (error) {
+      // Wenn Fehler auftritt, Fehlermeldung anzeigen aber Dialog offen lassen
+      setRenameError(error.message || 'Fehler beim Umbenennen');
+    }
   };
 
   const handleDelete = () => {
@@ -92,6 +131,13 @@ const ModelCard = ({ model, onAction }) => {
     <>
       <Zoom in={true} timeout={300}>
         <Card
+          draggable={true}
+          onDragStart={(e) => {
+            onDragStart(model);
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('application/json', JSON.stringify(model));
+          }}
+          onDragEnd={onDragEnd}
           sx={{
             width: '100%',
             aspectRatio: '1 / 1',
@@ -99,7 +145,10 @@ const ModelCard = ({ model, onAction }) => {
             flexDirection: 'column',
             borderRadius: 2,
             boxShadow: 3,
-            overflow: 'hidden'
+            overflow: 'hidden',
+            opacity: dragState.isDragging && dragState.draggedItem?.path === model.path ? 0.5 : 1,
+            cursor: dragState.isDragging ? 'grabbing' : 'grab',
+            transition: 'opacity 0.2s ease-in-out'
           }}
         >
           <Box
@@ -117,6 +166,7 @@ const ModelCard = ({ model, onAction }) => {
             <Typography
               variant="subtitle1"
               noWrap
+              textAlign='center'
               title={name}
               sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
             >
@@ -128,32 +178,72 @@ const ModelCard = ({ model, onAction }) => {
           </Box>
 
           <Box sx={{ display: 'flex', justifyContent: 'space-around', py: 1, px: 1, pb: 0 }}>
-            <IconButton
-              component="a"
-              href={operations.download.path}
-              download
-              rel="noopener noreferrer"
-              title="Download"
-            >
-              <DownloadIcon />
-            </IconButton>
-
             <IconButton onClick={() => setModalOpen(true)} title="Drucken">
               <PrintIcon />
             </IconButton>
 
-            <IconButton onClick={() => handleAction('refreshThumbnail')} title="Thumbnail aktualisieren">
-              <RefreshIcon />
+            <IconButton onClick={() => onMove(model)} title="Verschieben">
+              <DriveFileMoveIcon />
             </IconButton>
 
-            <IconButton onClick={openRenameDialog} title="Umbenennen">
-              <DriveFileRenameOutlineIcon />
+            <IconButton onClick={() => setDetailsDialogOpen(true)} title="Details">
+              <InfoIcon />
             </IconButton>
 
             <IconButton onClick={handleDelete} title="Löschen">
               <DeleteIcon />
             </IconButton>
+
+            <IconButton onClick={handleMenuOpen} title="Mehr">
+              <MoreVertIcon />
+            </IconButton>
           </Box>
+
+          {/* More Menu */}
+          <Menu
+            anchorEl={anchorEl}
+            open={menuOpen}
+            onClose={handleMenuClose}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+          >
+            <MenuItem
+              component="a"
+              href={operations.download.path}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleMenuClose}
+            >
+              <ListItemIcon>
+                <DownloadIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Download</ListItemText>
+            </MenuItem>
+
+
+            <MenuItem onClick={async () => {
+              await handleAction('refreshThumbnail');
+              handleMenuClose();
+            }}>
+              <ListItemIcon>
+              <RefreshIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Refresh Thumbnail</ListItemText>
+            </MenuItem>
+
+            <MenuItem onClick={openRenameDialog}>
+              <ListItemIcon>
+                <DriveFileRenameOutlineIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText>Umbenennen</ListItemText>
+            </MenuItem>
+          </Menu>
         </Card>
       </Zoom>
 
@@ -182,6 +272,9 @@ const ModelCard = ({ model, onAction }) => {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={handleConfirmPrint}
+        plateCount={plateCount}
+        onAnalyzePlates={handleAnalyzePlates}
+        plateImages={plateImages}
       />
 
       {/* Umbenennen-Dialog */}
@@ -205,6 +298,13 @@ const ModelCard = ({ model, onAction }) => {
           <Button onClick={handleRenameConfirm} variant="contained">Umbenennen</Button>
         </DialogActions>
       </Dialog>
+
+      {/* Details-Dialog */}
+      <ModelDetailsDialog
+        open={detailsDialogOpen}
+        onClose={() => setDetailsDialogOpen(false)}
+        model={model}
+      />
     </>
   );
 };
@@ -213,10 +313,16 @@ ModelCard.propTypes = {
   model: PropTypes.shape({
     name: PropTypes.string.isRequired,
     size: PropTypes.number.isRequired,
-    thumbnail: PropTypes.string.isRequired,
+    type: PropTypes.string,
+    path: PropTypes.string,
+    thumbnail: PropTypes.string,
     operations: PropTypes.object.isRequired
   }).isRequired,
-  onAction: PropTypes.func.isRequired
+  onAction: PropTypes.func.isRequired,
+  onMove: PropTypes.func.isRequired,
+  dragState: PropTypes.object.isRequired,
+  onDragStart: PropTypes.func.isRequired,
+  onDragEnd: PropTypes.func.isRequired
 };
 
 export default memo(ModelCard);

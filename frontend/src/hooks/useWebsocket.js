@@ -12,17 +12,22 @@ export default function useWebSocket(
     let isMounted = true;
 
     const connect = () => {
-      const ws = new WebSocket(url);
-      socketRef.current = ws;
+      const ws = socketRef.current;
+      if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+        return;
+      }
 
-      ws.onopen = (ev) => {
+      const newWs = new WebSocket(url);
+      socketRef.current = newWs;
+
+      newWs.onopen = (ev) => {
         reconnectAttempts.current = 0;
         onOpen?.(ev);
       };
 
-      ws.onmessage = onMessage;
+      newWs.onmessage = onMessage;
 
-      ws.onclose = (ev) => {
+      newWs.onclose = (ev) => {
         onClose?.(ev);
         if (shouldReconnectRef.current && isMounted) {
           const delay = Math.min(1000 * 2 ** reconnectAttempts.current, 30000);
@@ -31,16 +36,29 @@ export default function useWebSocket(
         }
       };
 
-      ws.onerror = (err) => {
+      newWs.onerror = (err) => {
         console.error('[WS] Fehler', err);
       };
     };
 
     connect();
 
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        const ws = socketRef.current;
+        if (!ws || ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
+          reconnectAttempts.current = 0;
+          connect();
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
       isMounted = false;
       shouldReconnectRef.current = false;
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       const ws = socketRef.current;
       if (ws && ws.readyState === WebSocket.OPEN) {
         ws.close();

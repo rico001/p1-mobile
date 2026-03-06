@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 
-export default function UploadFabDialog({ uploadUrl, onUploaded }) {
+export default function UploadFabDialog({ uploadUrl, onUploaded, currentPath = '/p1-app-models' }) {
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState(null);
   const [newFileName, setNewFileName] = useState('');
@@ -57,6 +57,7 @@ export default function UploadFabDialog({ uploadUrl, onUploaded }) {
 
     const formData = new FormData();
     formData.append('file', file, newFileName || file.name);
+    formData.append('parentPath', currentPath);
 
     try {
       const res = await fetch(uploadUrl, {
@@ -67,9 +68,9 @@ export default function UploadFabDialog({ uploadUrl, onUploaded }) {
 
       if (!res.ok) {
         // If server indicates file exists, allow rename
-        if (res.status === 409 || json.code === 'fileExists') {
+        if (res.status === 409 || json.type === 'fileExists') {
           setExistsError(true);
-          setMessage('Eine Datei mit diesem Namen existiert bereits. Bitte umbenennen.');
+          setMessage(json.message || 'Eine Datei mit diesem Namen existiert bereits. Bitte umbenennen.');
         } else {
           setExistsError(false);
           throw new Error(json.message || 'Fehler beim Upload');
@@ -167,5 +168,6 @@ export default function UploadFabDialog({ uploadUrl, onUploaded }) {
 
 UploadFabDialog.propTypes = {
   uploadUrl: PropTypes.string.isRequired,
-  onUploaded: PropTypes.func
+  onUploaded: PropTypes.func,
+  currentPath: PropTypes.string
 };
