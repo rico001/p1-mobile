@@ -37,6 +37,7 @@ export const CurrenPrintjob = ({ show = true }) => {
     totalLayerNum,
     mcPercent,
     printType,
+    plateNumber,
     mcRemainingTime,
     gcodeFile,
     printError
@@ -49,6 +50,7 @@ export const CurrenPrintjob = ({ show = true }) => {
       mcRemainingTime: state.printer.mcRemainingTime,
       gcodeFile: state.printer.gcodeFile,
       printError: state.printer.printError,
+      plateNumber: state.printer.plateNumber,
     }),
     shallowEqual
   );
@@ -74,8 +76,8 @@ export const CurrenPrintjob = ({ show = true }) => {
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, justifyContent: 'space-between' }}>
         <Box
           sx={{
-            width: 105,
-            height: 105,
+            width: 125,
+            height: 125,
             m: 1,
 
             bgcolor: 'grey.300',
@@ -104,7 +106,7 @@ export const CurrenPrintjob = ({ show = true }) => {
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between' }}>
               <Typography variant="body2">
-
+Plate: {plateNumber || 'k.A.'}
               </Typography>
               <Typography variant="body2">
                 {`${layerNum || 0} / ${totalLayerNum || '-'}`}

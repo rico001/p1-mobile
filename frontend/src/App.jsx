@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useEffect } from 'react';
 import { Provider, useDispatch } from 'react-redux';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
@@ -9,8 +8,8 @@ import AMS from './pages/AMS';
 import Layout from './layout/Layout';
 import { PAGES, setPage } from './store/uiSlice';
 import Logs from './pages/Logs';
+import Timelapse from './pages/Timelapse';
 
-// Wrapper, der auf Location-Änderungen reagiert
 function RouteChangeHandler() {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -33,6 +32,7 @@ export default function App() {
           <Route path={PAGES.PRINTER} element={<Printer />} />
           <Route path={PAGES.AMS} element={<AMS />} />
           <Route path={PAGES.LOG} element={<Logs />} />
+          <Route path={PAGES.TIMELAPSE} element={<Timelapse />} />
         </Route>
       </Routes>
     </Provider>

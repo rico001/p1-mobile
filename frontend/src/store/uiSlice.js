@@ -5,6 +5,7 @@ export const PAGES = {
     PRINTER: 'printer',
     AMS: 'ams',
     LOG: 'log',
+    TIMELAPSE: 'timelapse',
 }
 
 const initialState = {

@@ -1,12 +1,12 @@
-# 🖨️ P1 Mobile – Local Web App for Bambu Lab P1S
+# 🖨️ P1X Mobile – Local Web App for Bambu Lab P1S
 
 <table border="0">
   <tr style="vertical-align: top; border: none;">
     <td>
-      <img src="./screenshots/printer.png" alt="P1 Mobile Logo" width="150"/>
+      <img src="./screenshots/printer.png" alt="P1X Mobile Logo" width="150"/>
     </td>
     <td>
-      **P1 Mobile** is a local-first web application for managing your Bambu Lab P1S 3D printer – fully independent from the cloud.  
+      **P1X Mobile** is a local-first web application for managing your Bambu Lab P1S 3D printer – fully independent from the cloud.  
       It is built using a Node.js (TypeScript) backend and a React frontend and communicates solely via local printer APIs (mqtt, ftp, http).
     </td>
   </tr>
@@ -49,19 +49,26 @@ The following Bambu Lab firmware versions have been verified for compatibility:
   <img src="./screenshots/5.png" alt="Model Upload" width="100"/>
 </p>
 <p align="center">
-  <img src="./screenshots/demo.gif" alt="P1 Mobile Preview" width="200"/>
+  <img src="./screenshots/6.png" alt="Model Upload" width="100"/>
+  <img src="./screenshots/7.png" alt="Model Upload" width="100"/>
+  <img src="./screenshots/8.png" alt="Model Upload" width="100"/>
+  <img src="./screenshots/9.png" alt="Model Upload" width="100"/>
+  <img src="./screenshots/10.png" alt="Model Upload" width="100"/>
+</p>
+<p align="center">
+  <img src="./screenshots/demo.gif" alt="P1X Mobile Preview" width="200"/>
 </p>
 
 ## Requirements
 
-To run **P1 Mobile** locally, you'll need:
+To run **P1X Mobile** locally, you'll need:
 
 - A **Bambu Lab P1S** printer with **Local Mode enabled** (for firmware **01.08.00.00 or higher, Developer Mode must also be enabled!**)
 - **Docker** and **Docker Compose** installed on the machine where you want to run the app (e.g. your homelab or local server)
 - Your **P1S must be powered on** and **connected to the same network** as the machine running the app at startup
 ## 🐳 Docker Compose Setup
 
-P1 Mobile is fully containerized and can be started with Docker Compose.
+P1X Mobile is fully containerized and can be started with Docker Compose.
 
 ### `docker-compose.yml`
 ```yaml
