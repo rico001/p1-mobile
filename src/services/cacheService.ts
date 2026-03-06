@@ -24,7 +24,7 @@ class CacheService {
    * Check if caching is enabled via environment variable
    */
   isEnabled(): boolean {
-    return process.env.CACHE_MODELS_ENABLED === 'true';
+    return process.env.CACHE_MODELS_ENABLED !== 'false';
   }
 
   /**
