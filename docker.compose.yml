@@ -28,6 +28,9 @@ services:
       - PROXY_MQTT_BROKER_PASSWORD=
       - PROXY_MQTT_BROKER_TOPIC_PREFIX=bambu-p1s
       - PROXY_MQTT_BROKER_ENABLED=true
+      # optional, cache configuration for downloaded 3MF files
+      - CACHE_MODELS_ENABLED=true #if enabled, downloaded 3MF files will be cached to reduce FTP downloads (default: true)
+      - CACHE_MAX_AGE_DAYS=7 #number of days to keep cached files before automatic cleanup (default: 7)
     restart: unless-stopped
     volumes:
       - ./thumbnails:/app/thumbnails
