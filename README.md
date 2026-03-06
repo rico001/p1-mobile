@@ -32,11 +32,12 @@ Unfortunately, this trend limits local control, offline usability, and integrati
 
 The following Bambu Lab firmware versions have been verified for compatibility:
 
-| Firmware Version | Status     |
-|------------------|------------|
-| `01.07.xx.xx`    | Tested     |
-| `01.08.xx.xx`    | Tested     |
-| `01.09.00.00`    | Tested     |
+| Printer Firmware | Status          | Compatible Release Version |
+|------------------|-----------------|----------------------------|
+| `01.07.xx.xx`    | ✅ Tested       | v1.1.29                    |
+| `01.08.xx.xx`    | ✅ Tested       | v2.0.0                     |
+| `01.09.00.00`    | ✅ Tested       | v2.0.0                     |
+| `01.09.01.00`    | 🔜 Planned      | -                          |
 
 - Compatibility with future firmware releases is expected, but will be tested incrementally.
 
