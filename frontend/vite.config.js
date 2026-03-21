@@ -5,7 +5,7 @@ import svgr from 'vite-plugin-svgr';
 const target_prod = "http://portainer-my-apps.fritz.box:3004"
 const target_dev = "http://localhost:3000"
 
-const target_local = target_prod
+const target_local = target_dev
 
 export default defineConfig({
   plugins: [

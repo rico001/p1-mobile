@@ -10,7 +10,8 @@ import {
   createFolder,
   deleteFolder,
   moveItem,
-  renameFolder
+  renameFolder,
+  getCurrentPrintImage
 } from '../controllers/ftpController';
 
 const router = Router();
@@ -39,6 +40,7 @@ const upload = multer({ storage, fileFilter });
 // GET-Routen
 router.get('/list-files', listFiles);
 router.get('/download-file', downloadFile);
+router.get('/current-print-image', getCurrentPrintImage);
 
 // DELETE-Routen
 router.delete('/delete-file', deleteFile);

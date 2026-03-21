@@ -423,6 +423,68 @@ export const moveItem = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+// GET /api/ftp/current-print-image
+export const getCurrentPrintImage = async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const items = await ftpService.listFilesAndFolders('/image');
+
+    const parseRawDate = (raw: string): Date => {
+      if (!raw) return new Date(0);
+      // Format "Jun 26 2025" (mit Jahr)
+      const hasYear = /\d{4}$/.test(raw.trim());
+      if (hasYear) {
+        return new Date(raw);
+      }
+      // Format "Mar 21 13:41" (ohne Jahr) — aktuelles Jahr, aber wenn in der Zukunft dann Vorjahr
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const parsed = new Date(`${raw} ${currentYear}`);
+      if (parsed > now) {
+        parsed.setFullYear(currentYear - 1);
+      }
+      return parsed;
+    };
+
+    const pngFiles = items
+      .filter(item => !item.isDirectory && item.name.toLowerCase().endsWith('.png'))
+      .sort((a, b) => {
+        const dateA = parseRawDate(a.rawModifiedAt);
+        const dateB = parseRawDate(b.rawModifiedAt);
+        return dateB.getTime() - dateA.getTime();
+      });
+
+    if (pngFiles.length === 0) {
+      res.status(404).json({ message: 'Kein aktuelles Druckbild gefunden.' });
+      return;
+    }
+
+    const latestImage = pngFiles[0];
+    const remotePath = path.posix.join('/image', latestImage.name);
+
+    const localDir = path.resolve(process.cwd(), 'files');
+    if (!fs.existsSync(localDir)) {
+      fs.mkdirSync(localDir, { recursive: true });
+    }
+
+    const localPath = path.join(localDir, `current-print-image.png`);
+    await ftpService.downloadFile(remotePath, localPath);
+
+    res.set('Content-Type', 'image/png');
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+
+    const imageBuffer = fs.readFileSync(localPath);
+    res.send(imageBuffer);
+
+    // Clean up temp file
+    fs.unlink(localPath, err => {
+      if (err) console.warn('Konnte temporäre Bilddatei nicht löschen:', err);
+    });
+  } catch (error: any) {
+    console.error('Fehler beim Abrufen des aktuellen Druckbilds:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // POST /api/ftp/rename-folder
 export const renameFolder = async (req: Request, res: Response): Promise<void> => {
   try {

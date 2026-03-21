@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, LinearProgress, Button, IconButton } from '@mui/material';
 import { shallowEqual, useSelector } from 'react-redux';
 import { transparentPng } from '../../utils/functions';
@@ -55,6 +55,28 @@ export const CurrenPrintjob = ({ show = true }) => {
     shallowEqual
   );
 
+  const [printImageUrl, setPrintImageUrl] = useState(null);
+
+  useEffect(() => {
+    const updatePrintImage = () => {
+      setPrintImageUrl(`/api/ftp/current-print-image?v=${Date.now()}`);
+    };
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        updatePrintImage();
+      }
+    };
+    updatePrintImage();
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, []);
+
+  useEffect(() => {
+    if (layerNum === 1) {
+      setPrintImageUrl(`/api/ftp/current-print-image?v=${Date.now()}`);
+    }
+  }, [layerNum]);
+
   if (!show) {
     return null;
   }
@@ -85,8 +107,8 @@ export const CurrenPrintjob = ({ show = true }) => {
           }}
 
           component="img"
-          src={gcodeFile ? `/thumbnails/${gcodeFile}.png` : transparentPng()}
-          alt="Thumbnail"
+          src={gcodeFile ? `/thumbnails/${gcodeFile}.png` : (isPrinting && printImageUrl ? printImageUrl : transparentPng())}
+          alt=""
         />
         { /* Printing progress and status */}
         <Box sx={{ flexGrow: 1, ml: 1, mr: 2 }}>
@@ -106,7 +128,7 @@ export const CurrenPrintjob = ({ show = true }) => {
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, justifyContent: 'space-between' }}>
               <Typography variant="body2">
-Plate: {plateNumber || 'k.A.'}
+                Plate: {plateNumber || 'k.A.'}
               </Typography>
               <Typography variant="body2">
                 {`${layerNum || 0} / ${totalLayerNum || '-'}`}
