@@ -97,21 +97,21 @@ const FolderCard = ({ folder, onNavigate, onAction, onMove, onDelete, onRename, 
             aspectRatio: '1 / 1',
             display: 'flex',
             flexDirection: 'column',
-            borderRadius: 2,
-            boxShadow: 3,
+            borderRadius: '12px',
             overflow: 'hidden',
             opacity: isBeingDragged ? 0.7 : 1,
             cursor: dragState.isDragging ? 'default' : 'grab',
-            transition: 'all 0.2s ease-in-out',
+            transition: 'all 0.25s ease',
             ...(isDropTarget && {
               transform: 'scale(1.02)',
               opacity: 0.8,
               border: '2px solid',
-              borderColor: 'primary.main'
+              borderColor: 'primary.main',
+              boxShadow: '0 0 20px rgba(91, 155, 213, 0.2)',
             }),
             ...(showDropZone && !isDropTarget && {
               border: '2px dashed',
-              borderColor: 'action.disabled'
+              borderColor: 'rgba(255, 255, 255, 0.15)',
             })
           }}
         >
@@ -132,21 +132,21 @@ const FolderCard = ({ folder, onNavigate, onAction, onMove, onDelete, onRename, 
             <FolderIcon sx={{ fontSize: 80, color: 'primary.main' }} />
           </Box>
 
-          <Box sx={{ p: 1, pt: 0, pb: 0 }}>
+          <Box sx={{ p: 1.25, pt: 0.75, pb: 0.5 }}>
             <Typography
               variant="subtitle1"
               noWrap
               title={name}
-              sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+              sx={{ overflow: 'hidden', textOverflow: 'ellipsis', fontSize: '0.85rem' }}
             >
               {name}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
               Ordner
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-around', py: 1, px: 1, pb: 0 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-around', py: 0.5, px: 1, borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
             <IconButton onClick={() => onMove(folder)} title="Verschieben">
               <DriveFileMoveIcon />
             </IconButton>

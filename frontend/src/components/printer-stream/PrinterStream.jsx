@@ -76,12 +76,16 @@ export default function PrinterStream(props) {
           display: 'block',
           marginTop: { xs: '0', md: 3 },
           cursor: 'pointer',
-          maxHeight: '250px',
+          maxHeight: '260px',
           height: 'fill-available',
           width: '100%',
           maxWidth: '420px',
           aspectRatio: '16/9',
           margin: 'auto',
+          borderRadius: '12px',
+          overflow: 'visible',
+          border: '1px solid rgba(255, 255, 255, 0.06)',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
         }}>
 
         <FormControl
@@ -93,7 +97,7 @@ export default function PrinterStream(props) {
             top: 8,
             right: 8,
             zIndex: 3,
-            '& .MuiSelect-select': { color: 'rgba(255, 255, 255, 0.83)', padding: '4px 8px', border: 'none', background: 'rgba(95, 95, 95, 0.51)' },
+            '& .MuiSelect-select': { color: 'rgba(255, 255, 255, 0.9)', padding: '4px 8px', border: 'none', background: 'rgba(13, 17, 23, 0.7)', backdropFilter: 'blur(8px)', borderRadius: '6px' },
           }}>
           <Select
             value={streamSource}
@@ -115,7 +119,7 @@ export default function PrinterStream(props) {
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            background: '#4040404a',
+            background: 'linear-gradient(135deg, #161b22, #1c2333)',
           }}
         />
 
@@ -147,9 +151,10 @@ export default function PrinterStream(props) {
             bottom: 10,
             right: 10,
             zIndex: 2,
-            bgcolor: 'rgba(0,0,0,0.5)',
+            bgcolor: 'rgba(13, 17, 23, 0.7)',
+            backdropFilter: 'blur(8px)',
             color: '#fff',
-            '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' }
+            '&:hover': { bgcolor: 'rgba(13, 17, 23, 0.85)' }
           }}
         >
           <RefreshIcon fontSize="small" />
@@ -184,7 +189,7 @@ export default function PrinterStream(props) {
         >
           <FullScreenButton disabled={loading} src={streamSource} />
         </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, padding: 0.5 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, padding: 1, mt: 0.5 }}>
           <BedTempState />
           <NozzleTempState />
         </Box>

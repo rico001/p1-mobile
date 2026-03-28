@@ -50,9 +50,8 @@ const TimelapseCard = ({ video, onDelete }) => {
             aspectRatio: '1 / 1',
             display: 'flex',
             flexDirection: 'column',
-            borderRadius: 2,
-            boxShadow: 3,
-            overflow: 'hidden'
+            borderRadius: '12px',
+            overflow: 'hidden',
           }}
         >
           <Box
@@ -67,21 +66,21 @@ const TimelapseCard = ({ video, onDelete }) => {
             <VideoLibraryIcon sx={{ fontSize: 80, color: 'primary.main' }} />
           </Box>
 
-          <Box sx={{ p: 1, pt: 0, pb: 0 }}>
+          <Box sx={{ p: 1.25, pt: 0.75, pb: 0.5 }}>
             <Typography
               variant="subtitle1"
               noWrap
               title={name}
-              sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+              sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.85rem' }}
             >
               {formatVideoName(name)}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
               {bytesToMB(size)} MB
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-around', py: 1, px: 1, pb: 0 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-around', py: 0.5, px: 1, borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
             <IconButton
               component="a"
               href={operations.download?.path}

@@ -69,24 +69,28 @@ export const CurrenPrintjob = ({ show = true }) => {
         color: 'white',
         m: 'auto',
         mt: 2,
-        borderRadius: 2,
+        p: 2,
+        borderRadius: '12px',
+        background: 'linear-gradient(135deg, rgba(22, 27, 34, 0.8), rgba(28, 35, 51, 0.6))',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
+        backdropFilter: 'blur(10px)',
       }}
     >
       { /* current printjob with thumbnail */}
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, justifyContent: 'space-between' }}>
         <Box
+          component="img"
+          src={gcodeFile ? `/thumbnails/${gcodeFile}.png` : transparentPng()}
+          alt="Thumbnail"
           sx={{
             width: 125,
             height: 125,
             m: 1,
-
-            bgcolor: 'grey.300',
-            borderRadius: 1,
+            bgcolor: 'rgba(255, 255, 255, 0.04)',
+            borderRadius: '10px',
+            border: '1px solid rgba(255, 255, 255, 0.06)',
+            objectFit: 'cover',
           }}
-
-          component="img"
-          src={gcodeFile ? `/thumbnails/${gcodeFile}.png` : transparentPng()}
-          alt="Thumbnail"
         />
         { /* Printing progress and status */}
         <Box sx={{ flexGrow: 1, ml: 1, mr: 2 }}>
@@ -142,7 +146,7 @@ Plate: {plateNumber || 'k.A.'}
           disabled={isStopping || !isPrinting}
           sx={{ p: 0 }}
         >
-          <StopIcon sx={{ p: 0.5, backgroundColor: '#4040404a', borderRadius: '100%' }} />
+          <StopIcon sx={{ p: 0.5, backgroundColor: 'rgba(255, 255, 255, 0.06)', borderRadius: '100%', border: '1px solid rgba(255, 255, 255, 0.08)' }} />
         </IconButton>
         <IconButton
           color="primary"
@@ -150,7 +154,7 @@ Plate: {plateNumber || 'k.A.'}
           disabled={isPausing || !isPrinting}
           sx={{ p: 0 }}
         >
-          <PauseIcon sx={{ p: 0.5, backgroundColor: '#4040404a', borderRadius: '100%' }} />
+          <PauseIcon sx={{ p: 0.5, backgroundColor: 'rgba(255, 255, 255, 0.06)', borderRadius: '100%', border: '1px solid rgba(255, 255, 255, 0.08)' }} />
         </IconButton>
         <IconButton
           color="primary"
@@ -158,7 +162,7 @@ Plate: {plateNumber || 'k.A.'}
           disabled={isResuming || !isPrinting}
           sx={{ p: 0 }}
         >
-          <PlayArrowIcon sx={{ p: 0.5, backgroundColor: '#4040404a', borderRadius: '100%' }} />
+          <PlayArrowIcon sx={{ p: 0.5, backgroundColor: 'rgba(255, 255, 255, 0.06)', borderRadius: '100%', border: '1px solid rgba(255, 255, 255, 0.08)' }} />
         </IconButton>
       </Box>
     </Box>

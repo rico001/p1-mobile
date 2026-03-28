@@ -25,9 +25,10 @@ export default function ChamberLightToggle() {
       onClick={handleToggle}
       disabled={isSettingLight}
       sx={{
-        bgcolor: 'rgba(0,0,0,0.5)',
+        bgcolor: 'rgba(13, 17, 23, 0.7)',
+        backdropFilter: 'blur(8px)',
         color: '#fff',
-        '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' }
+        '&:hover': { bgcolor: 'rgba(13, 17, 23, 0.85)' }
       }}
     >
       {isOn ? <LightbulbIcon sx={{ color: '#fffbe3' }}  fontSize="small" /> : <LightbulbOutlineIcon fontSize="small" />}

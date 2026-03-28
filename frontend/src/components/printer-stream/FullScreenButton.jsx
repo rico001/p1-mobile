@@ -16,9 +16,10 @@ export default function FullScreenButton({ disabled = false, src = '' }) {
       disabled={disabled}
       onClick={e => window.confirm('Vollbild im neuen Tab öffnen?') && window.open(src)}
       sx={{
-        bgcolor: 'rgba(0,0,0,0.5)',
+        bgcolor: 'rgba(13, 17, 23, 0.7)',
+        backdropFilter: 'blur(8px)',
         color: '#fff',
-        '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' }
+        '&:hover': { bgcolor: 'rgba(13, 17, 23, 0.85)' }
       }}
     >
       <FullScreenIcon fontSize="small" />

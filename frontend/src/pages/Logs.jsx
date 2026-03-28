@@ -21,12 +21,12 @@ import useLocalStorage from '../hooks/useLocalStorage';
 import AppLoader from '../components/AppLoader';
 
 const messageTypeColors = {
-  print: 'rgb(105, 188, 194)',
-  report: 'rgb(161, 105, 194)',
-  info: 'rgb(139, 194, 105)',
-  system: 'rgb(194, 160, 105)',
-  error: 'rgb(194, 105, 105)',
-  other: 'rgb(189, 204, 205)',
+  print: 'rgba(105, 188, 194, 0.85)',
+  report: 'rgba(161, 105, 194, 0.85)',
+  info: 'rgba(139, 194, 105, 0.85)',
+  system: 'rgba(194, 160, 105, 0.85)',
+  error: 'rgba(194, 105, 105, 0.85)',
+  other: 'rgba(189, 204, 205, 0.85)',
 };
 
 const filters = {
@@ -113,12 +113,13 @@ const Logs = () => {
 
   const getBorder = message =>
     filters.error(message)
-      ? `20px solid ${messageTypeColors.error}`
-      : '20px solid transparent';
+      ? `4px solid ${messageTypeColors.error}`
+      : '4px solid transparent';
 
   const getBackground = message => {
     const type = messageTypes.find(type => filters[type](message));
-    return messageTypeColors[type] || '';
+    const color = messageTypeColors[type];
+    return color ? color.replace('0.85', '0.08') : 'rgba(255, 255, 255, 0.03)';
   };
 
   const [expandedId, setExpandedId] = useState(null);
@@ -156,8 +157,10 @@ const Logs = () => {
             labelId="log-filter-label"
             multiple
             sx={{
-              background: '#333',
-              color: 'white'
+              background: 'rgba(22, 27, 34, 0.8)',
+              color: 'white',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: '10px',
             }}
             value={selectedTypes}
             onChange={e => setSelectedTypes(e.target.value)}
@@ -195,6 +198,8 @@ const Logs = () => {
             sx={{
               borderLeft: getBorder(log.message),
               background: getBackground(log.message),
+              mb: 0.5,
+              borderRadius: '8px !important',
             }}
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>

@@ -13,11 +13,31 @@ export default function BottomNav() {
   const location = useLocation();
 
   return (
-    <Paper elevation={3} sx={{ position: 'sticky', bottom: 0 }}>
+    <Paper
+      elevation={0}
+      sx={{
+        position: 'sticky',
+        bottom: 0,
+        background: 'linear-gradient(180deg, rgba(13, 17, 23, 0.85) 0%, rgba(13, 17, 23, 0.98) 100%)',
+        backdropFilter: 'blur(20px)',
+        borderTop: '1px solid rgba(91, 155, 213, 0.1)',
+      }}
+    >
       <BottomNavigation
         showLabels
         value={location.pathname}
         onChange={(_, newValue) => navigate(newValue)}
+        sx={{
+          '& .MuiBottomNavigationAction-label': {
+            fontSize: '0.65rem',
+            fontWeight: 500,
+            letterSpacing: '0.03em',
+            mt: 0.25,
+            '&.Mui-selected': {
+              fontSize: '0.65rem',
+            },
+          },
+        }}
       >
         <BottomNavigationAction
           label="Modelle"

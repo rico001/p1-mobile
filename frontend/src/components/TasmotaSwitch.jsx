@@ -41,7 +41,7 @@ export default function TasmotaSwitch() {
 
   return (
     <>
-      <Box display="flex" alignItems="center" bgcolor={'background.paper'} borderRadius={100} mr={1}>
+      <Box display="flex" alignItems="center" bgcolor={'rgba(255, 255, 255, 0.06)'} borderRadius={100} mr={1}>
         <Tooltip title={status.title} arrow>
           <IconButton onClick={handleOpen} disabled={isToggling || status.disabled} color={status.color} size="small">
             <PowerSettingsNewIcon sx={{ height: "20px", width: "auto" }} />
@@ -60,7 +60,7 @@ export default function TasmotaSwitch() {
           <IconButton
             aria-label="close"
             onClick={handleClose}
-            sx={{ position: 'absolute', right: 8, top: 8, backgroundColor: 'white' }}
+            sx={{ position: 'absolute', right: 8, top: 8, backgroundColor: 'rgba(255, 255, 255, 0.08)' }}
             size="small"
           >
             <CloseIcon />

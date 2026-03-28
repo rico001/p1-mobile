@@ -143,12 +143,11 @@ const ModelCard = ({ model, onAction, onMove, dragState, onDragStart, onDragEnd 
             aspectRatio: '1 / 1',
             display: 'flex',
             flexDirection: 'column',
-            borderRadius: 2,
-            boxShadow: 3,
+            borderRadius: '12px',
             overflow: 'hidden',
             opacity: dragState.isDragging && dragState.draggedItem?.path === model.path ? 0.5 : 1,
             cursor: dragState.isDragging ? 'grabbing' : 'grab',
-            transition: 'opacity 0.2s ease-in-out'
+            transition: 'all 0.25s ease',
           }}
         >
           <Box
@@ -162,22 +161,22 @@ const ModelCard = ({ model, onAction, onMove, dragState, onDragStart, onDragEnd 
             }}
           />
 
-          <Box sx={{ p: 1, pt: 0, pb: 0 }}>
+          <Box sx={{ p: 1.25, pt: 0.75, pb: 0.5 }}>
             <Typography
               variant="subtitle1"
               noWrap
               textAlign='center'
               title={name}
-              sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+              sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.85rem' }}
             >
               {name}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
               {bytesToMB(size)} MB
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-around', py: 1, px: 1, pb: 0 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-around', py: 0.5, px: 1, borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
             <IconButton onClick={() => setModalOpen(true)} title="Drucken">
               <PrintIcon />
             </IconButton>

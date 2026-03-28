@@ -10,7 +10,7 @@ import { OfflineCheck } from '../components/OfflineCheck';
 
 export default function Layout() {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#0d1117' }}>
       <Header title="P1X Mobile" />
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
         {/* <PrintErrorCheck> */}

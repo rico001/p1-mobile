@@ -28,13 +28,12 @@ const NavigateUpCard = ({ currentPath, onNavigate, dragState }) => {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: 2,
-          boxShadow: 3,
+          borderRadius: '12px',
           cursor: isDragging ? 'default' : 'pointer',
-          border: '2px dashed',
-          borderColor: 'primary.main',
-          backgroundColor: 'action.hover',
-          transition: 'all 0.2s ease-in-out',
+          border: '1px dashed',
+          borderColor: 'rgba(91, 155, 213, 0.4)',
+          backgroundColor: 'rgba(91, 155, 213, 0.04)',
+          transition: 'all 0.25s ease',
           ...(!isDragging && {
             '&:hover': {
               backgroundColor: 'action.selected',

@@ -101,7 +101,17 @@ export default function UploadFabDialog({ uploadUrl, onUploaded, currentPath = '
         color="primary"
         aria-label="Datei hochladen"
         onClick={handleOpen}
-        sx={{ position: 'fixed', bottom: 80, right: 40 }}
+        sx={{
+          position: 'fixed',
+          bottom: 80,
+          right: 24,
+          boxShadow: '0 4px 20px rgba(91, 155, 213, 0.3)',
+          background: 'linear-gradient(135deg, #3a7bbf, #5b9bd5)',
+          '&:hover': {
+            background: 'linear-gradient(135deg, #2d6aa8, #4a8ac4)',
+            boxShadow: '0 6px 24px rgba(91, 155, 213, 0.4)',
+          },
+        }}
       >
         <FileUploadIcon />
       </Fab>

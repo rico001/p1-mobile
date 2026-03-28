@@ -36,7 +36,7 @@ const PrinterStatus = () => {
         color: 'white',
         m: 'auto',
         mt: 1,
-        borderRadius: 2,
+        borderRadius: '12px',
       }}
     >
       <Tooltip title={tooltip} arrow>

@@ -16,7 +16,8 @@ function Printer() {
     <div
       style={{
         margin: 'auto',
-        textAlign: 'center'
+        textAlign: 'center',
+        padding: '0 8px 16px',
       }}
     >
       <PrinterStream />

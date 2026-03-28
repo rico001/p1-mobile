@@ -106,7 +106,10 @@ const AMSState = () => {
         color: 'white',
         m: 'auto',
         mt: 2,
-        borderRadius: 2,
+        borderRadius: '12px',
+        p: 2,
+        background: 'linear-gradient(135deg, rgba(22, 27, 34, 0.8), rgba(28, 35, 51, 0.6))',
+        border: '1px solid rgba(255, 255, 255, 0.06)',
       }}
     >
       {validGroups.map((trays, gIdx) => (
@@ -130,12 +133,15 @@ const AMSState = () => {
                   sx={{
                     backgroundColor: `#${bg}`,
                     color: textColor,
-                    borderRadius: 1,
-                    p: 1,
+                    borderRadius: '8px',
+                    p: 1.5,
                     textAlign: "center",
                     fontSize: "0.75rem",
                     cursor: "pointer",
-                    "&:hover": { opacity: 0.9 },
+                    transition: 'all 0.2s ease',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                    "&:hover": { opacity: 0.85, transform: 'scale(1.02)' },
                   }}
                   onClick={() => handleTrayClick(gIdx, tIdx)}
                 >

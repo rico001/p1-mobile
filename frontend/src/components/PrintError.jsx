@@ -6,13 +6,16 @@ export const PrintError = ({ code, message, infoLink }) => {
         <Box
             sx={{
                 position: "relative",
-                margin: "30px",
+                m: 2,
+                p: 2,
                 textAlign: "center",
-                height: "80%",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
                 flexDirection: "column",
+                borderRadius: '10px',
+                background: 'rgba(194, 105, 105, 0.08)',
+                border: '1px solid rgba(194, 105, 105, 0.2)',
             }}
         >
             <Typography variant="h7" color="error" maxWidth={400} mb={1}>
