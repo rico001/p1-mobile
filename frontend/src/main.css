@@ -6,7 +6,7 @@
   font-weight: 400;
 
   color: rgba(255, 255, 255, 0.92);
-  background-color: #0d1117;
+  background-color: #0a0e1a;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -18,12 +18,48 @@ body {
   margin: 0;
   padding: 0;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  background: linear-gradient(135deg, #0a1210 0%, #0b1a18 25%, #0d1f1a 50%, #0a1815 75%, #0c1412 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Animated gradient orbs for glassmorphism depth */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(120px);
+  opacity: 0.3;
+}
+
+body::before {
+  width: 500px;
+  height: 500px;
+  top: -100px;
+  right: -100px;
+  background: radial-gradient(circle, rgba(45, 212, 170, 0.3), transparent 70%);
+}
+
+body::after {
+  width: 400px;
+  height: 400px;
+  bottom: -50px;
+  left: -100px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.25), transparent 70%);
+}
+
+#root {
+  position: relative;
+  z-index: 1;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -31,12 +67,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 /* Smooth scrolling */
@@ -46,6 +82,6 @@ html {
 
 /* Selection color */
 ::selection {
-  background: rgba(91, 155, 213, 0.3);
+  background: rgba(45, 212, 170, 0.3);
   color: #fff;
 }

@@ -106,10 +106,13 @@ const AMSState = () => {
         color: 'white',
         m: 'auto',
         mt: 2,
-        borderRadius: '12px',
+        borderRadius: '16px',
         p: 2,
-        background: 'linear-gradient(135deg, rgba(22, 27, 34, 0.8), rgba(28, 35, 51, 0.6))',
-        border: '1px solid rgba(255, 255, 255, 0.06)',
+        background: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
       }}
     >
       {validGroups.map((trays, gIdx) => (
@@ -133,15 +136,15 @@ const AMSState = () => {
                   sx={{
                     backgroundColor: `#${bg}`,
                     color: textColor,
-                    borderRadius: '8px',
+                    borderRadius: '12px',
                     p: 1.5,
                     textAlign: "center",
                     fontSize: "0.75rem",
                     cursor: "pointer",
-                    transition: 'all 0.2s ease',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
-                    "&:hover": { opacity: 0.85, transform: 'scale(1.02)' },
+                    transition: 'all 0.25s ease',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                    "&:hover": { opacity: 0.85, transform: 'scale(1.03)', boxShadow: '0 6px 20px rgba(0, 0, 0, 0.3)' },
                   }}
                   onClick={() => handleTrayClick(gIdx, tIdx)}
                 >

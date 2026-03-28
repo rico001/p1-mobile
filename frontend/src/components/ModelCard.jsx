@@ -143,11 +143,11 @@ const ModelCard = ({ model, onAction, onMove, dragState, onDragStart, onDragEnd 
             aspectRatio: '1 / 1',
             display: 'flex',
             flexDirection: 'column',
-            borderRadius: '12px',
+            borderRadius: '16px',
             overflow: 'hidden',
             opacity: dragState.isDragging && dragState.draggedItem?.path === model.path ? 0.5 : 1,
             cursor: dragState.isDragging ? 'grabbing' : 'grab',
-            transition: 'all 0.25s ease',
+            transition: 'all 0.3s ease',
           }}
         >
           <Box
@@ -176,7 +176,7 @@ const ModelCard = ({ model, onAction, onMove, dragState, onDragStart, onDragEnd 
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-around', py: 0.5, px: 1, borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-around', py: 0.5, px: 1, borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
             <IconButton onClick={() => setModalOpen(true)} title="Drucken">
               <PrintIcon />
             </IconButton>

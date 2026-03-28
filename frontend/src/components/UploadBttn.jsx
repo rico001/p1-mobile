@@ -105,11 +105,15 @@ export default function UploadFabDialog({ uploadUrl, onUploaded, currentPath = '
           position: 'fixed',
           bottom: 80,
           right: 24,
-          boxShadow: '0 4px 20px rgba(91, 155, 213, 0.3)',
-          background: 'linear-gradient(135deg, #3a7bbf, #5b9bd5)',
+          background: 'rgba(45, 212, 170, 0.2)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(45, 212, 170, 0.3)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+          color: '#5eead4',
           '&:hover': {
-            background: 'linear-gradient(135deg, #2d6aa8, #4a8ac4)',
-            boxShadow: '0 6px 24px rgba(91, 155, 213, 0.4)',
+            background: 'rgba(45, 212, 170, 0.3)',
+            boxShadow: '0 8px 32px rgba(45, 212, 170, 0.2)',
           },
         }}
       >

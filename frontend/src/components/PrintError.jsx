@@ -13,9 +13,12 @@ export const PrintError = ({ code, message, infoLink }) => {
                 justifyContent: "center",
                 alignItems: "center",
                 flexDirection: "column",
-                borderRadius: '10px',
-                background: 'rgba(194, 105, 105, 0.08)',
+                borderRadius: '14px',
+                background: 'rgba(194, 105, 105, 0.06)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
                 border: '1px solid rgba(194, 105, 105, 0.2)',
+                boxShadow: '0 4px 20px rgba(194, 105, 105, 0.08)',
             }}
         >
             <Typography variant="h7" color="error" maxWidth={400} mb={1}>

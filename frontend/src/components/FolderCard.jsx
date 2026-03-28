@@ -97,20 +97,20 @@ const FolderCard = ({ folder, onNavigate, onAction, onMove, onDelete, onRename, 
             aspectRatio: '1 / 1',
             display: 'flex',
             flexDirection: 'column',
-            borderRadius: '12px',
+            borderRadius: '16px',
             overflow: 'hidden',
             opacity: isBeingDragged ? 0.7 : 1,
             cursor: dragState.isDragging ? 'default' : 'grab',
-            transition: 'all 0.25s ease',
+            transition: 'all 0.3s ease',
             ...(isDropTarget && {
               transform: 'scale(1.02)',
               opacity: 0.8,
               border: '2px solid',
               borderColor: 'primary.main',
-              boxShadow: '0 0 20px rgba(91, 155, 213, 0.2)',
+              boxShadow: '0 0 24px rgba(45, 212, 170, 0.25)',
             }),
             ...(showDropZone && !isDropTarget && {
-              border: '2px dashed',
+              border: '1px dashed',
               borderColor: 'rgba(255, 255, 255, 0.15)',
             })
           }}
@@ -146,7 +146,7 @@ const FolderCard = ({ folder, onNavigate, onAction, onMove, onDelete, onRename, 
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-around', py: 0.5, px: 1, borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-around', py: 0.5, px: 1, borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
             <IconButton onClick={() => onMove(folder)} title="Verschieben">
               <DriveFileMoveIcon />
             </IconButton>

@@ -18,9 +18,10 @@ export default function BottomNav() {
       sx={{
         position: 'sticky',
         bottom: 0,
-        background: 'linear-gradient(180deg, rgba(13, 17, 23, 0.85) 0%, rgba(13, 17, 23, 0.98) 100%)',
-        backdropFilter: 'blur(20px)',
-        borderTop: '1px solid rgba(91, 155, 213, 0.1)',
+        background: 'rgba(255, 255, 255, 0.04)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
       }}
     >
       <BottomNavigation

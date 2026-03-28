@@ -147,9 +147,6 @@ const Logs = () => {
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
         <FormControl sx={{ minWidth: 320 }} size="small">
           <InputLabel
-            sx={{
-              color: 'white'
-            }}
             id="log-filter-label">
             Log-Typen
           </InputLabel>
@@ -157,10 +154,12 @@ const Logs = () => {
             labelId="log-filter-label"
             multiple
             sx={{
-              background: 'rgba(22, 27, 34, 0.8)',
+              background: 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
               color: 'white',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              borderRadius: '10px',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '12px',
             }}
             value={selectedTypes}
             onChange={e => setSelectedTypes(e.target.value)}
@@ -199,7 +198,7 @@ const Logs = () => {
               borderLeft: getBorder(log.message),
               background: getBackground(log.message),
               mb: 0.5,
-              borderRadius: '8px !important',
+              borderRadius: '12px !important',
             }}
           >
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>

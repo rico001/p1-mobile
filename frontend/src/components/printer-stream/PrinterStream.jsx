@@ -82,10 +82,10 @@ export default function PrinterStream(props) {
           maxWidth: '420px',
           aspectRatio: '16/9',
           margin: 'auto',
-          borderRadius: '12px',
+          borderRadius: '16px',
           overflow: 'visible',
-          border: '1px solid rgba(255, 255, 255, 0.06)',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
         }}>
 
         <FormControl
@@ -97,7 +97,7 @@ export default function PrinterStream(props) {
             top: 8,
             right: 8,
             zIndex: 3,
-            '& .MuiSelect-select': { color: 'rgba(255, 255, 255, 0.9)', padding: '4px 8px', border: 'none', background: 'rgba(13, 17, 23, 0.7)', backdropFilter: 'blur(8px)', borderRadius: '6px' },
+            '& .MuiSelect-select': { color: 'rgba(255, 255, 255, 0.9)', padding: '4px 8px', border: '1px solid rgba(255, 255, 255, 0.1)', background: 'rgba(255, 255, 255, 0.08)', backdropFilter: 'blur(12px)', borderRadius: '8px' },
           }}>
           <Select
             value={streamSource}
@@ -119,7 +119,7 @@ export default function PrinterStream(props) {
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            background: 'linear-gradient(135deg, #161b22, #1c2333)',
+            background: 'rgba(255, 255, 255, 0.03)',
           }}
         />
 
@@ -151,10 +151,12 @@ export default function PrinterStream(props) {
             bottom: 10,
             right: 10,
             zIndex: 2,
-            bgcolor: 'rgba(13, 17, 23, 0.7)',
-            backdropFilter: 'blur(8px)',
+            bgcolor: 'rgba(255, 255, 255, 0.08)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
             color: '#fff',
-            '&:hover': { bgcolor: 'rgba(13, 17, 23, 0.85)' }
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.14)' }
           }}
         >
           <RefreshIcon fontSize="small" />

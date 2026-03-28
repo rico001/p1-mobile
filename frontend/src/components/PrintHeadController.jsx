@@ -45,10 +45,13 @@ export const PrintHeadController = ({ show = true }) => {
         color: 'white',
         m: 'auto',
         mt: 2,
-        borderRadius: '12px',
+        borderRadius: '16px',
         p: 2,
-        background: 'linear-gradient(135deg, rgba(22, 27, 34, 0.8), rgba(28, 35, 51, 0.6))',
-        border: '1px solid rgba(255, 255, 255, 0.06)',
+        background: 'rgba(255, 255, 255, 0.05)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
       }}
     >
       {/* IconButton for Statt Calibration */}
@@ -59,7 +62,7 @@ export const PrintHeadController = ({ show = true }) => {
       >
       <IconButton
         color="primary"
-        sx={{ mb: 2, backgroundColor: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.08)' }}
+        sx={{ mb: 2, backgroundColor: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)' }}
         onClick={() => confirm('Möchtest du die Kalibrierung starten?') && calibratePrinter()}
         disabled={loading}
       >
@@ -75,7 +78,7 @@ export const PrintHeadController = ({ show = true }) => {
         size="small"
         fullWidth
         color="primary"
-        sx={{ mb: 2, backgroundColor: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.08)' }}
+        sx={{ mb: 2, backgroundColor: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)' }}
       >
         <ToggleButton value="xy">X/Y</ToggleButton>
         <ToggleButton value="z">Z</ToggleButton>
@@ -87,7 +90,7 @@ export const PrintHeadController = ({ show = true }) => {
           labelId="step-label"
           value={step}
           onChange={e => setStep(Number(e.target.value))}
-          sx={{ mb: 1, color: "primary", backgroundColor: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.08)' }}
+          sx={{ mb: 1, color: "primary", backgroundColor: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)' }}
         >
           {[1, 2, 3, 4, 5].map(n => (
             <MenuItem key={n} value={n}>{n}</MenuItem>
@@ -102,7 +105,7 @@ export const PrintHeadController = ({ show = true }) => {
         width: '160px',
         margin: 'auto',
         height: '160px',
-        backgroundColor: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.08)',
+        backgroundColor: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)',
         borderRadius: '100%',
         gap: 1,
         justifyItems: 'center',
@@ -137,7 +140,7 @@ export const PrintHeadController = ({ show = true }) => {
         {/* Home */}
         <IconButton
           color="primary"
-          sx={{ backgroundColor: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.08)', p: 2, pointerEvents: loading ? 'none' : 'auto' }}
+          sx={{ backgroundColor: 'rgba(255, 255, 255, 0.06)', border: '1px solid rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', p: 2, pointerEvents: loading ? 'none' : 'auto' }}
           onClick={() => home()}
         >
           <HomeIcon />

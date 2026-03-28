@@ -24,7 +24,7 @@ export const PrintSpeedSelector = ({show = true}) => {
         color: 'white',
         m: 'auto',
         mt: 3,
-        borderRadius: '12px',
+        borderRadius: '16px',
       }}
     >
       <ButtonGroup
@@ -35,9 +35,12 @@ export const PrintSpeedSelector = ({show = true}) => {
           margin: 'auto',
           width: '100%',
           display: 'flex',
-          borderRadius: '10px',
-          backgroundColor: 'rgba(22, 27, 34, 0.8)',
-          border: '1px solid rgba(255, 255, 255, 0.06)',
+          borderRadius: '12px',
+          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.15)',
           fontSize: '8px',
           overflow: 'hidden',
           '& .MuiButton-root': {

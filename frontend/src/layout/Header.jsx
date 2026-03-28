@@ -9,20 +9,21 @@ export default function Header({ title }) {
       position="static"
       elevation={0}
       sx={{
-        background: 'linear-gradient(135deg, #1a2942 0%, #1e3a5f 50%, #1a2942 100%)',
-        borderBottom: '1px solid rgba(91, 155, 213, 0.15)',
-        backdropFilter: 'blur(20px)',
-        minHeight: { xs: '44px', sm: '52px' },
+        background: 'rgba(255, 255, 255, 0.04)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        minHeight: { xs: '46px', sm: '52px' },
       }}
     >
-      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', padding: '0 16px', minHeight: { xs: '44px', sm: '52px' } }}>
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', padding: '0 16px', minHeight: { xs: '46px', sm: '52px' } }}>
         <Typography
           sx={{
             flexGrow: 1,
             fontSize: '1rem',
             fontWeight: 600,
-            letterSpacing: '0.02em',
-            background: 'linear-gradient(135deg, #7db8e8, #5b9bd5)',
+            letterSpacing: '0.03em',
+            background: 'linear-gradient(135deg, #5eead4 0%, #2dd4aa 50%, #10b981 100%)',
             backgroundClip: 'text',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',

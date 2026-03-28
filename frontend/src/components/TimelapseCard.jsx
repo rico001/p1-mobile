@@ -50,7 +50,7 @@ const TimelapseCard = ({ video, onDelete }) => {
             aspectRatio: '1 / 1',
             display: 'flex',
             flexDirection: 'column',
-            borderRadius: '12px',
+            borderRadius: '16px',
             overflow: 'hidden',
           }}
         >
@@ -80,7 +80,7 @@ const TimelapseCard = ({ video, onDelete }) => {
             </Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-around', py: 0.5, px: 1, borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-around', py: 0.5, px: 1, borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
             <IconButton
               component="a"
               href={operations.download?.path}
